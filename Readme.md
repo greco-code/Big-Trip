@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Георгий Найфонов](https://up.htmlacademy.ru/ecmascript/14/user/1035371).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Алипкин](https://htmlacademy.ru/profile/ealipkin).
 
 ---
 
