@@ -1,4 +1,5 @@
 import {createSiteMenuTemplate} from './createSiteMenuTemplate';
+import {createTripInfoTemplate} from './createTripInfoTemplate';
 
 
 const headerMain = document.querySelector('.trip-main');
@@ -9,3 +10,4 @@ const render = (container, template, place) => {
 };
 
 render(headerMenuContainer, createSiteMenuTemplate(), 'beforeend');
+render(headerMain, createTripInfoTemplate(), 'afterbegin');
