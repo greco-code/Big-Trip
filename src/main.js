@@ -5,6 +5,7 @@ import {createTripSortTemplate} from './createTripSortTemplate';
 import {createTripEventsListTemplate} from './createTripEventsListTemplate';
 import {createTripEventsItemTemplate} from './createTripEventsItemTemplate';
 import {createAddNewPointFormTemplate} from './createAddNewPointFormTemplate';
+import {createEventTemplate} from './createEventTemplate';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
@@ -23,11 +24,19 @@ render(tripFilterContainer, createTripFilterTemplate(), 'afterbegin');
 render(tripEventsContainer, createTripSortTemplate(), 'afterbegin');
 render(tripEventsContainer, createTripEventsListTemplate(), 'afterbegin');
 
-//todo получается некрасиво, как можно решить?
+// todo получается некрасиво, как можно решить?
 const tripEventsList = document.querySelector('.trip-events__list');
 
-render(tripEventsList, createTripEventsItemTemplate(), 'afterbegin');
+// Отрисовывает 5 <li>
+// for (let i = 0; i < 5; i++) {
+//   render(tripEventsList, createTripEventsItemTemplate(), 'afterbegin');
+// }
 
-const tripEventsItem = tripEventsList.querySelector('.trip-events__item');
+// const tripEventsItems = tripEventsList.querySelectorAll('.trip-events__item');
 
-render(tripEventsItem, createAddNewPointFormTemplate(), 'afterbegin');
+// Заполняет пункты списка точками маршрута
+for (let i = 1; i <= 3; i++) {
+  render(tripEventsList, createEventTemplate(), 'afterbegin');
+}
+
+render(tripEventsList, createAddNewPointFormTemplate(), 'afterbegin');
