@@ -4,7 +4,7 @@ import {createTripFilterTemplate} from './createTripFilterTemplate';
 import {createTripSortTemplate} from './createTripSortTemplate';
 import {createTripEventsListTemplate} from './createTripEventsListTemplate';
 import {createTripEventsItemTemplate} from './createTripEventsItemTemplate';
-// import {createAddNewPointFormTemplate} from './createAddNewPointFormTemplate';
+import {createAddNewPointFormTemplate} from './createAddNewPointFormTemplate';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
@@ -29,3 +29,5 @@ const tripEventsList = document.querySelector('.trip-events__list');
 render(tripEventsList, createTripEventsItemTemplate(), 'afterbegin');
 
 const tripEventsItem = tripEventsList.querySelector('.trip-events__item');
+
+render(tripEventsItem, createAddNewPointFormTemplate(), 'afterbegin');
