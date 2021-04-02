@@ -1,17 +1,19 @@
-import {createSiteMenuTemplate} from './view/createSiteMenuTemplate';
-import {createTripInfoTemplate} from './view/createTripInfoTemplate';
-import {createTripFilterTemplate} from './view/createTripFilterTemplate';
-import {createTripSortTemplate} from './view/createTripSortTemplate';
-import {createTripEventsListTemplate} from './view/createTripEventsListTemplate';
-import {createAddNewPointFormTemplate} from './view/createAddNewPointFormTemplate';
-import {createEventTemplate} from './view/createEventTemplate';
-import {createEditPointForm} from './view/createEditPointForm';
+import {createSiteMenuTemplate} from './view/site-menu';
+import {createTripInfoTemplate} from './view/trip-info';
+import {createTripFilterTemplate} from './view/trip-filter';
+import {createTripSortTemplate} from './view/trip-sort';
+import {createTripEventsListTemplate} from './view/event-list';
+import {createAddNewPointFormTemplate} from './view/new-point';
+import {createEventTemplate} from './view/event';
+import {createEditPointForm} from './view/edit-point';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
 const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation');
 const tripFilterContainer = headerMain.querySelector('.trip-controls__filters');
 const tripEventsContainer = pageMain.querySelector('.trip-events');
+
+const EVENTS_COUNT = 3;
 
 
 const render = (container, template, place) => {
@@ -24,10 +26,9 @@ render(tripFilterContainer, createTripFilterTemplate(), 'afterbegin');
 render(tripEventsContainer, createTripSortTemplate(), 'afterbegin');
 render(tripEventsContainer, createTripEventsListTemplate(), 'beforeend');
 
-// todo получается некрасиво, как можно решить?
 const tripEventsList = document.querySelector('.trip-events__list');
 
-for (let i = 1; i < 3; i++) {
+for (let i = 1; i < EVENTS_COUNT; i++) {
   render(tripEventsList, createEventTemplate(), 'afterbegin');
 }
 
