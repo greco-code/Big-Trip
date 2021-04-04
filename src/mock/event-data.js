@@ -133,6 +133,8 @@ export const generateEvent = () => {
   const dateFrom = generateDateFrom().toDate();
   const dateTo = generateDateTo(dateFrom).toDate();
 
+  // console.log(dayjs(dateFrom).format('D MMMM'));
+
   const getDuration = () => {
     const MILLISECONDS = 1000;
     const MINUTES = 60;
@@ -175,12 +177,9 @@ export const generateEvent = () => {
         },
       ],
     },
-    //todo добавить id
     id: '0',
     is_favorite: Boolean(getRandomInteger(0, 1)),
-    offer: randomizeArray(OFFERS),
+    offers: randomizeArray(OFFERS),
     type: randomizeType(),
   };
 };
-
-
