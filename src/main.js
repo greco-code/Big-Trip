@@ -6,7 +6,7 @@ import {createTripEventsListTemplate} from './view/event-list-container';
 import {createAddNewPointFormTemplate} from './view/new-point';
 import {createEventTemplate} from './view/event';
 import {createEditPointForm} from './view/edit-point';
-
+import {generateEvent} from './mock/event-data';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
@@ -35,3 +35,5 @@ for (let i = 1; i < EVENTS_COUNT; i++) {
 
 render(tripEventsList, createEditPointForm(), 'afterbegin');
 render(tripEventsList, createAddNewPointFormTemplate(), 'afterbegin');
+
+const events = new Array(EVENTS_COUNT).fill().map(generateEvent);
