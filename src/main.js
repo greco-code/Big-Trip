@@ -7,6 +7,7 @@ import {createEventTemplate} from './view/event';
 import {createPointForm} from './view/point-form';
 import {generateEvent} from './mock/event-data';
 import {createEventPhotosContainer} from './view/event-photos';
+import {createEventItemContainerTemplate} from './view/event-item-container';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
@@ -16,6 +17,7 @@ const tripEventsContainer = pageMain.querySelector('.trip-events');
 
 const EVENTS_COUNT = 3;
 
+const events = new Array(EVENTS_COUNT).fill().map(generateEvent);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -29,8 +31,10 @@ render(tripEventsContainer, createTripEventsListTemplate(), 'beforeend');
 
 const tripEventsList = document.querySelector('.trip-events__list');
 
-for (let i = 1; i < EVENTS_COUNT; i++) {
-  render(tripEventsList, createEventTemplate(), 'afterbegin');
+for (let i = 0; i < EVENTS_COUNT; i++) {
+  render(tripEventsList, createEventItemContainerTemplate(), 'afterbegin');
+  const tripEventItem = document.querySelector('.trip-events__item');
+  render(tripEventItem, createEventTemplate(events[i]), 'afterbegin');
 }
 
 render(tripEventsList, createPointForm(), 'afterbegin');
@@ -38,6 +42,3 @@ render(tripEventsList, createPointForm(), 'afterbegin');
 
 const photosContainer = document.querySelector('.event__section--destination');
 render(photosContainer, createEventPhotosContainer(), 'beforeend');
-
-
-const events = new Array(EVENTS_COUNT).fill().map(generateEvent);
