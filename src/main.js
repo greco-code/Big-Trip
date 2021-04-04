@@ -2,10 +2,11 @@ import {createSiteMenuTemplate} from './view/site-menu';
 import {createTripInfoTemplate} from './view/trip-info';
 import {createTripFilterTemplate} from './view/trip-filter';
 import {createTripSortTemplate} from './view/trip-sort';
-import {createTripEventsListTemplate} from './view/event-list';
+import {createTripEventsListTemplate} from './view/event-list-container';
 import {createAddNewPointFormTemplate} from './view/new-point';
 import {createEventTemplate} from './view/event';
 import {createEditPointForm} from './view/edit-point';
+
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
