@@ -35,6 +35,11 @@ export const humanizeEventDueDate = (dueDate) => {
   return dayjs(dueDate).format('MMM DD');
 };
 
+export const humanizeEventDueFullDate = (dueDate) => {
+  return dayjs(dueDate).format('YY/MM/DD HH:mm');
+};
+
+
 export const randomObject = (obj) => {
   const keys = Object.keys(obj);
   return obj[keys[ keys.length * Math.random() << 0]];

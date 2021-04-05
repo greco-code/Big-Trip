@@ -4,7 +4,7 @@ import {createTripFilterTemplate} from './view/trip-filter';
 import {createTripSortTemplate} from './view/trip-sort';
 import {createTripEventsListTemplate} from './view/event-list-container';
 import {createEventTemplate} from './view/event';
-import {createPointForm} from './view/point-form';
+import {createPointForm} from './view/event-form';
 import {generateEvent} from './mock/event-data';
 import {createEventItemContainerTemplate} from './view/event-item-container';
 // import {createEventPhotosContainer} from './view/event-photos';
@@ -31,16 +31,20 @@ render(tripEventsContainer, createTripEventsListTemplate(), 'beforeend');
 
 const tripEventsList = document.querySelector('.trip-events__list');
 
-
-for (let i = 1; i < EVENTS_COUNT; i++) {
+for (let i = 0; i < EVENTS_COUNT; i++) {
   render(tripEventsList, createEventItemContainerTemplate(), 'afterbegin');
-  const tripEventItem = document.querySelector('.trip-events__item');
+}
+
+const tripEventItems = document.querySelectorAll('.trip-events__item');
+
+// Кажется, это какая то фигня
+for (let i = 1; i < EVENTS_COUNT; i++) {
+  const tripEventItem = tripEventItems[i];
   render(tripEventItem, createEventTemplate(events[i]), 'afterbegin');
 }
 
-render(tripEventsList, createPointForm(events[0]), 'afterbegin');
-
-// console.log(events);
+const tripEventItem = tripEventItems[0];
+render(tripEventItem, createPointForm(events[0]), 'afterbegin');
 
 
 // render(tripEventsList, createPointForm(), 'afterbegin');
