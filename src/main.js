@@ -40,6 +40,8 @@ for (let i = 1; i < EVENTS_COUNT; i++) {
 
 render(tripEventsList, createPointForm(events[0]), 'afterbegin');
 
+// console.log(events);
+
 
 // render(tripEventsList, createPointForm(), 'afterbegin');
 

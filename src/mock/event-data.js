@@ -68,6 +68,19 @@ const OFFERS = [
   },
 ];
 
+const ICONS_TO_TYPE = {
+  'Taxi': 'img/icons/taxi.png',
+  'Bus': 'img/icons/bus.png',
+  'Train': 'img/icons/train.png',
+  'Ship': 'img/icons/ship.png',
+  'Transport': 'img/icons/transport.png',
+  'Drive': 'img/icons/drive.png',
+  'Flight': 'img/icons/flight.png',
+  'Check-in': 'img/icons/check-in.png',
+  'Sightseeing': 'img/icons/sightseeing.png',
+  'Restaurant': 'img/icons/restaurant.png',
+};
+
 // Возвращает массив из 5 неповторяющихся чисел
 const generateRandomIntArray = () => {
   const randomIntSet = new Set();
@@ -161,6 +174,7 @@ export const generateEvent = () => {
   const duration = getDuration();
   const name = randomizePointName();
   const description = DESTINATION[name];
+  const type = randomizeType();
 
   return {
     base_price: generatePrice(EVENT_MIN_PRICE, EVENT_MAX_PRICE),
@@ -180,6 +194,7 @@ export const generateEvent = () => {
     id: '0',
     is_favorite: Boolean(getRandomInteger(0, 1)),
     offers: randomizeArray(OFFERS),
-    type: randomizeType(),
+    type,
+    icon: ICONS_TO_TYPE[type],
   };
 };
