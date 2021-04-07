@@ -7,7 +7,7 @@ import {createEventTemplate} from './view/event';
 import {createPointForm} from './view/event-form';
 import {generateEvent} from './mock/event-data';
 import {createEventItemContainerTemplate} from './view/event-item-container';
-// import {createEventPhotosContainer} from './view/event-photos';
+
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
