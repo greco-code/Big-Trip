@@ -14,7 +14,6 @@ export const createEventTemplate = (event) => {
     icon,
   } = event;
 
-
   const timeStart = humanizeEventDueTime(date_from);
   const timeFinish = humanizeEventDueTime(date_to);
   const eventDay = humanizeEventDueDate(date_from);
@@ -24,17 +23,17 @@ export const createEventTemplate = (event) => {
     return (is_favorite) ? 'event__favorite-btn--active' : '';
   };
 
-  const generateOfferContainer = () => {
-    let offerMarkup = '';
+  const generateOffers = () => {
+    let offersMarkup = '';
 
     offers.forEach((offer) => {
-      offerMarkup += `<li class="event__offer">
+      offersMarkup += `<li class="event__offer">
          <span class="event__offer-title">${offer.title}</span>
            &plus;&euro;&nbsp;
          <span class="event__offer-price">${offer.price}</span>
          </li>`;
     });
-    return offerMarkup;
+    return offersMarkup;
   };
 
   return `<div class="event">
@@ -56,7 +55,7 @@ export const createEventTemplate = (event) => {
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                ${generateOfferContainer()}
+                ${generateOffers()}
                 </ul>
                 <button class="event__favorite-btn ${isFavourite()}" type="button">
                   <span class="visually-hidden">Add to favorite</span>

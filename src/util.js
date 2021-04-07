@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 
+// Возвращает рандомное целое число в заданном диапазоне
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -7,6 +8,7 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
+// Перемешивает массив
 export const shuffleArray = (array) => {
   let currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -23,10 +25,22 @@ export const shuffleArray = (array) => {
   return array;
 };
 
+// Возвращает массив из неповторяющихся рандомных чисел
+export const generateRandomIntArray = (amount) => {
+  const randomIntSet = new Set();
+
+  while (randomIntSet.size < amount) {
+    randomIntSet.add(getRandomInteger(0, 1000000));
+  }
+  return Array.from(randomIntSet);
+};
+
+// Рандомно добавляет элементы в массив
 export const randomizeArray = (arr) => {
   return arr.filter(() => Math.random() > 0.5);
 };
 
+// Время
 export const humanizeEventDueTime = (dueTime) => {
   return dayjs(dueTime).format('HH:mm');
 };

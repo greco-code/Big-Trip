@@ -1,4 +1,4 @@
-import {getRandomInteger, shuffleArray, randomizeArray} from '../util.js';
+import {getRandomInteger, shuffleArray, randomizeArray, generateRandomIntArray} from '../util.js';
 import dayjs from 'dayjs';
 
 
@@ -81,22 +81,9 @@ const ICONS_TO_TYPE = {
   'Restaurant': 'img/icons/restaurant.png',
 };
 
-// Возвращает массив из 5 неповторяющихся чисел
-const generateRandomIntArray = () => {
-  const randomIntSet = new Set();
-
-  while (randomIntSet.size < PHOTOS_MAX_LENGTH) {
-    randomIntSet.add(getRandomInteger(0, 1000000));
-  }
-  return Array.from(randomIntSet);
-};
-
-const PHOTOS = [];
-
 const EVENT_MIN_PRICE = 20;
 const EVENT_MAX_PRICE = 1000;
 const PHOTOS_MAX_LENGTH = 5;
-
 
 const randomizeType = () => {
   return TYPES[getRandomInteger(0, TYPES.length - 1)];
@@ -108,18 +95,21 @@ const randomizePointName = () => {
   return keys[getRandomInteger(0, keys.length - 1)];
 };
 
-// Возвращает массив из сгенерированных ссылок на фото
+// Возвращает рандомное количество объектов с ссылкой и описанием на фото
 const generatePhotos = () => {
+  const PHOTOS = [];
   const photosCurrentLength = getRandomInteger(0, PHOTOS_MAX_LENGTH - 1);
+  const randomNumbers = generateRandomIntArray(PHOTOS_MAX_LENGTH);
 
   for (let i = 0; i < photosCurrentLength; i++) {
-    const randomNumber = generateRandomIntArray()[getRandomInteger(0, generateRandomIntArray().length - 1)];
-
-    const PHOTOS_LINK = `http://picsum.photos/248/152?r=${randomNumber}`;
-    PHOTOS.push(PHOTOS_LINK);
+    const randomNumber = randomNumbers[i];
+    PHOTOS.push({
+      src: `http://picsum.photos/248/152?r=${randomNumber}`,
+      description: `Подпись к картинке номер ${i + 1}`,
+    });
   }
 
-  return shuffleArray(PHOTOS).slice(0, getRandomInteger(0, PHOTOS_MAX_LENGTH));
+  return PHOTOS;
 };
 
 // Возвращает рандомную цену, округленную до 10
@@ -146,7 +136,6 @@ export const generateEvent = () => {
   const dateFrom = generateDateFrom().toDate();
   const dateTo = generateDateTo(dateFrom).toDate();
 
-  // console.log(dayjs(dateFrom).format('D MMMM'));
 
   const getDuration = () => {
     const MILLISECONDS = 1000;
@@ -176,6 +165,7 @@ export const generateEvent = () => {
   const description = DESTINATION[name];
   const type = randomizeType();
 
+
   return {
     base_price: generatePrice(EVENT_MIN_PRICE, EVENT_MAX_PRICE),
     date_from: dateFrom,
@@ -184,12 +174,7 @@ export const generateEvent = () => {
     destination: {
       name,
       description,
-      pictures: [
-        {
-          src: generatePhotos(),
-          description,
-        },
-      ],
+      pictures: generatePhotos(),
     },
     id: '0',
     is_favorite: Boolean(getRandomInteger(0, 1)),

@@ -15,7 +15,7 @@ const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation
 const tripFilterContainer = headerMain.querySelector('.trip-controls__filters');
 const tripEventsContainer = pageMain.querySelector('.trip-events');
 
-const EVENTS_COUNT = 4;
+const EVENTS_COUNT = 5;
 
 const events = new Array(EVENTS_COUNT).fill().map(generateEvent);
 
@@ -37,17 +37,11 @@ for (let i = 0; i < EVENTS_COUNT; i++) {
 
 const tripEventItems = document.querySelectorAll('.trip-events__item');
 
-// Кажется, это какая то фигня
-for (let i = 1; i < EVENTS_COUNT; i++) {
+// Кажется, это какая то фигня дальше
+for (let i = 2; i < EVENTS_COUNT; i++) {
   const tripEventItem = tripEventItems[i];
   render(tripEventItem, createEventTemplate(events[i]), 'afterbegin');
 }
 
-const tripEventItem = tripEventItems[0];
-render(tripEventItem, createPointForm(events[0]), 'afterbegin');
-
-
-// render(tripEventsList, createPointForm(), 'afterbegin');
-
-// const photosContainer = document.querySelector('.event__section--destination');
-// render(photosContainer, createEventPhotosContainer(), 'beforeend');
+render(tripEventItems[0], createPointForm(events[0]), 'afterbegin');
+render(tripEventItems[1], createPointForm(events[1]), 'afterbegin');
