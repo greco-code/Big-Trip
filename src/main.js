@@ -1,11 +1,13 @@
-import {createSiteMenuTemplate} from './view/createSiteMenuTemplate';
-import {createTripInfoTemplate} from './view/createTripInfoTemplate';
-import {createTripFilterTemplate} from './view/createTripFilterTemplate';
-import {createTripSortTemplate} from './view/createTripSortTemplate';
-import {createTripEventsListTemplate} from './view/createTripEventsListTemplate';
-import {createAddNewPointFormTemplate} from './view/createAddNewPointFormTemplate';
-import {createEventTemplate} from './view/createEventTemplate';
-import {createEditPointForm} from './view/createEditPointForm';
+import {createSiteMenuTemplate} from './view/site-menu';
+import {createTripInfoTemplate} from './view/trip-info';
+import {createTripFilterTemplate} from './view/trip-filter';
+import {createTripSortTemplate} from './view/trip-sort';
+import {createTripEventsListTemplate} from './view/event-list-container';
+import {createEventTemplate} from './view/event';
+import {createPointForm} from './view/event-form';
+import {generateEvent} from './mock/event-data';
+import {createEventItemContainerTemplate} from './view/event-item-container';
+
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
@@ -13,8 +15,11 @@ const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation
 const tripFilterContainer = headerMain.querySelector('.trip-controls__filters');
 const tripEventsContainer = pageMain.querySelector('.trip-events');
 
+const EVENTS_COUNT = 5;
 
-const render = (container, template, place) => {
+const events = new Array(EVENTS_COUNT).fill().map(generateEvent);
+
+export const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
@@ -24,12 +29,19 @@ render(tripFilterContainer, createTripFilterTemplate(), 'afterbegin');
 render(tripEventsContainer, createTripSortTemplate(), 'afterbegin');
 render(tripEventsContainer, createTripEventsListTemplate(), 'beforeend');
 
-// todo получается некрасиво, как можно решить?
 const tripEventsList = document.querySelector('.trip-events__list');
 
-for (let i = 1; i < 3; i++) {
-  render(tripEventsList, createEventTemplate(), 'afterbegin');
+for (let i = 0; i < EVENTS_COUNT; i++) {
+  render(tripEventsList, createEventItemContainerTemplate(), 'afterbegin');
 }
 
-render(tripEventsList, createEditPointForm(), 'afterbegin');
-render(tripEventsList, createAddNewPointFormTemplate(), 'afterbegin');
+const tripEventItems = document.querySelectorAll('.trip-events__item');
+
+// Кажется, это какая то фигня дальше
+for (let i = 2; i < EVENTS_COUNT; i++) {
+  const tripEventItem = tripEventItems[i];
+  render(tripEventItem, createEventTemplate(events[i]), 'afterbegin');
+}
+
+render(tripEventItems[0], createPointForm(events[0]), 'afterbegin');
+render(tripEventItems[1], createPointForm(events[1]), 'afterbegin');
