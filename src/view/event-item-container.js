@@ -1,4 +1,5 @@
 export const createEventItemContainerTemplate = () => {
-  return `<li class="trip-events__item">
-          </li>`;
+  return `
+        <li class="trip-events__item">
+        </li>`;
 };
