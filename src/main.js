@@ -37,11 +37,10 @@ for (let i = 0; i < EVENTS_COUNT; i++) {
 
 const tripEventItems = document.querySelectorAll('.trip-events__item');
 
-// Кажется, это какая то фигня дальше
+render(tripEventItems[0], createPointForm(events[0]), 'afterbegin');
+render(tripEventItems[1], createPointForm(events[1]), 'afterbegin');
+
 for (let i = 2; i < EVENTS_COUNT; i++) {
   const tripEventItem = tripEventItems[i];
   render(tripEventItem, createEventTemplate(events[i]), 'afterbegin');
 }
-
-render(tripEventItems[0], createPointForm(events[0]), 'afterbegin');
-render(tripEventItems[1], createPointForm(events[1]), 'afterbegin');

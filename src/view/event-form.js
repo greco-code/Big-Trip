@@ -1,5 +1,73 @@
 import {humanizeEventDueFullDate} from '../util';
 
+// Возвращает список услуг
+const generateOffers = (offers) => {
+  let offerMarkup = '';
+
+  offers.forEach((offer) => {
+    offerMarkup +=
+      `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage">
+            <label class="event__offer-label" for="event-offer-luggage-1">
+              <span class="event__offer-title">${offer.title}</span>
+              &plus;&euro;&nbsp;
+              <span class="event__offer-price">${offer.price}</span>
+            </label>
+       </div>`;
+  });
+
+  return offerMarkup;
+};
+
+// Возвращает список услуг В КОНТЕЙНЕРЕ
+const generateOffersContainer = (offers, offersNumber) => {
+  return offersNumber
+    ? `<section class="event__section  event__section--offers">
+         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+         <div class="event__available-offers">
+            ${generateOffers(offers)}
+         </div>
+       </section>`
+    : '';
+};
+
+// Возвращает спсико фото
+const generatePhotos = (destination, photosNumber) => {
+  let photosMarkup = '';
+
+  if (photosNumber) {
+    for (let i = 0; i < photosNumber; i++) {
+      photosMarkup +=
+        `<img class="event__photo" src="${destination.pictures[i].src}" alt="${destination.pictures[i].description}">`;
+    }
+  }
+
+  return photosMarkup;
+};
+
+// Возвращает список фото В КОНТЕЙНЕРЕ
+const generatePhotosContainer = (destination, photosNumber) => {
+  return photosNumber
+    ? `<div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${generatePhotos(destination, photosNumber)}
+          </div>
+        </div>`
+    : '';
+};
+
+
+const generateOfferDescription = (destination, photosNumber) => {
+  return destination.description
+    ? `<section class="event__section  event__section--destination">
+        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+        <p class="event__destination-description">${destination.description}</p>
+        ${generatePhotosContainer(destination, photosNumber)}
+      </section>`
+
+    : '';
+};
+
 export const createPointForm = (event) => {
   const {
     base_price,
@@ -13,100 +81,11 @@ export const createPointForm = (event) => {
 
   const timeStart = humanizeEventDueFullDate(date_from);
   const timeFinish = humanizeEventDueFullDate(date_to);
-  const picturesNumber = destination.pictures.length;
+  const photosNumber = destination.pictures.length;
   const offersNumber = offers.length;
 
-
-  // Возвращает список услуг
-  const generateOffers = () => {
-    let offerMarkup = '';
-
-    offers.forEach((offer) => {
-      offerMarkup +=
-        `<div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage">
-                <label class="event__offer-label" for="event-offer-luggage-1">
-                  <span class="event__offer-title">${offer.title}</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">${offer.price}</span>
-                </label>
-            </div>`;
-    });
-
-    return offerMarkup;
-  };
-
-  // Возвращает список услуг В КОНТЕЙНЕРЕ
-  const generateOffersContainer = () => {
-    let offersContainerMarkup = '';
-
-    if (!(offersNumber === 0)) {
-      offersContainerMarkup =
-        `<section class="event__section  event__section--offers">
-               <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-                     <div class="event__available-offers">
-                            ${generateOffers()}
-                     </div>
-        </section>`;
-    } else {
-      offersContainerMarkup = '';
-    }
-
-    return offersContainerMarkup;
-  };
-
-  // Возвращает спсико фото
-  const generatePhotos = () => {
-    let photosMarkup = '';
-
-    if (!(picturesNumber === 0)) {
-      for (let i = 0; i < picturesNumber; i++) {
-        photosMarkup +=
-          `<img class="event__photo" src="${destination.pictures[i].src}" alt="${destination.pictures[i].description}">`;
-      }
-    } else {
-      photosMarkup = '';
-    }
-
-    return photosMarkup;
-  };
-
-  // Возвращает список фото В КОНТЕЙНЕРЕ
-  const generatePhotosContainer = () => {
-    let photosContainerMarkup = '';
-
-    if (!(picturesNumber === 0)) {
-      photosContainerMarkup =
-        `<div class="event__photos-container">
-                      <div class="event__photos-tape">
-                        ${generatePhotos()}
-                      </div>
-        </div>`;
-    } else {
-      photosContainerMarkup = '';
-    }
-
-    return photosContainerMarkup;
-  };
-
-
-  const generateOfferDescription = () => {
-    let descriptionMarkup = '';
-
-    if (!(destination.description === '')) {
-
-      descriptionMarkup = `<section class="event__section  event__section--destination">
-                                <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                                <p class="event__destination-description">${destination.description}</p>
-                                ${generatePhotosContainer()}
-                           </section>`;
-
-    } else {
-      descriptionMarkup = '';
-    }
-
-    return descriptionMarkup;
-  };
+  const offersList = generateOffersContainer(offers, offersNumber);
+  const description = generateOfferDescription(destination, photosNumber);
 
   return `
       <form class="event event--edit" action="#" method="post">
@@ -210,8 +189,8 @@ export const createPointForm = (event) => {
           </button>
         </header>
         <section class="event__details">
-          ${generateOffersContainer()}
-          ${generateOfferDescription()}
+          ${offersList}
+          ${description}
         </section>
       </form>`;
 };
