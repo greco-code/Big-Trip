@@ -1,14 +1,14 @@
 import {humanizeEventDueFullDate} from '../util';
 
 // Возвращает список услуг
-const generateOffers = (offers) => {
+const generateOffers = (offers, id) => {
   let offerMarkup = '';
 
   offers.forEach((offer) => {
     offerMarkup +=
       `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage">
-            <label class="event__offer-label" for="event-offer-luggage-1">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.type}-${id}" type="checkbox" name="event-offer-${offer.type}">
+            <label class="event__offer-label" for="event-offer-${offer.type}-${id}">
               <span class="event__offer-title">${offer.title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${offer.price}</span>
@@ -20,12 +20,12 @@ const generateOffers = (offers) => {
 };
 
 // Возвращает список услуг В КОНТЕЙНЕРЕ
-const generateOffersContainer = (offers, offersNumber) => {
+const generateOffersContainer = (offers, offersNumber, id) => {
   return offersNumber
     ? `<section class="event__section  event__section--offers">
          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
          <div class="event__available-offers">
-            ${generateOffers(offers)}
+            ${generateOffers(offers, id)}
          </div>
        </section>`
     : '';
@@ -78,14 +78,13 @@ export const createPointForm = (event) => {
     offers,
   } = event;
 
-
   const timeStart = humanizeEventDueFullDate(date_from);
   const timeFinish = humanizeEventDueFullDate(date_to);
   const photosNumber = destination.pictures.length;
   const offersNumber = offers.length;
 
-  const offersList = generateOffersContainer(offers, offersNumber);
-  const description = generateOfferDescription(destination, photosNumber);
+  const offersList = generateOffersContainer(offers, offersNumber, id);
+  const description = generateOfferDescription(destination, photosNumber, id);
 
   return `
       <form class="event event--edit" action="#" method="post">
@@ -95,35 +94,35 @@ export const createPointForm = (event) => {
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
 
                 <div class="event__type-item">
-                  <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
+                  <input id="event-type-taxi-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
+                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-${id}">Taxi</label>
                 </div>
 
                 <div class="event__type-item">
-                  <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
+                  <input id="event-type-bus-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
+                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-${id}">Bus</label>
                 </div>
 
                 <div class="event__type-item">
-                  <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                  <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
+                  <input id="event-type-train-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
+                  <label class="event__type-label  event__type-label--train" for="event-type-train-${id}">Train</label>
                 </div>
 
                 <div class="event__type-item">
-                  <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
+                  <input id="event-type-ship-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
+                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-${id}">Ship</label>
                 </div>
 
                 <div class="event__type-item">
-                  <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                  <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
+                  <input id="event-type-transport-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
+                  <label class="event__type-label  event__type-label--transport" for="event-type-transport-${id}">Transport</label>
                 </div>
 
                 <div class="event__type-item">
