@@ -7,6 +7,7 @@ import {createEventTemplate} from './view/event';
 import {createPointForm} from './view/event-form';
 import {generateEvent} from './mock/event-data';
 import {createEventItemContainerTemplate} from './view/event-item-container';
+import dayjs from 'dayjs';
 
 
 const headerMain = document.querySelector('.trip-main');
@@ -17,7 +18,11 @@ const tripEventsContainer = pageMain.querySelector('.trip-events');
 
 const EVENTS_COUNT = 5;
 
-const events = new Array(EVENTS_COUNT).fill().map(generateEvent);
+const events = new Array(EVENTS_COUNT)
+  .fill()
+  .map(generateEvent)
+  .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
+
 
 export const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
