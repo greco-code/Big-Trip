@@ -1,4 +1,4 @@
-import {humanizeEventDueDate, humanizeEventDueTime} from '../util';
+import {humanizeToMonthDay, humanizeToTime} from '../util';
 
 const generateOffers = (offers) => {
   let offersMarkup = '';
@@ -25,9 +25,9 @@ export const createEventTemplate = (event) => {
     type,
   } = event;
 
-  const timeStart = humanizeEventDueTime(date_from);
-  const timeFinish = humanizeEventDueTime(date_to);
-  const eventDay = humanizeEventDueDate(date_from);
+  const timeStart = humanizeToTime(date_from);
+  const timeFinish = humanizeToTime(date_to);
+  const eventDay = humanizeToMonthDay(date_from);
 
   const isFavourite = is_favorite ? 'event__favorite-btn--active' : '';
   const offersMarkup = generateOffers(offers);

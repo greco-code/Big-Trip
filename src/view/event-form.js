@@ -1,4 +1,4 @@
-import {humanizeEventDueFullDate} from '../util';
+import {humanizeToFullDate} from '../util';
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -78,8 +78,8 @@ export const createPointForm = (event) => {
     offers,
   } = event;
 
-  const timeStart = humanizeEventDueFullDate(date_from);
-  const timeFinish = humanizeEventDueFullDate(date_to);
+  const timeStart = humanizeToFullDate(date_from);
+  const timeFinish = humanizeToFullDate(date_to);
   const photosNumber = destination.pictures.length;
   const offersNumber = offers.length;
 

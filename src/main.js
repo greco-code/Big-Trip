@@ -16,7 +16,7 @@ const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation
 const tripFilterContainer = headerMain.querySelector('.trip-controls__filters');
 const tripEventsContainer = pageMain.querySelector('.trip-events');
 
-const EVENTS_COUNT = 5;
+const EVENTS_COUNT = 15;
 
 const events = new Array(EVENTS_COUNT)
   .fill()
@@ -29,7 +29,7 @@ export const render = (container, template, place) => {
 };
 
 render(headerMenuContainer, createSiteMenuTemplate(), 'beforeend');
-render(headerMain, createTripInfoTemplate(), 'afterbegin');
+render(headerMain, createTripInfoTemplate(events), 'afterbegin');
 render(tripFilterContainer, createTripFilterTemplate(), 'afterbegin');
 render(tripEventsContainer, createTripSortTemplate(), 'afterbegin');
 render(tripEventsContainer, createTripEventsListTemplate(), 'beforeend');

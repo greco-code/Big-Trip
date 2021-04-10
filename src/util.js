@@ -41,20 +41,14 @@ export const randomizeArray = (arr) => {
 };
 
 // Время
-export const humanizeEventDueTime = (dueTime) => {
+export const humanizeToTime = (dueTime) => {
   return dayjs(dueTime).format('HH:mm');
 };
 
-export const humanizeEventDueDate = (dueDate) => {
+export const humanizeToMonthDay = (dueDate) => {
   return dayjs(dueDate).format('MMM DD');
 };
 
-export const humanizeEventDueFullDate = (dueDate) => {
+export const humanizeToFullDate = (dueDate) => {
   return dayjs(dueDate).format('YY/MM/DD HH:mm');
-};
-
-
-export const randomObject = (obj) => {
-  const keys = Object.keys(obj);
-  return obj[keys[ keys.length * Math.random() << 0]];
 };
