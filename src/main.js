@@ -1,4 +1,4 @@
-import {createSiteMenuTemplate} from './view/site-menu';
+import SiteMenuView from './view/site-menu';
 import {createTripInfoTemplate} from './view/trip-info';
 import {createTripFilterTemplate} from './view/trip-filter';
 import {createTripSortTemplate} from './view/trip-sort';
@@ -7,7 +7,7 @@ import {createEventTemplate} from './view/event';
 import {createPointForm} from './view/event-form';
 import {generateEvent} from './mock/event-data';
 import {createEventItemContainerTemplate} from './view/event-item-container';
-import {renderTemplate} from './util';
+import {renderTemplate, renderElement, RenderPosition} from './util';
 import dayjs from 'dayjs';
 
 
@@ -24,7 +24,7 @@ const events = new Array(EVENTS_COUNT)
   .map(generateEvent)
   .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
 
-renderTemplate(headerMenuContainer, createSiteMenuTemplate(), 'beforeend');
+renderElement(headerMenuContainer, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
 renderTemplate(headerMain, createTripInfoTemplate(events), 'afterbegin');
 renderTemplate(tripFilterContainer, createTripFilterTemplate(), 'afterbegin');
 renderTemplate(tripEventsContainer, createTripSortTemplate(), 'afterbegin');

@@ -24,10 +24,10 @@ export const renderTemplate = (container, template, place) => {
 };
 
 export const createElement = (template) => {
-  const newElement = document.createElement('div'); // 1
-  newElement.innerHTML = template; // 2
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
 
-  return newElement.firstChild; // 3
+  return newElement.firstChild;
 };
 
 // Возвращает рандомное целое число в заданном диапазоне
@@ -38,7 +38,9 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-// Перемешивает массив
+/**
+ Utils
+ */
 export const shuffleArray = (array) => {
   let currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -55,7 +57,6 @@ export const shuffleArray = (array) => {
   return array;
 };
 
-// Возвращает массив из неповторяющихся рандомных чисел
 export const generateRandomIntArray = (amount) => {
   const randomIntSet = new Set();
 
@@ -70,7 +71,9 @@ export const randomizeArray = (arr) => {
   return arr.filter(() => Math.random() > 0.5);
 };
 
-// Время
+/**
+ Time
+ */
 export const humanizeToTime = (dueTime) => {
   return dayjs(dueTime).format('HH:mm');
 };
