@@ -7,6 +7,7 @@ import {createEventTemplate} from './view/event';
 import {createPointForm} from './view/event-form';
 import {generateEvent} from './mock/event-data';
 import {createEventItemContainerTemplate} from './view/event-item-container';
+import {renderTemplate} from './util';
 import dayjs from 'dayjs';
 
 
@@ -23,29 +24,24 @@ const events = new Array(EVENTS_COUNT)
   .map(generateEvent)
   .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
 
-
-export const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
-
-render(headerMenuContainer, createSiteMenuTemplate(), 'beforeend');
-render(headerMain, createTripInfoTemplate(events), 'afterbegin');
-render(tripFilterContainer, createTripFilterTemplate(), 'afterbegin');
-render(tripEventsContainer, createTripSortTemplate(), 'afterbegin');
-render(tripEventsContainer, createTripEventsListTemplate(), 'beforeend');
+renderTemplate(headerMenuContainer, createSiteMenuTemplate(), 'beforeend');
+renderTemplate(headerMain, createTripInfoTemplate(events), 'afterbegin');
+renderTemplate(tripFilterContainer, createTripFilterTemplate(), 'afterbegin');
+renderTemplate(tripEventsContainer, createTripSortTemplate(), 'afterbegin');
+renderTemplate(tripEventsContainer, createTripEventsListTemplate(), 'beforeend');
 
 const tripEventsList = document.querySelector('.trip-events__list');
 
 for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(tripEventsList, createEventItemContainerTemplate(), 'afterbegin');
+  renderTemplate(tripEventsList, createEventItemContainerTemplate(), 'afterbegin');
 }
 
 const tripEventItems = document.querySelectorAll('.trip-events__item');
 
-render(tripEventItems[0], createPointForm(events[0]), 'afterbegin');
-render(tripEventItems[1], createPointForm(events[1]), 'afterbegin');
+renderTemplate(tripEventItems[0], createPointForm(events[0]), 'afterbegin');
+renderTemplate(tripEventItems[1], createPointForm(events[1]), 'afterbegin');
 
 for (let i = 2; i < EVENTS_COUNT; i++) {
   const tripEventItem = tripEventItems[i];
-  render(tripEventItem, createEventTemplate(events[i]), 'afterbegin');
+  renderTemplate(tripEventItem, createEventTemplate(events[i]), 'afterbegin');
 }
