@@ -24,6 +24,13 @@ const events = new Array(EVENTS_COUNT)
   .map(generateEvent)
   .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
 
+const renderEvent = (tripEventItem, event) => {
+  const taskComponent = new EventView(event);
+  const eventForm = new EventFormView(event);
+
+  render(tripEventItem, taskComponent.getElement(), RenderPosition.AFTERBEGIN);
+};
+
 render(headerMenuContainer, new MenuView().getElement(), RenderPosition.BEFOREEND);
 render(headerMain, new TripInfoView(events).getElement(), RenderPosition.AFTERBEGIN);
 render(tripFilterContainer, new FilterView().getElement(), RenderPosition.AFTERBEGIN);
@@ -39,11 +46,7 @@ for (let i = 0; i < EVENTS_COUNT; i++) {
 
 const tripEventItems = tripEventList.getElement().querySelectorAll('.trip-events__item');
 
-
-render(tripEventItems[0], new EventFormView(events[0]).getElement(), RenderPosition.AFTERBEGIN);
-render(tripEventItems[1], new EventFormView(events[1]).getElement(), RenderPosition.AFTERBEGIN);
-
-for (let i = 2; i < EVENTS_COUNT; i++) {
+for (let i = 0; i < EVENTS_COUNT; i++) {
   const tripEventItem = tripEventItems[i];
-  render(tripEventItem, new EventView(events[i]).getElement(), RenderPosition.AFTERBEGIN);
+  renderEvent(tripEventItem, events[i]);
 }
