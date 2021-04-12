@@ -1,4 +1,4 @@
-import {humanizeToMonthDay} from '../util';
+import {createElement, humanizeToMonthDay} from '../util';
 
 
 const getRoute = (events) => {
@@ -52,21 +52,43 @@ const getDuration = (events) => {
 };
 
 
-export const createTripInfoTemplate = (events) => {
+const createTripInfoTemplate = (events) => {
   const route = getRoute(events);
   const price = getPrice(events);
   const duration = getDuration(events);
 
-  return `
-      <section class="trip-main__trip-info  trip-info">
-        <div class="trip-info__main">
-          ${route}
+  return `<section class="trip-main__trip-info  trip-info">
+            <div class="trip-info__main">
+              ${route}
 
-          <p class="trip-info__dates">${duration}</p>
-        </div>
+              <p class="trip-info__dates">${duration}</p>
+            </div>
 
-        <p class="trip-info__cost">
-          Total: &euro;&nbsp;<span class="trip-info__cost-value">${price}</span>
-        </p>
-      </section>`;
+            <p class="trip-info__cost">
+              Total: &euro;&nbsp;<span class="trip-info__cost-value">${price}</span>
+            </p>
+          </section>`;
 };
+
+export default class TripInfo {
+  constructor(events) {
+    this._events = events;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
