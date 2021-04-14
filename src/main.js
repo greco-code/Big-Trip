@@ -25,10 +25,56 @@ const events = new Array(EVENTS_COUNT)
   .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
 
 const renderEvent = (tripEventItem, event) => {
-  const taskComponent = new EventView(event);
+  const eventComponent = new EventView(event);
   const eventForm = new EventFormView(event);
 
-  render(tripEventItem, taskComponent.getElement(), RenderPosition.AFTERBEGIN);
+  const replaceEventToForm = () => {
+    tripEventItem.replaceChild(eventForm.getElement(), eventComponent.getElement());
+  };
+
+  const replaceFormToEvent = () => {
+    tripEventItem.replaceChild(eventComponent.getElement(), eventForm.getElement());
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      replaceFormToEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
+
+  eventComponent
+    .getElement()
+    .querySelector('.event__rollup-btn')
+    .addEventListener('click', () => {
+      replaceEventToForm();
+      document.addEventListener('keydown', onEscKeyDown);
+
+      if (eventForm.getElement().querySelector('.event__photos-container')) {
+        eventForm.getElement().querySelector('.event__photos-container').remove();
+      }
+
+    });
+
+  eventForm
+    .getElement()
+    .querySelector('.event__rollup-btn')
+    .addEventListener('click', () => {
+      replaceFormToEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+  eventForm
+    .getElement()
+    .addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+  render(tripEventItem, eventComponent.getElement(), RenderPosition.AFTERBEGIN);
 };
 
 render(headerMenuContainer, new MenuView().getElement(), RenderPosition.BEFOREEND);
@@ -46,7 +92,7 @@ for (let i = 0; i < EVENTS_COUNT; i++) {
 
 const tripEventItems = tripEventList.getElement().querySelectorAll('.trip-events__item');
 
-for (let i = 0; i < EVENTS_COUNT; i++) {
+for (let i = 1; i < EVENTS_COUNT; i++) {
   const tripEventItem = tripEventItems[i];
   renderEvent(tripEventItem, events[i]);
 }
