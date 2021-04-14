@@ -24,6 +24,8 @@ const events = new Array(EVENTS_COUNT)
   .map(generateEvent)
   .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
 
+
+// Не слишком раздутая функция полуается?
 const renderEvent = (tripEventItem, event) => {
   const eventComponent = new EventView(event);
   const eventForm = new EventFormView(event);
@@ -43,7 +45,6 @@ const renderEvent = (tripEventItem, event) => {
       document.removeEventListener('keydown', onEscKeyDown);
     }
   };
-
 
   eventComponent
     .getElement()
@@ -92,7 +93,13 @@ for (let i = 0; i < EVENTS_COUNT; i++) {
 
 const tripEventItems = tripEventList.getElement().querySelectorAll('.trip-events__item');
 
-for (let i = 1; i < EVENTS_COUNT; i++) {
+for (let i = 0; i < EVENTS_COUNT; i++) {
   const tripEventItem = tripEventItems[i];
   renderEvent(tripEventItem, events[i]);
+}
+
+if (!events) {
+  render(tripEventList.getElement(), new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
+
+  render(EventListItemView().getElement(), new EventFormView().getElement(), RenderPosition.AFTERBEGIN);
 }
