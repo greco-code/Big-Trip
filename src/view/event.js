@@ -1,4 +1,4 @@
-import {humanizeToMonthDay, humanizeToTime} from '../util';
+import {humanizeToMonthDay, humanizeToTime} from '../utils/time.js';
 import Abstract from './abstract.js';
 
 const generateOffers = (offers) => {

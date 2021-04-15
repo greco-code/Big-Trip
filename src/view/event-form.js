@@ -1,4 +1,4 @@
-import {humanizeToFullDate} from '../util';
+import {humanizeToFullDate} from '../utils/time.js';
 import Abstract from './abstract.js';
 
 // Возвращает список услуг

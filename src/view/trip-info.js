@@ -1,4 +1,4 @@
-import {humanizeToMonthDay} from '../util';
+import {humanizeToMonthDay} from '../utils/time.js';
 import Abstract from './abstract.js';
 
 

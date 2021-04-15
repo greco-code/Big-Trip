@@ -1,4 +1,4 @@
-import {getRandomInteger, shuffleArray, randomizeArray, generateRandomIntArray} from '../util.js';
+import {getRandomInteger, shuffleArray, randomizeArray, generateRandomIntArray} from '../utils/random.js';
 import dayjs from 'dayjs';
 
 let i = 0;

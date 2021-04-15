@@ -7,7 +7,7 @@ import EventView from './view/event.js';
 import TripInfoView from './view/trip-info.js';
 import EventFormView from './view/event-form.js';
 import {generateEvent} from './mock/event-data.js';
-import {render, RenderPosition} from './util.js';
+import {render, RenderPosition, replace} from './utils/render.js';
 import dayjs from 'dayjs';
 
 
@@ -31,11 +31,11 @@ const renderEvent = (tripEventItem, event) => {
   const eventForm = new EventFormView(event);
 
   const replaceEventToForm = () => {
-    tripEventItem.replaceChild(eventForm.getElement(), eventComponent.getElement());
+    replace(eventForm.getElement(), eventComponent.getElement());
   };
 
   const replaceFormToEvent = () => {
-    tripEventItem.replaceChild(eventComponent.getElement(), eventForm.getElement());
+    replace(eventComponent.getElement(), eventForm.getElement());
   };
 
   const onEscKeyDown = (evt) => {
@@ -68,17 +68,17 @@ const renderEvent = (tripEventItem, event) => {
   render(tripEventItem, eventComponent.getElement(), RenderPosition.AFTERBEGIN);
 };
 
-render(headerMenuContainer, new MenuView().getElement(), RenderPosition.BEFOREEND);
-render(headerMain, new TripInfoView(events).getElement(), RenderPosition.AFTERBEGIN);
-render(tripFilterContainer, new FilterView().getElement(), RenderPosition.AFTERBEGIN);
-render(tripEventsContainer, new SortView().getElement(), RenderPosition.AFTERBEGIN);
+render(headerMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
+render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
+render(tripFilterContainer, new FilterView(), RenderPosition.AFTERBEGIN);
+render(tripEventsContainer, new SortView(), RenderPosition.AFTERBEGIN);
 
 const tripEventList = new EventListView();
-render(tripEventsContainer, tripEventList.getElement(), RenderPosition.BEFOREEND);
+render(tripEventsContainer, tripEventList, RenderPosition.BEFOREEND);
 
 
 for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(tripEventList.getElement(), new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
+  render(tripEventList,new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
 }
 
 const tripEventItems = tripEventList.getElement().querySelectorAll('.trip-events__item');
@@ -89,7 +89,7 @@ for (let i = 0; i < EVENTS_COUNT; i++) {
 }
 
 if (!events) {
-  render(tripEventList.getElement(), new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
+  render(tripEventList, new EventListItemView(), RenderPosition.AFTERBEGIN);
 
-  render(EventListItemView().getElement(), new EventFormView().getElement(), RenderPosition.AFTERBEGIN);
+  render(EventListItemView(), new EventFormView(), RenderPosition.AFTERBEGIN);
 }
