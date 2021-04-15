@@ -1,4 +1,5 @@
-import {createElement, humanizeToFullDate} from '../util';
+import {humanizeToFullDate} from '../util';
+import Abstract from './abstract.js';
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -193,25 +194,13 @@ const createPointForm = (event) => {
           </form>`;
 };
 
-export default class EventForm {
+export default class EventForm extends Abstract {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
   }
 
   getTemplate() {
     return createPointForm(this._event);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
