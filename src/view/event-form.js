@@ -198,9 +198,38 @@ export default class EventForm extends Abstract {
   constructor(event) {
     super();
     this._event = event;
+    this._eventClickHandler = this._eventClickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+
   }
 
   getTemplate() {
     return createPointForm(this._event);
   }
+
+  _eventClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.eventClick();
+  }
+
+  setEventClickHandler(callback) {
+    this._callback.eventClick = callback;
+    this
+      .getElement()
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this._eventClickHandler);
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setFromSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this
+      .getElement()
+      .addEventListener('submit',this._formSubmitHandler);
+  }
+
 }

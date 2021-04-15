@@ -46,34 +46,24 @@ const renderEvent = (tripEventItem, event) => {
     }
   };
 
-  eventComponent
-    .getElement()
-    .querySelector('.event__rollup-btn')
-    .addEventListener('click', () => {
-      replaceEventToForm();
-      document.addEventListener('keydown', onEscKeyDown);
+  eventComponent.setEditClickHandler(() => {
+    replaceEventToForm();
+    document.addEventListener('keydown', onEscKeyDown);
 
-      if (eventForm.getElement().querySelector('.event__photos-container')) {
-        eventForm.getElement().querySelector('.event__photos-container').remove();
-      }
+    if (eventForm.getElement().querySelector('.event__photos-container')) {
+      eventForm.getElement().querySelector('.event__photos-container').remove();
+    }
+  });
 
-    });
+  eventForm.setEventClickHandler(() => {
+    replaceFormToEvent();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
 
-  eventForm
-    .getElement()
-    .querySelector('.event__rollup-btn')
-    .addEventListener('click', () => {
-      replaceFormToEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-  eventForm
-    .getElement()
-    .addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
+  eventForm.setFromSubmitHandler(() => {
+    replaceFormToEvent();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
 
   render(tripEventItem, eventComponent.getElement(), RenderPosition.AFTERBEGIN);
 };
