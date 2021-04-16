@@ -79,5 +79,5 @@ export const humanizeToMonthDay = (dueDate) => {
 };
 
 export const humanizeToFullDate = (dueDate) => {
-  return dayjs(dueDate).format('YY/MM/DD HH:mm');
+  return dayjs(dueDate).format('DD/MM/YY HH:mm');
 };
