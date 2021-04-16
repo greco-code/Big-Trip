@@ -1,6 +1,7 @@
 import {getRandomInteger, shuffleArray, randomizeArray, generateRandomIntArray} from '../util.js';
 import dayjs from 'dayjs';
 
+let i = 0;
 
 const TYPES = [
   'Taxi',
@@ -15,7 +16,7 @@ const TYPES = [
   'Restaurant',
 ];
 
-const DESTINATION_INFO = [
+const DESTINATION_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
   'Fusce tristique felis at fermentum pharetra.',
@@ -34,7 +35,7 @@ const INFO_LENGTH = 5;
 // Возвращает рандомный текст из предложений в DESTINATION_INFO
 const generateInfo = () => {
   const randomInteger = getRandomInteger(0, INFO_LENGTH);
-  return shuffleArray(DESTINATION_INFO).slice(0, randomInteger).join();
+  return shuffleArray(DESTINATION_DESCRIPTIONS).slice(0, randomInteger).join();
 };
 
 const DESTINATION = {
@@ -49,41 +50,37 @@ const OFFERS = [
   {
     title: 'Order Uber',
     price: 20,
+    type: 'taxi',
   },
   {
     title: 'Add luggage',
     price: 50,
+    type: 'flight',
   },
   {
     title: 'Rent a car',
     price: 200,
+    type: 'drive',
   },
   {
     title: 'Add breakfast',
     price: 50,
+    type: 'check-in',
   },
   {
     title: 'Book tickets',
     price: 40,
+    type: 'sightseeing',
   },
 ];
-
-const ICONS_TO_TYPE = {
-  'Taxi': 'img/icons/taxi.png',
-  'Bus': 'img/icons/bus.png',
-  'Train': 'img/icons/train.png',
-  'Ship': 'img/icons/ship.png',
-  'Transport': 'img/icons/transport.png',
-  'Drive': 'img/icons/drive.png',
-  'Flight': 'img/icons/flight.png',
-  'Check-in': 'img/icons/check-in.png',
-  'Sightseeing': 'img/icons/sightseeing.png',
-  'Restaurant': 'img/icons/restaurant.png',
-};
 
 const EVENT_MIN_PRICE = 20;
 const EVENT_MAX_PRICE = 1000;
 const PHOTOS_MAX_LENGTH = 5;
+
+const MILLISECONDS = 1000;
+const MINUTES = 60;
+const HOURS = 60;
 
 const randomizeType = () => {
   return TYPES[getRandomInteger(0, TYPES.length - 1)];
@@ -131,36 +128,31 @@ const generateDateTo = (dateFrom) => {
     .add(getRandomInteger(1, 59), 'minute');
 };
 
+const getDuration = (dateFrom, dateTo) => {
+  const diffTime = Math.abs(dateTo - dateFrom); //ms
+  const diffHours = Math.floor(diffTime / (MILLISECONDS * MINUTES * HOURS)); //hours
+  let diffMinutes = Math.ceil(diffTime / (MILLISECONDS * MINUTES)); //minutes
+
+  // Выводит количество минут в часовом формате (менее 60 минут)
+  if (diffMinutes > 59) {
+    const moreHours = Math.floor(diffMinutes / 60);
+    diffMinutes = diffMinutes - moreHours * 60;
+  }
+
+  // Если разница менее одного часа
+  if (diffHours < 1) {
+    return (`${diffMinutes}M`);
+  }
+
+  return (`${diffHours}H ${diffMinutes}M`);
+};
+
 
 export const generateEvent = () => {
   const dateFrom = generateDateFrom().toDate();
   const dateTo = generateDateTo(dateFrom).toDate();
+  const duration = getDuration(dateFrom, dateTo);
 
-
-  const getDuration = () => {
-    const MILLISECONDS = 1000;
-    const MINUTES = 60;
-    const HOURS = 60;
-
-    const diffTime = Math.abs(dateTo - dateFrom); //ms
-    const diffHours = Math.floor(diffTime / (MILLISECONDS * MINUTES * HOURS)); //hours
-    let diffMinutes = Math.ceil(diffTime / (MILLISECONDS * MINUTES)); //minutes
-
-    // Выводит количество минут в часовом формате (менее 60 минут)
-    if (diffMinutes > 59) {
-      const moreHours = Math.floor(diffMinutes / 60);
-      diffMinutes = diffMinutes - moreHours * 60;
-    }
-
-    // Если разница менее одного часа
-    if (diffHours < 1) {
-      return (`${diffMinutes}M`);
-    }
-
-    return (`${diffHours}H ${diffMinutes}M`);
-  };
-
-  const duration = getDuration();
   const name = randomizePointName();
   const description = DESTINATION[name];
   const type = randomizeType();
@@ -176,10 +168,9 @@ export const generateEvent = () => {
       description,
       pictures: generatePhotos(),
     },
-    id: '0',
+    id: i++,
     is_favorite: Boolean(getRandomInteger(0, 1)),
     offers: randomizeArray(OFFERS),
     type,
-    icon: ICONS_TO_TYPE[type],
   };
 };

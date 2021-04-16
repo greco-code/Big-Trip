@@ -1,5 +1,31 @@
 import dayjs from 'dayjs';
 
+/**
+ Render
+ */
+export const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
 // Возвращает рандомное целое число в заданном диапазоне
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -8,7 +34,9 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-// Перемешивает массив
+/**
+ Utils
+ */
 export const shuffleArray = (array) => {
   let currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -25,7 +53,6 @@ export const shuffleArray = (array) => {
   return array;
 };
 
-// Возвращает массив из неповторяющихся рандомных чисел
 export const generateRandomIntArray = (amount) => {
   const randomIntSet = new Set();
 
@@ -40,21 +67,17 @@ export const randomizeArray = (arr) => {
   return arr.filter(() => Math.random() > 0.5);
 };
 
-// Время
-export const humanizeEventDueTime = (dueTime) => {
+/**
+ Time
+ */
+export const humanizeToTime = (dueTime) => {
   return dayjs(dueTime).format('HH:mm');
 };
 
-export const humanizeEventDueDate = (dueDate) => {
+export const humanizeToMonthDay = (dueDate) => {
   return dayjs(dueDate).format('MMM DD');
 };
 
-export const humanizeEventDueFullDate = (dueDate) => {
+export const humanizeToFullDate = (dueDate) => {
   return dayjs(dueDate).format('YY/MM/DD HH:mm');
-};
-
-
-export const randomObject = (obj) => {
-  const keys = Object.keys(obj);
-  return obj[keys[ keys.length * Math.random() << 0]];
 };

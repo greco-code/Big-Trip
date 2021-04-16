@@ -1,12 +1,14 @@
-import {createSiteMenuTemplate} from './view/site-menu';
-import {createTripInfoTemplate} from './view/trip-info';
-import {createTripFilterTemplate} from './view/trip-filter';
-import {createTripSortTemplate} from './view/trip-sort';
-import {createTripEventsListTemplate} from './view/event-list-container';
-import {createEventTemplate} from './view/event';
-import {createPointForm} from './view/event-form';
-import {generateEvent} from './mock/event-data';
-import {createEventItemContainerTemplate} from './view/event-item-container';
+import MenuView from './view/menu.js';
+import SortView from './view/trip-sort.js';
+import FilterView from './view/trip-filter.js';
+import EventListItemView from './view/event-item-container.js';
+import EventListView from './view/event-list-container.js';
+import EventView from './view/event.js';
+import TripInfoView from './view/trip-info.js';
+import EventFormView from './view/event-form.js';
+import {generateEvent} from './mock/event-data.js';
+import {render, RenderPosition} from './util.js';
+import dayjs from 'dayjs';
 
 
 const headerMain = document.querySelector('.trip-main');
@@ -15,33 +17,89 @@ const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation
 const tripFilterContainer = headerMain.querySelector('.trip-controls__filters');
 const tripEventsContainer = pageMain.querySelector('.trip-events');
 
-const EVENTS_COUNT = 5;
+const EVENTS_COUNT = 15;
 
-const events = new Array(EVENTS_COUNT).fill().map(generateEvent);
+const events = new Array(EVENTS_COUNT)
+  .fill()
+  .map(generateEvent)
+  .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
 
-export const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
+
+// Не слишком раздутая функция полуается?
+const renderEvent = (tripEventItem, event) => {
+  const eventComponent = new EventView(event);
+  const eventForm = new EventFormView(event);
+
+  const replaceEventToForm = () => {
+    tripEventItem.replaceChild(eventForm.getElement(), eventComponent.getElement());
+  };
+
+  const replaceFormToEvent = () => {
+    tripEventItem.replaceChild(eventComponent.getElement(), eventForm.getElement());
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      replaceFormToEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
+  eventComponent
+    .getElement()
+    .querySelector('.event__rollup-btn')
+    .addEventListener('click', () => {
+      replaceEventToForm();
+      document.addEventListener('keydown', onEscKeyDown);
+
+      if (eventForm.getElement().querySelector('.event__photos-container')) {
+        eventForm.getElement().querySelector('.event__photos-container').remove();
+      }
+
+    });
+
+  eventForm
+    .getElement()
+    .querySelector('.event__rollup-btn')
+    .addEventListener('click', () => {
+      replaceFormToEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+  eventForm
+    .getElement()
+    .addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+  render(tripEventItem, eventComponent.getElement(), RenderPosition.AFTERBEGIN);
 };
 
-render(headerMenuContainer, createSiteMenuTemplate(), 'beforeend');
-render(headerMain, createTripInfoTemplate(), 'afterbegin');
-render(tripFilterContainer, createTripFilterTemplate(), 'afterbegin');
-render(tripEventsContainer, createTripSortTemplate(), 'afterbegin');
-render(tripEventsContainer, createTripEventsListTemplate(), 'beforeend');
+render(headerMenuContainer, new MenuView().getElement(), RenderPosition.BEFOREEND);
+render(headerMain, new TripInfoView(events).getElement(), RenderPosition.AFTERBEGIN);
+render(tripFilterContainer, new FilterView().getElement(), RenderPosition.AFTERBEGIN);
+render(tripEventsContainer, new SortView().getElement(), RenderPosition.AFTERBEGIN);
 
-const tripEventsList = document.querySelector('.trip-events__list');
+const tripEventList = new EventListView();
+render(tripEventsContainer, tripEventList.getElement(), RenderPosition.BEFOREEND);
+
 
 for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(tripEventsList, createEventItemContainerTemplate(), 'afterbegin');
+  render(tripEventList.getElement(), new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
 }
 
-const tripEventItems = document.querySelectorAll('.trip-events__item');
+const tripEventItems = tripEventList.getElement().querySelectorAll('.trip-events__item');
 
-// Кажется, это какая то фигня дальше
-for (let i = 2; i < EVENTS_COUNT; i++) {
+for (let i = 0; i < EVENTS_COUNT; i++) {
   const tripEventItem = tripEventItems[i];
-  render(tripEventItem, createEventTemplate(events[i]), 'afterbegin');
+  renderEvent(tripEventItem, events[i]);
 }
 
-render(tripEventItems[0], createPointForm(events[0]), 'afterbegin');
-render(tripEventItems[1], createPointForm(events[1]), 'afterbegin');
+if (!events) {
+  render(tripEventList.getElement(), new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
+
+  render(EventListItemView().getElement(), new EventFormView().getElement(), RenderPosition.AFTERBEGIN);
+}
