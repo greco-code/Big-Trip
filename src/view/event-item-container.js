@@ -1,28 +1,12 @@
-import {createElement} from '../util.js';
+import Abstract from './abstract.js';
 
 export const createEventItemContainerTemplate = () => {
   return `<li class="trip-events__item">
           </li>`;
 };
 
-export default class EventListItem {
-  constructor() {
-    this._element = null;
-  }
-
+export default class EventListItem extends Abstract{
   getTemplate() {
     return createEventItemContainerTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

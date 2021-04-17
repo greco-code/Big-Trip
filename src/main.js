@@ -6,8 +6,9 @@ import EventListView from './view/event-list-container.js';
 import EventView from './view/event.js';
 import TripInfoView from './view/trip-info.js';
 import EventFormView from './view/event-form.js';
+import NoEventView from './view/no-event.js';
 import {generateEvent} from './mock/event-data.js';
-import {render, RenderPosition} from './util.js';
+import {render, RenderPosition, replace} from './utils/render.js';
 import dayjs from 'dayjs';
 
 
@@ -24,18 +25,16 @@ const events = new Array(EVENTS_COUNT)
   .map(generateEvent)
   .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
 
-
-// Не слишком раздутая функция полуается?
 const renderEvent = (tripEventItem, event) => {
   const eventComponent = new EventView(event);
   const eventForm = new EventFormView(event);
 
   const replaceEventToForm = () => {
-    tripEventItem.replaceChild(eventForm.getElement(), eventComponent.getElement());
+    replace(eventForm.getElement(), eventComponent.getElement());
   };
 
   const replaceFormToEvent = () => {
-    tripEventItem.replaceChild(eventComponent.getElement(), eventForm.getElement());
+    replace(eventComponent.getElement(), eventForm.getElement());
   };
 
   const onEscKeyDown = (evt) => {
@@ -46,44 +45,42 @@ const renderEvent = (tripEventItem, event) => {
     }
   };
 
-  eventComponent
-    .getElement()
-    .querySelector('.event__rollup-btn')
-    .addEventListener('click', () => {
-      replaceEventToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
+  eventComponent.setEditClickHandler(() => {
+    replaceEventToForm();
+    document.addEventListener('keydown', onEscKeyDown);
+  });
 
-  eventForm
-    .getElement()
-    .querySelector('.event__rollup-btn')
-    .addEventListener('click', () => {
-      replaceFormToEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
+  eventForm.setEventClickHandler(() => {
+    replaceFormToEvent();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
 
-  eventForm
-    .getElement()
-    .addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
+  eventForm.setFromSubmitHandler(() => {
+    replaceFormToEvent();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
 
   render(tripEventItem, eventComponent.getElement(), RenderPosition.AFTERBEGIN);
 };
 
-render(headerMenuContainer, new MenuView().getElement(), RenderPosition.BEFOREEND);
-render(headerMain, new TripInfoView(events).getElement(), RenderPosition.AFTERBEGIN);
-render(tripFilterContainer, new FilterView().getElement(), RenderPosition.AFTERBEGIN);
-render(tripEventsContainer, new SortView().getElement(), RenderPosition.AFTERBEGIN);
+if (!events.length) {
+  render(tripEventsContainer, new NoEventView(), RenderPosition.AFTERBEGIN);
+}
+
+if (events.length) {
+  render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
+  render(tripEventsContainer, new SortView(), RenderPosition.AFTERBEGIN);
+}
+
+render(headerMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
+render(tripFilterContainer, new FilterView(), RenderPosition.AFTERBEGIN);
 
 const tripEventList = new EventListView();
-render(tripEventsContainer, tripEventList.getElement(), RenderPosition.BEFOREEND);
+render(tripEventsContainer, tripEventList, RenderPosition.BEFOREEND);
 
 
 for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(tripEventList.getElement(), new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
+  render(tripEventList, new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
 }
 
 const tripEventItems = tripEventList.getElement().querySelectorAll('.trip-events__item');
@@ -91,10 +88,4 @@ const tripEventItems = tripEventList.getElement().querySelectorAll('.trip-events
 for (let i = 0; i < EVENTS_COUNT; i++) {
   const tripEventItem = tripEventItems[i];
   renderEvent(tripEventItem, events[i]);
-}
-
-if (!events) {
-  render(tripEventList.getElement(), new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
-
-  render(EventListItemView().getElement(), new EventFormView().getElement(), RenderPosition.AFTERBEGIN);
 }

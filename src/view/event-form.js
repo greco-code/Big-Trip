@@ -1,4 +1,5 @@
-import {createElement, humanizeToFullDate} from '../util';
+import {humanizeToFullDate} from '../utils/time.js';
+import Abstract from './abstract.js';
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -194,25 +195,42 @@ const createPointForm = (event) => {
           </form>`;
 };
 
-export default class EventForm {
+export default class EventForm extends Abstract {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
+    this._eventClickHandler = this._eventClickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+
   }
 
   getTemplate() {
     return createPointForm(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _eventClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.eventClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEventClickHandler(callback) {
+    this._callback.eventClick = callback;
+    this
+      .getElement()
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this._eventClickHandler);
   }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setFromSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this
+      .getElement()
+      .addEventListener('submit',this._formSubmitHandler);
+  }
+
 }

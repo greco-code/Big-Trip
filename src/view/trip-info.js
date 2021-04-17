@@ -1,4 +1,5 @@
-import {createElement, humanizeToMonthDay} from '../util';
+import {humanizeToMonthDay} from '../utils/time.js';
+import Abstract from './abstract.js';
 
 
 const getRoute = (events) => {
@@ -70,25 +71,13 @@ const createTripInfoTemplate = (events) => {
           </section>`;
 };
 
-export default class TripInfo {
+export default class TripInfo extends Abstract {
   constructor(events) {
+    super();
     this._events = events;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._events);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
