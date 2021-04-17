@@ -49,10 +49,6 @@ const renderEvent = (tripEventItem, event) => {
   eventComponent.setEditClickHandler(() => {
     replaceEventToForm();
     document.addEventListener('keydown', onEscKeyDown);
-
-    if (eventForm.getElement().querySelector('.event__photos-container')) {
-      eventForm.getElement().querySelector('.event__photos-container').remove();
-    }
   });
 
   eventForm.setEventClickHandler(() => {
@@ -78,7 +74,7 @@ render(tripEventsContainer, tripEventList, RenderPosition.BEFOREEND);
 
 
 for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(tripEventList,new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
+  render(tripEventList, new EventListItemView().getElement(), RenderPosition.AFTERBEGIN);
 }
 
 const tripEventItems = tripEventList.getElement().querySelectorAll('.trip-events__item');
