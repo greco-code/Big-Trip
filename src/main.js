@@ -18,7 +18,7 @@ const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation
 const tripFilterContainer = headerMain.querySelector('.trip-controls__filters');
 const tripEventsContainer = pageMain.querySelector('.trip-events');
 
-const EVENTS_COUNT = 0;
+const EVENTS_COUNT = 15;
 
 const events = new Array(EVENTS_COUNT)
   .fill()
