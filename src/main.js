@@ -52,11 +52,6 @@ const renderEvent = (tripEventItem, event) => {
     .addEventListener('click', () => {
       replaceEventToForm();
       document.addEventListener('keydown', onEscKeyDown);
-
-      if (eventForm.getElement().querySelector('.event__photos-container')) {
-        eventForm.getElement().querySelector('.event__photos-container').remove();
-      }
-
     });
 
   eventForm
