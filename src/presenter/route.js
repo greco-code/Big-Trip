@@ -1,9 +1,8 @@
 import EventListItemView from '../view/event-item-container.js';
 import EventListView from '../view/event-list-container.js';
-import EventView from '../view/event.js';
-import EventFormView from '../view/event-form.js';
 import NoEventView from '../view/no-event.js';
-import {render, RenderPosition, replace} from '../utils/render.js';
+import PointPresenter from '../presenter/point.js';
+import {render, RenderPosition} from '../utils/render.js';
 
 export default class Route {
   constructor(eventsContainer) {
@@ -28,40 +27,8 @@ export default class Route {
 
   _renderEvent(event)  {
     this._renderEventContainer();
-    const eventComponent = new EventView(event);
-    render(this._eventListItem, eventComponent, RenderPosition.AFTERBEGIN);
-    const eventForm = new EventFormView(event);
-
-    const replaceEventToForm = () => {
-      replace(eventForm, eventComponent);
-    };
-
-    const replaceFormToEvent = () => {
-      replace(eventComponent, eventForm);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceFormToEvent();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    eventComponent.setEditClickHandler(() => {
-      replaceEventToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    eventForm.setEventClickHandler(() => {
-      replaceFormToEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    eventForm.setFromSubmitHandler(() => {
-      replaceFormToEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
+    const pointPresenter = new PointPresenter(this._eventListItem);
+    pointPresenter.init(event);
   }
 
   _renderEvents(events) {

@@ -232,5 +232,4 @@ export default class EventForm extends Abstract {
       .getElement()
       .addEventListener('submit',this._formSubmitHandler);
   }
-
 }
