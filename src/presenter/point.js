@@ -1,4 +1,4 @@
-import {render, RenderPosition, replace} from '../utils/render.js';
+import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import EventView from '../view/event.js';
 import EventFormView from '../view/event-form.js';
 
@@ -18,6 +18,9 @@ export default class Point {
   init(event) {
     this._event = event;
 
+    const prevEventComponent = this._eventComponent;
+    const prevEventFormComponent = this._eventFormComponent;
+
     this._eventComponent = new EventView(this._event);
     this._eventFormComponent = new EventFormView(this._event);
 
@@ -25,7 +28,27 @@ export default class Point {
     this._eventFormComponent.setEventClickHandler(this._handleEventClick);
     this._eventFormComponent.setFromSubmitHandler(this._handleFormSubmit);
 
-    render(this._eventContainer, this._eventComponent, RenderPosition.AFTERBEGIN);
+
+    if (prevEventComponent === null || prevEventFormComponent === null) {
+      render(this._eventContainer, this._eventComponent, RenderPosition.AFTERBEGIN);
+      return;
+    }
+
+    if (this._eventContainer.getElement().contains(prevEventComponent.getElement())) {
+      replace(this._eventComponent, prevEventComponent);
+    }
+
+    if (this._eventContainer.getElement().contains(prevEventFormComponent.getElement())) {
+      replace(this._eventFormComponent, prevEventFormComponent);
+    }
+
+    remove(prevEventComponent);
+    remove(prevEventFormComponent);
+  }
+
+  destroy() {
+    remove(this._eventComponent);
+    remove(this._eventFormComponent);
   }
 
   _replaceEventToForm() {
