@@ -2,7 +2,7 @@ import EventListItemView from '../view/event-item-container.js';
 import EventListView from '../view/event-list-container.js';
 import NoEventView from '../view/no-event.js';
 import PointPresenter from '../presenter/point.js';
-import {render, RenderPosition} from '../utils/render.js';
+import {render, RenderPosition, updateItem} from '../utils/render.js';
 
 export default class Route {
   constructor(eventsContainer) {
@@ -10,11 +10,19 @@ export default class Route {
     this._noEvent = new NoEventView();
     this._eventList = new EventListView();
     this._eventListItem = new EventListItemView();
+    this._pointPresenter = {};
+
+    this._handleEventChange = this._handleEventChange.bind(this);
   }
 
   init(events) {
     this._events = events.slice();
     this._renderBoard();
+  }
+
+  _handleEventChange(updateEvent) {
+    this._events = updateItem(this._events, updateEvent);
+    this._pointPresenter[updateEvent.id].init(updateEvent);
   }
 
   _renderEventsList() {
@@ -27,8 +35,9 @@ export default class Route {
 
   _renderEvent(event)  {
     this._renderEventContainer();
-    const pointPresenter = new PointPresenter(this._eventListItem);
+    const pointPresenter = new PointPresenter(this._eventListItem, this._handleEventChange);
     pointPresenter.init(event);
+    this._pointPresenter[event.id] = pointPresenter;
   }
 
   _renderEvents(events) {
@@ -37,6 +46,13 @@ export default class Route {
         this._renderEvent(event);
         this._eventListItem = new EventListItemView();
       });
+  }
+
+  _clearEvents() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._taskPresenter = {};
   }
 
   _renderNoEvent() {

@@ -3,16 +3,19 @@ import EventView from '../view/event.js';
 import EventFormView from '../view/event-form.js';
 
 export default class Point {
-  constructor(eventContainer) {
+  constructor(eventContainer, changeData) {
     this._eventContainer = eventContainer;
+    this._changeData = changeData;
 
     this._eventComponent = null;
     this._eventFormComponent = null;
+
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleEventClick = this._handleEventClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
   init(event) {
@@ -25,6 +28,7 @@ export default class Point {
     this._eventFormComponent = new EventFormView(this._event);
 
     this._eventComponent.setEditClickHandler(this._handleEditClick);
+    this._eventComponent.setFavouriteClickHandler(this._handleFavoriteClick);
     this._eventFormComponent.setEventClickHandler(this._handleEventClick);
     this._eventFormComponent.setFromSubmitHandler(this._handleFormSubmit);
 
@@ -44,11 +48,6 @@ export default class Point {
 
     remove(prevEventComponent);
     remove(prevEventFormComponent);
-  }
-
-  destroy() {
-    remove(this._eventComponent);
-    remove(this._eventFormComponent);
   }
 
   _replaceEventToForm() {
@@ -80,5 +79,23 @@ export default class Point {
   _handleFormSubmit() {
     this._replaceFormToEvent();
     document.removeEventListener('keydown', this._onEscKeyDown);
+  }
+
+  _handleFavoriteClick() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._event,
+        {
+          is_favorite: !this._event.is_favorite,
+        },
+      ),
+    );
+  }
+
+
+  destroy() {
+    remove(this._eventComponent);
+    remove(this._eventFormComponent);
   }
 }
