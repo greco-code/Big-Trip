@@ -13,6 +13,7 @@ export default class Route {
     this._pointPresenter = {};
 
     this._handleEventChange = this._handleEventChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(events) {
@@ -25,6 +26,12 @@ export default class Route {
     this._pointPresenter[updateEvent.id].init(updateEvent);
   }
 
+  _handleModeChange() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
   _renderEventsList() {
     render(this._eventsContainer, this._eventList, RenderPosition.BEFOREEND);
   }
@@ -35,7 +42,7 @@ export default class Route {
 
   _renderEvent(event)  {
     this._renderEventContainer();
-    const pointPresenter = new PointPresenter(this._eventListItem, this._handleEventChange);
+    const pointPresenter = new PointPresenter(this._eventListItem, this._handleEventChange, this._handleModeChange);
     pointPresenter.init(event);
     this._pointPresenter[event.id] = pointPresenter;
   }

@@ -2,13 +2,20 @@ import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import EventView from '../view/event.js';
 import EventFormView from '../view/event-form.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class Point {
-  constructor(eventContainer, changeData) {
+  constructor(eventContainer, changeData, changeMode) {
     this._eventContainer = eventContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._eventComponent = null;
     this._eventFormComponent = null;
+    this._mode = Mode.DEFAULT;
 
 
     this._handleEditClick = this._handleEditClick.bind(this);
@@ -38,11 +45,11 @@ export default class Point {
       return;
     }
 
-    if (this._eventContainer.getElement().contains(prevEventComponent.getElement())) {
+    if (this._mode === Mode.DEFAULT) {
       replace(this._eventComponent, prevEventComponent);
     }
 
-    if (this._eventContainer.getElement().contains(prevEventFormComponent.getElement())) {
+    if (this._mode === Mode.EDITING) {
       replace(this._eventFormComponent, prevEventFormComponent);
     }
 
@@ -52,11 +59,14 @@ export default class Point {
 
   _replaceEventToForm() {
     replace(this._eventFormComponent, this._eventComponent);
+    this._changeMode();
+    this._mode = Mode.EDITING;
   }
 
   _replaceFormToEvent() {
     replace(this._eventComponent, this._eventFormComponent);
     document.removeEventListener('keydown', this._onEscKeyDown);
+    this._mode = Mode.DEFAULT;
   }
 
   _onEscKeyDown(evt) {
@@ -93,9 +103,14 @@ export default class Point {
     );
   }
 
-
   destroy() {
     remove(this._eventComponent);
     remove(this._eventFormComponent);
+  }
+
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceFormToEvent();
+    }
   }
 }
