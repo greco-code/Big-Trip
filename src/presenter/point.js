@@ -104,6 +104,7 @@ export default class Point {
   }
 
   destroy() {
+    // console.log(this._eventComponent);
     remove(this._eventComponent);
     remove(this._eventFormComponent);
   }
