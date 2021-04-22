@@ -4,11 +4,11 @@ import Abstract from './abstract.js';
 const generateOffers = (offers) => {
   let offersMarkup = '';
 
-  offers.forEach((offer) => {
+  offers.forEach(({price, title}) => {
     offersMarkup += `<li class="event__offer">
-         <span class="event__offer-title">${offer.title}</span>
+         <span class="event__offer-title">${title}</span>
            &plus;&euro;&nbsp;
-         <span class="event__offer-price">${offer.price}</span>
+         <span class="event__offer-price">${price}</span>
          </li>`;
   });
   return offersMarkup;
@@ -71,6 +71,7 @@ export default class Event extends Abstract {
     super();
     this._event = event;
     this._editClickHandler = this._editClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -82,10 +83,22 @@ export default class Event extends Abstract {
     this._callback.editClick();
   }
 
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
   setEditClickHandler(callback) {
     this._callback.editClick = callback;
     this.getElement()
       .querySelector('.event__rollup-btn')
       .addEventListener('click', this._editClickHandler);
+  }
+
+  setFavouriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement()
+      .querySelector('.event__favorite-btn ')
+      .addEventListener('click', this._favoriteClickHandler);
   }
 }

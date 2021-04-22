@@ -30,8 +30,8 @@ const getRoute = (events) => {
 const getPrice = (events) => {
   let price = 0;
 
-  events.forEach((event) => {
-    price += event.base_price;
+  events.forEach(({base_price}) => {
+    price += base_price;
   });
 
   return price;

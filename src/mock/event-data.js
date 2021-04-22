@@ -1,7 +1,6 @@
 import {getRandomInteger, shuffleArray, randomizeArray, generateRandomIntArray} from '../utils/random.js';
 import dayjs from 'dayjs';
-
-let i = 0;
+import {nanoid} from 'nanoid';
 
 const TYPES = [
   'Taxi',
@@ -168,7 +167,7 @@ export const generateEvent = () => {
       description,
       pictures: generatePhotos(),
     },
-    id: i++,
+    id: nanoid(),
     is_favorite: Boolean(getRandomInteger(0, 1)),
     offers: randomizeArray(OFFERS),
     type,
