@@ -54,7 +54,6 @@ export const remove = (component) => {
     throw new Error('Can remove only components');
   }
 
-  component.getElement().parentElement.remove();
   component.getElement().remove();
   component.removeElement();
 };
