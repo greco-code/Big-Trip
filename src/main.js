@@ -1,5 +1,4 @@
 import MenuView from './view/menu.js';
-import SortView from './view/trip-sort.js';
 import FilterView from './view/trip-filter.js';
 import TripInfoView from './view/trip-info.js';
 import {generateEvent} from './mock/event-data.js';
@@ -12,7 +11,6 @@ const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
 const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation');
 const tripFilterContainer = headerMain.querySelector('.trip-controls__filters');
-const tripEventsContainer = pageMain.querySelector('.trip-events');
 const pageContainer = pageMain.querySelector('.trip-events');
 
 const EVENTS_COUNT = 15;
@@ -27,7 +25,6 @@ const events = new Array(EVENTS_COUNT)
 
 if (events.length) {
   render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
-  render(tripEventsContainer, new SortView(), RenderPosition.AFTERBEGIN);
 }
 
 render(headerMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
