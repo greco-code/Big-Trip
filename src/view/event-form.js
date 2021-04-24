@@ -76,8 +76,8 @@ const createPointForm = (event) => {
     date_to,
     destination,
     type,
-    id,
     offers,
+    id,
   } = event;
 
   const timeStart = humanizeToFullDate(date_from);

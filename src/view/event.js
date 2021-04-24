@@ -1,4 +1,4 @@
-import {humanizeToMonthDay, humanizeToTime} from '../utils/time.js';
+import {getDuration, humanizeToMonthDay, humanizeToTime} from '../utils/time.js';
 import Abstract from './abstract.js';
 
 const generateOffers = (offers) => {
@@ -19,12 +19,13 @@ const createEventTemplate = (event) => {
     base_price,
     date_from,
     date_to,
-    duration,
     destination,
     is_favorite,
     offers,
     type,
   } = event;
+
+  const duration = getDuration(date_from, date_to);
 
   const timeStart = humanizeToTime(date_from);
   const timeFinish = humanizeToTime(date_to);

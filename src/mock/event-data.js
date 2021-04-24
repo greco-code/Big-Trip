@@ -1,4 +1,4 @@
-import {getRandomInteger, shuffleArray, randomizeArray, generateRandomIntArray} from '../utils/random.js';
+import {generateRandomIntArray, getRandomInteger, randomizeArray, shuffleArray} from '../utils/random.js';
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
 
@@ -49,37 +49,28 @@ const OFFERS = [
   {
     title: 'Order Uber',
     price: 20,
-    type: 'taxi',
   },
   {
     title: 'Add luggage',
     price: 50,
-    type: 'flight',
   },
   {
     title: 'Rent a car',
     price: 200,
-    type: 'drive',
   },
   {
     title: 'Add breakfast',
     price: 50,
-    type: 'check-in',
   },
   {
     title: 'Book tickets',
     price: 40,
-    type: 'sightseeing',
   },
 ];
 
 const EVENT_MIN_PRICE = 20;
 const EVENT_MAX_PRICE = 1000;
 const PHOTOS_MAX_LENGTH = 5;
-
-const MILLISECONDS = 1000;
-const MINUTES = 60;
-const HOURS = 60;
 
 const randomizeType = () => {
   return TYPES[getRandomInteger(0, TYPES.length - 1)];
@@ -127,49 +118,36 @@ const generateDateTo = (dateFrom) => {
     .add(getRandomInteger(1, 59), 'minute');
 };
 
-const getDuration = (dateFrom, dateTo) => {
-  const diffTime = Math.abs(dateTo - dateFrom); //ms
-  const diffHours = Math.floor(diffTime / (MILLISECONDS * MINUTES * HOURS)); //hours
-  let diffMinutes = Math.ceil(diffTime / (MILLISECONDS * MINUTES)); //minutes
+const getDestinations = () => {
+  const name = randomizePointName();
 
-  // Выводит количество минут в часовом формате (менее 60 минут)
-  if (diffMinutes > 59) {
-    const moreHours = Math.floor(diffMinutes / 60);
-    diffMinutes = diffMinutes - moreHours * 60;
-  }
-
-  // Если разница менее одного часа
-  if (diffHours < 1) {
-    return (`${diffMinutes}M`);
-  }
-
-  return (`${diffHours}H ${diffMinutes}M`);
+  return new Array(15)
+    .fill()
+    .map(() => ({
+      destination: {
+        name,
+        description: DESTINATION[name],
+        pictures: generatePhotos(),
+      },
+      type: randomizeType(),
+      offers: randomizeArray(OFFERS),
+    }));
 };
 
 
 export const generateEvent = () => {
   const dateFrom = generateDateFrom().toDate();
   const dateTo = generateDateTo(dateFrom).toDate();
-  const duration = getDuration(dateFrom, dateTo);
-
-  const name = randomizePointName();
-  const description = DESTINATION[name];
-  const type = randomizeType();
-
+  const destination = getDestinations()[getRandomInteger(0, 14)];
 
   return {
     base_price: generatePrice(EVENT_MIN_PRICE, EVENT_MAX_PRICE),
     date_from: dateFrom,
     date_to: dateTo,
-    duration,
-    destination: {
-      name,
-      description,
-      pictures: generatePhotos(),
-    },
+    destination: destination.destination,
     id: nanoid(),
     is_favorite: Boolean(getRandomInteger(0, 1)),
-    offers: randomizeArray(OFFERS),
-    type,
+    offers: destination.offers,
+    type: destination.type,
   };
 };
