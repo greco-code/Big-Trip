@@ -6,7 +6,7 @@ import SortView from '../view/trip-sort.js';
 import {render, RenderPosition, updateItem} from '../utils/render.js';
 import dayjs from 'dayjs';
 
-export const SortType = {
+const SortType = {
   DAY: 'day',
   TIME: 'time',
   PRICE: 'price',
@@ -30,12 +30,10 @@ export default class Route {
   init(events) {
     this._events = events.slice();
     this._renderBoard();
-    this._sortedEvents = events.slice();
   }
 
   _handleEventChange(updatedEvent) {
     this._events = updateItem(this._events, updatedEvent);
-    this._sortedEvents = updateItem(this._sortedEvents, updatedEvent);
     this._pointPresenter[updatedEvent.id].init(updatedEvent);
   }
 
@@ -48,7 +46,7 @@ export default class Route {
         this._events.sort((a, b) => (a.base_price) - (b.base_price));
         break;
       default:
-        this._events = this._sortedEvents;
+        this._events.sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
     }
 
     this._currentSortType = sortType;
