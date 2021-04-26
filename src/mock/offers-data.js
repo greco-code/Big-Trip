@@ -1,6 +1,6 @@
 import {getRandomInteger} from '../utils/random.js';
 
-const TYPES = [
+export const TYPES = [
   'Taxi',
   'Bus',
   'Train',
