@@ -1,5 +1,5 @@
 import {humanizeToFullDate} from '../utils/time.js';
-import Abstract from './abstract.js';
+import Smart from './smart.js';
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -195,7 +195,7 @@ const createPointForm = (event) => {
           </form>`;
 };
 
-export default class EventForm extends Abstract {
+export default class EventForm extends Smart{
   constructor(event) {
     super();
     this._event = event;
