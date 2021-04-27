@@ -4,6 +4,9 @@ import {TYPES} from '../mock/offers-data.js';
 import {offersArray} from '../mock/offers-data.js';
 import {destinationsArray} from '../mock/destinations-data.js';
 
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
   let offerMarkup = '';

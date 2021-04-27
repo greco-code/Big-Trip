@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   entry: './src/main.js',
   output: {
-    filename: "bundle.js",
+    filename: 'bundle.js',
     path: path.resolve(__dirname, 'public'),
   },
   devtool: 'source-map',
@@ -14,5 +14,13 @@ module.exports = {
     compress: true,
     progress: true,
     watchContentBase: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader']
+      }
+    ]
   }
 };
