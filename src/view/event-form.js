@@ -161,7 +161,7 @@ const createPointForm = (event) => {
 export default class EventForm extends Smart {
   constructor(event) {
     super();
-    this._event = event;
+    this._data = EventForm.parseEventToData(event);
     this._eventClickHandler = this._eventClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
@@ -175,7 +175,7 @@ export default class EventForm extends Smart {
   }
 
   getTemplate() {
-    return createPointForm(this._event);
+    return createPointForm(this._data);
   }
 
   _eventClickHandler(evt) {
@@ -204,12 +204,17 @@ export default class EventForm extends Smart {
   }
 
   _typeChangeHandler(evt) {
-    console.log(this._event);
     evt.preventDefault();
     this.updateData({
       type: evt.target.dataset.type,
-      base_price: 0,
     });
-    console.log(this._event);
+  }
+
+  static parseEventToData(event) {
+
+    return Object.assign(
+      {},
+      event,
+    );
   }
 }
