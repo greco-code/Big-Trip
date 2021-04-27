@@ -1,4 +1,4 @@
-import {getRandomInteger} from '../utils/random.js';
+import {getRandomInteger, shuffleArray} from '../utils/random.js';
 
 export const TYPES = [
   'Taxi',
@@ -13,33 +13,33 @@ export const TYPES = [
   'Restaurant',
 ];
 
-const TYPE_TITLES = [
-  'Order Uber',
-  'Add luggage',
-  'Rent a car',
-  'Add breakfast',
-  'Book tickets',
+const TYPES_PRICE = [
+  {
+    title: 'Order Uber',
+    price: 100,
+  },
+  {
+    title: 'Add luggage',
+    price: 100,
+  },
+  {
+    title: 'Add breakfast',
+    price: 100,
+  },
+  {
+    title: 'Book tickets',
+    price: 100,
+  },
+  {
+    title: 'Rent a car',
+    price: 100,
+  },
 ];
-
-const generateSingleOffer = () => {
-  return {
-    title: TYPE_TITLES[getRandomInteger(0, TYPE_TITLES.length - 1)],
-    price: getRandomInteger(30, 500),
-  };
-};
-
-const generateOfferList = () => {
-  const OFFERS = [];
-  for (let i = 0; i < getRandomInteger(0, 5); i++) {
-    OFFERS.push(generateSingleOffer());
-  }
-  return OFFERS;
-};
 
 const getFullOffer = (index) => {
   return {
     type: TYPES[index],
-    offers: generateOfferList(),
+    offers: shuffleArray(TYPES_PRICE).slice(0, getRandomInteger(0, 5)),
   };
 };
 

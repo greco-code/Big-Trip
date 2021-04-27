@@ -11,8 +11,8 @@ const generateOffers = (offers, id) => {
   offers.forEach((offer) => {
     offerMarkup +=
       `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.type}-${id}" type="checkbox" name="event-offer-${offer.type}">
-            <label class="event__offer-label" for="event-offer-${offer.type}-${id}">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${id}" type="checkbox" name="event-offer-${offer.title}">
+            <label class="event__offer-label" for="event-offer-${offer.title}-${id}">
               <span class="event__offer-title">${offer.title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${offer.price}</span>
@@ -83,6 +83,7 @@ const generateTypesSelect = (id) => {
 
 
 const createPointForm = (event) => {
+  // console.log(event.offers);
   const {
     base_price,
     date_from,
