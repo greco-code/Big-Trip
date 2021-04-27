@@ -47,18 +47,22 @@ const generatePhotos = () => {
   return PHOTOS;
 };
 
-const getDestination = () => {
+const getDestination = (index) => {
   return {
     description: generateInfo(),
-    name: DESTINATION_NAMES[getRandomInteger(0, DESTINATION_NAMES.length - 1)],
+    name: DESTINATION_NAMES[index],
     pictures: generatePhotos(),
   };
 };
 
 const getDestinations = () => {
-  return new Array(20)
-    .fill()
-    .map(getDestination);
+  const destinations = [];
+
+  DESTINATION_NAMES.forEach((destination, index) => {
+    destinations.push(getDestination(index));
+  });
+
+  return destinations;
 };
 
 export const destinationsArray = getDestinations();

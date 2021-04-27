@@ -2,6 +2,7 @@ import {humanizeToFullDate} from '../utils/time.js';
 import Smart from './smart.js';
 import {TYPES} from '../mock/offers-data.js';
 import {offersArray} from '../mock/offers-data.js';
+import {destinationsArray} from '../mock/destinations-data.js';
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -167,6 +168,7 @@ export default class EventForm extends Smart {
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -190,7 +192,7 @@ export default class EventForm extends Smart {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(EventForm.parseEventToData(this._data));
   }
 
   setFormSubmitHandler(callback) {
@@ -210,6 +212,9 @@ export default class EventForm extends Smart {
     });
   }
 
+  _destinationChangeHandler(evt) {
+  }
+
   _findOffers(type) {
     for (let i = 0; i < offersArray.length; i++) {
       if (offersArray[i].type === type) {
@@ -220,6 +225,8 @@ export default class EventForm extends Smart {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this.setEventClickHandler(this._callback.eventClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
   _setInnerHandlers() {
@@ -227,6 +234,12 @@ export default class EventForm extends Smart {
 
     selectItems.forEach((item) => {
       item.addEventListener('click', this._typeChangeHandler);
+    });
+
+    const destinationInputs = this.getElement().querySelectorAll('.event__input--destination');
+
+    destinationInputs.forEach((item) => {
+      item.addEventListener('change', this._destinationChangeHandler);
     });
   }
 
