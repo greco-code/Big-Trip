@@ -6,6 +6,7 @@ import {destinationsArray} from '../mock/destinations-data.js';
 
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import dayjs from 'dayjs';
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -168,22 +169,23 @@ export default class EventForm extends Smart {
   constructor(event) {
     super();
     this._data = EventForm.parseEventToData(event);
+    this._startDatepicker = null;
+    this._finishDatepicker = null;
+
     this._eventClickHandler = this._eventClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
-
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._finishDateChangeHandler = this._finishDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setFinishDatepicker();
   }
 
   getTemplate() {
     return createPointForm(this._data);
-  }
-
-  _eventClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.eventClick();
   }
 
   setEventClickHandler(callback) {
@@ -194,16 +196,35 @@ export default class EventForm extends Smart {
       .addEventListener('click', this._eventClickHandler);
   }
 
-  _formSubmitHandler(evt) {
-    evt.preventDefault();
-    this._callback.formSubmit(EventForm.parseEventToData(this._data));
-  }
-
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this
       .getElement()
       .addEventListener('submit', this._formSubmitHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setFinishDatepicker();
+    this.setEventClickHandler(this._callback.eventClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  reset(event) {
+    this.updateData(
+      EventForm.parseEventToData(event),
+    );
+  }
+
+  _eventClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.eventClick();
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit(EventForm.parseEventToData(this._data));
   }
 
   _typeChangeHandler(evt) {
@@ -236,7 +257,73 @@ export default class EventForm extends Smart {
     }
   }
 
-  //todo следующие четыре метода смущают. Наверное, это можно как-то короче писать.
+  //DATE//
+
+  _startDateChangeHandler(date_from) {
+    this.updateData(
+      {
+        date_from,
+      },
+    );
+  }
+
+  _finishDateChangeHandler(date_to) {
+    this.updateData(
+      {
+        date_to,
+      },
+    );
+  }
+
+  _setStartDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+
+    this._startDatepicker = flatpickr(
+      this.getElement().querySelector('input[name = event-start-time]'),
+      {
+        enableTime: true,
+        dateFormat: 'y/m/d H:i',
+        minDate: dayjs().format('YY/MM/DD HH:MM'),
+        onChange: this._startDateChangeHandler,
+      },
+    );
+  }
+
+  _setFinishDatepicker() {
+    if (this._finishDatepicker) {
+      this._finishDatepicker.destroy();
+      this._finishDatepicker = null;
+    }
+
+
+    this._finishDatepicker = flatpickr(
+      this.getElement().querySelector('input[name = event-end-time]'),
+      {
+        enableTime: true,
+        dateFormat: 'y/m/d H:i',
+        // minDate: this.getElement().querySelector('input[name = event-start-time]').value,
+        minDate: dayjs(this._data.date_from).format('YY/MM/DD HH:MM'),
+        onChange: this._finishDateChangeHandler,
+      },
+    );
+  }
+
+  //UTILS//
+
+  _setInnerHandlers() {
+    const selectItems = this.getElement().querySelectorAll('.event__type-label');
+    selectItems.forEach((item) => {
+      item.addEventListener('click', this._typeChangeHandler);
+    });
+
+    const destinationInputs = this.getElement().querySelectorAll('.event__input--destination');
+    destinationInputs.forEach((item) => {
+      item.addEventListener('change', this._destinationChangeHandler);
+    });
+  }
 
   _findOffers(type) {
     for (let i = 0; i < offersArray.length; i++) {
@@ -270,30 +357,6 @@ export default class EventForm extends Smart {
         return destinationsArray[i].pictures;
       }
     }
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setEventClickHandler(this._callback.eventClick);
-    this.setFormSubmitHandler(this._callback.formSubmit);
-  }
-
-  _setInnerHandlers() {
-    const selectItems = this.getElement().querySelectorAll('.event__type-label');
-    selectItems.forEach((item) => {
-      item.addEventListener('click', this._typeChangeHandler);
-    });
-
-    const destinationInputs = this.getElement().querySelectorAll('.event__input--destination');
-    destinationInputs.forEach((item) => {
-      item.addEventListener('change', this._destinationChangeHandler);
-    });
-  }
-
-  reset(event) {
-    this.updateData(
-      EventForm.parseEventToData(event),
-    );
   }
 
   static parseEventToData(event) {
