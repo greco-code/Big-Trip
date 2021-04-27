@@ -70,7 +70,7 @@ const generateOfferDescription = (destination, photosNumber) => {
     : '';
 };
 
-export const generateTypesSelect = (id) => {
+const generateTypesSelect = (id) => {
   return TYPES.map((type) => {
     return `<div class="event__type-item">
               <input id="event-type-${type.toLowerCase()}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
@@ -167,11 +167,7 @@ export default class EventForm extends Smart {
 
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
 
-    const selectItems = this.getElement().querySelectorAll('.event__type-label');
-
-    selectItems.forEach((item) => {
-      item.addEventListener('click', this._typeChangeHandler);
-    });
+    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -207,6 +203,18 @@ export default class EventForm extends Smart {
     evt.preventDefault();
     this.updateData({
       type: evt.target.dataset.type,
+    });
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+  }
+
+  _setInnerHandlers() {
+    const selectItems = this.getElement().querySelectorAll('.event__type-label');
+
+    selectItems.forEach((item) => {
+      item.addEventListener('click', this._typeChangeHandler);
     });
   }
 
