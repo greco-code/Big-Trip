@@ -1,6 +1,7 @@
 import {humanizeToFullDate} from '../utils/time.js';
 import Smart from './smart.js';
 import {TYPES} from '../mock/offers-data.js';
+import {offersArray} from '../mock/offers-data.js';
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -192,7 +193,7 @@ export default class EventForm extends Smart {
     this._callback.formSubmit();
   }
 
-  setFromSubmitHandler(callback) {
+  setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this
       .getElement()
@@ -200,10 +201,21 @@ export default class EventForm extends Smart {
   }
 
   _typeChangeHandler(evt) {
+    const type = evt.target.dataset.type;
+    const offers = this._findOffers(type);
     evt.preventDefault();
     this.updateData({
-      type: evt.target.dataset.type,
+      type,
+      offers,
     });
+  }
+
+  _findOffers(type) {
+    for (let i = 0; i < offersArray.length; i++) {
+      if (offersArray[i].type === type) {
+        return offersArray[i].offers;
+      }
+    }
   }
 
   restoreHandlers() {
