@@ -36,17 +36,21 @@ const generateOfferList = () => {
   return OFFERS;
 };
 
-const getFullOffer = () => {
+const getFullOffer = (index) => {
   return {
-    type: TYPES[getRandomInteger(0, TYPES.length - 1)],
+    type: TYPES[index],
     offers: generateOfferList(),
   };
 };
 
 const getOffers = () => {
-  return new Array(20)
-    .fill()
-    .map(getFullOffer);
+  const offersList = [];
+
+  TYPES.forEach((type, index) => {
+    offersList.push(getFullOffer(index));
+  });
+
+  return offersList;
 };
 
 export const offersArray = getOffers();
