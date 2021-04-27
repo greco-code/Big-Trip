@@ -213,12 +213,57 @@ export default class EventForm extends Smart {
   }
 
   _destinationChangeHandler(evt) {
+    const selectedDestination = evt.target.value;
+    const destinationList = this._findDestination();
+    const description = this._findDescription(selectedDestination);
+    const pictures = this._findPictures(selectedDestination);
+
+    if (destinationList.includes(selectedDestination)) {
+      this.updateData({
+        destination: {
+          description,
+          name: selectedDestination,
+          pictures,
+        },
+      });
+    } else {
+      evt.target.setCustomValidity('This name is unavailable');
+      evt.target.reportValidity();
+    }
   }
+
+  //todo следующие четыре метода смущают. Наверное, это можно как-то короче писать.
 
   _findOffers(type) {
     for (let i = 0; i < offersArray.length; i++) {
       if (offersArray[i].type === type) {
         return offersArray[i].offers;
+      }
+    }
+  }
+
+  _findDestination() {
+    const destinationList = [];
+
+    destinationsArray.forEach((item) => {
+      destinationList.push(item.name);
+    });
+
+    return destinationList;
+  }
+
+  _findDescription(destination_name) {
+    for (let i = 0; i < destinationsArray.length; i++) {
+      if (destinationsArray[i].name === destination_name) {
+        return destinationsArray[i].description;
+      }
+    }
+  }
+
+  _findPictures(destination_name) {
+    for (let i = 0; i < destinationsArray.length; i++) {
+      if (destinationsArray[i].name === destination_name) {
+        return destinationsArray[i].pictures;
       }
     }
   }
