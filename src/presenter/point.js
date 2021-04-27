@@ -37,7 +37,7 @@ export default class Point {
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventComponent.setFavouriteClickHandler(this._handleFavoriteClick);
     this._eventFormComponent.setEventClickHandler(this._handleEventClick);
-    this._eventFormComponent.setFromSubmitHandler(this._handleFormSubmit);
+    this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
 
 
     if (prevEventComponent === null || prevEventFormComponent === null) {
