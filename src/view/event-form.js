@@ -226,7 +226,7 @@ export default class EventForm extends Smart {
           name: selectedDestination,
           pictures,
         },
-      });
+      }, true);
     } else {
       evt.target.setCustomValidity('This name is unavailable');
       evt.target.reportValidity();
@@ -277,16 +277,20 @@ export default class EventForm extends Smart {
 
   _setInnerHandlers() {
     const selectItems = this.getElement().querySelectorAll('.event__type-label');
-
     selectItems.forEach((item) => {
       item.addEventListener('click', this._typeChangeHandler);
     });
 
     const destinationInputs = this.getElement().querySelectorAll('.event__input--destination');
-
     destinationInputs.forEach((item) => {
       item.addEventListener('change', this._destinationChangeHandler);
     });
+  }
+
+  reset(event) {
+    this.updateData(
+      EventForm.parseEventToData(event),
+    );
   }
 
   static parseEventToData(event) {

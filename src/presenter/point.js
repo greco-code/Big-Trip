@@ -72,12 +72,14 @@ export default class Point {
   _onEscKeyDown(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this._eventFormComponent.reset(this._event);
       this._replaceFormToEvent();
     }
   }
 
   _handleEditClick() {
     this._replaceEventToForm();
+    this._eventFormComponent.reset(this._event);
     document.addEventListener('keydown', this._onEscKeyDown);
   }
 
