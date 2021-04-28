@@ -1,5 +1,8 @@
 import {humanizeToFullDate} from '../utils/time.js';
-import Abstract from './abstract.js';
+import Smart from './smart.js';
+import {TYPES} from '../mock/offers-data.js';
+import {offersArray} from '../mock/offers-data.js';
+import {destinationsArray} from '../mock/destinations-data.js';
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -8,8 +11,8 @@ const generateOffers = (offers, id) => {
   offers.forEach((offer) => {
     offerMarkup +=
       `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.type}-${id}" type="checkbox" name="event-offer-${offer.type}">
-            <label class="event__offer-label" for="event-offer-${offer.type}-${id}">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${id}" type="checkbox" name="event-offer-${offer.title}">
+            <label class="event__offer-label" for="event-offer-${offer.title}-${id}">
               <span class="event__offer-title">${offer.title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${offer.price}</span>
@@ -69,15 +72,26 @@ const generateOfferDescription = (destination, photosNumber) => {
     : '';
 };
 
+const generateTypesSelect = (id) => {
+  return TYPES.map((type) => {
+    return `<div class="event__type-item">
+              <input id="event-type-${type.toLowerCase()}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
+              <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-${id}" data-type="${type}">${type}</label>
+            </div>`;
+  }).join(' ');
+};
+
+
 const createPointForm = (event) => {
+  // console.log(event.offers);
   const {
     base_price,
     date_from,
     date_to,
     destination,
     type,
-    id,
     offers,
+    id,
   } = event;
 
   const timeStart = humanizeToFullDate(date_from);
@@ -87,11 +101,12 @@ const createPointForm = (event) => {
 
   const offersList = generateOffersContainer(offers, offersNumber, id);
   const description = generateOfferDescription(destination, photosNumber, id);
+  const typeSelectList = generateTypesSelect(id);
 
   return `<form class="event event--edit" action="#" method="post">
             <header class="event__header">
               <div class="event__type-wrapper">
-                <label class="event__type  event__type-btn" for="event-type-toggle-1">
+                <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
                   <span class="visually-hidden">Choose event type</span>
                   <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
                 </label>
@@ -100,56 +115,7 @@ const createPointForm = (event) => {
                 <div class="event__type-list">
                   <fieldset class="event__type-group">
                     <legend class="visually-hidden">Event type</legend>
-
-                    <div class="event__type-item">
-                      <input id="event-type-taxi-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                      <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-${id}">Taxi</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-bus-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                      <label class="event__type-label  event__type-label--bus" for="event-type-bus-${id}">Bus</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-train-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                      <label class="event__type-label  event__type-label--train" for="event-type-train-${id}">Train</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-ship-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                      <label class="event__type-label  event__type-label--ship" for="event-type-ship-${id}">Ship</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-transport-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                      <label class="event__type-label  event__type-label--transport" for="event-type-transport-${id}">Transport</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                      <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                      <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                      <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                      <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                      <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                    </div>
+                    ${typeSelectList}
                   </fieldset>
                 </div>
               </div>
@@ -195,17 +161,21 @@ const createPointForm = (event) => {
           </form>`;
 };
 
-export default class EventForm extends Abstract {
+export default class EventForm extends Smart {
   constructor(event) {
     super();
-    this._event = event;
+    this._data = EventForm.parseEventToData(event);
     this._eventClickHandler = this._eventClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createPointForm(this._event);
+    return createPointForm(this._data);
   }
 
   _eventClickHandler(evt) {
@@ -223,13 +193,111 @@ export default class EventForm extends Abstract {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(EventForm.parseEventToData(this._data));
   }
 
-  setFromSubmitHandler(callback) {
+  setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this
       .getElement()
-      .addEventListener('submit',this._formSubmitHandler);
+      .addEventListener('submit', this._formSubmitHandler);
+  }
+
+  _typeChangeHandler(evt) {
+    const type = evt.target.dataset.type;
+    const offers = this._findOffers(type);
+    evt.preventDefault();
+    this.updateData({
+      type,
+      offers,
+    });
+  }
+
+  _destinationChangeHandler(evt) {
+    const selectedDestination = evt.target.value;
+    const destinationList = this._findDestination();
+    const description = this._findDescription(selectedDestination);
+    const pictures = this._findPictures(selectedDestination);
+
+    if (destinationList.includes(selectedDestination)) {
+      this.updateData({
+        destination: {
+          description,
+          name: selectedDestination,
+          pictures,
+        },
+      }, true);
+    } else {
+      evt.target.setCustomValidity('This name is unavailable');
+      evt.target.reportValidity();
+    }
+  }
+
+  //todo следующие четыре метода смущают. Наверное, это можно как-то короче писать.
+
+  _findOffers(type) {
+    for (let i = 0; i < offersArray.length; i++) {
+      if (offersArray[i].type === type) {
+        return offersArray[i].offers;
+      }
+    }
+  }
+
+  _findDestination() {
+    const destinationList = [];
+
+    destinationsArray.forEach((item) => {
+      destinationList.push(item.name);
+    });
+
+    return destinationList;
+  }
+
+  _findDescription(destination_name) {
+    for (let i = 0; i < destinationsArray.length; i++) {
+      if (destinationsArray[i].name === destination_name) {
+        return destinationsArray[i].description;
+      }
+    }
+  }
+
+  _findPictures(destination_name) {
+    for (let i = 0; i < destinationsArray.length; i++) {
+      if (destinationsArray[i].name === destination_name) {
+        return destinationsArray[i].pictures;
+      }
+    }
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setEventClickHandler(this._callback.eventClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _setInnerHandlers() {
+    const selectItems = this.getElement().querySelectorAll('.event__type-label');
+    selectItems.forEach((item) => {
+      item.addEventListener('click', this._typeChangeHandler);
+    });
+
+    const destinationInputs = this.getElement().querySelectorAll('.event__input--destination');
+    destinationInputs.forEach((item) => {
+      item.addEventListener('change', this._destinationChangeHandler);
+    });
+  }
+
+  reset(event) {
+    this.updateData(
+      EventForm.parseEventToData(event),
+    );
+  }
+
+  static parseEventToData(event) {
+
+    return Object.assign(
+      {},
+      event,
+    );
   }
 }

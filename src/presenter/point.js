@@ -37,7 +37,7 @@ export default class Point {
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventComponent.setFavouriteClickHandler(this._handleFavoriteClick);
     this._eventFormComponent.setEventClickHandler(this._handleEventClick);
-    this._eventFormComponent.setFromSubmitHandler(this._handleFormSubmit);
+    this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
 
 
     if (prevEventComponent === null || prevEventFormComponent === null) {
@@ -72,12 +72,14 @@ export default class Point {
   _onEscKeyDown(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this._eventFormComponent.reset(this._event);
       this._replaceFormToEvent();
     }
   }
 
   _handleEditClick() {
     this._replaceEventToForm();
+    this._eventFormComponent.reset(this._event);
     document.addEventListener('keydown', this._onEscKeyDown);
   }
 
@@ -104,8 +106,7 @@ export default class Point {
   }
 
   destroy() {
-    this._eventComponent.getElement().parentElement.remove();
-    remove(this._eventComponent);
+    remove(this._eventContainer);
     remove(this._eventFormComponent);
   }
 
