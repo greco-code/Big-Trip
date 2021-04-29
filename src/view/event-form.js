@@ -64,7 +64,6 @@ const generatePhotosContainer = (destination, photosNumber) => {
     : '';
 };
 
-
 const generateOfferDescription = (destination, photosNumber) => {
   return destination.description
     ? `<section class="event__section  event__section--destination">
@@ -86,8 +85,18 @@ const generateTypesSelect = (id) => {
 };
 
 
+const generateDataList = () => {
+  const nameList = [];
+
+  destinations.forEach((destination) => {
+    nameList.push(`<option value="${destination.name}"></option>`);
+  });
+
+  return nameList.join('');
+};
+
+
 const createPointForm = (event) => {
-  // console.log(event.offers);
   const {
     base_price,
     date_from,
@@ -102,6 +111,7 @@ const createPointForm = (event) => {
   const timeFinish = humanizeToFullDate(date_to);
   const photosNumber = destination.pictures.length;
   const offersNumber = offers.length;
+  const dataList = generateDataList();
 
   const offersList = generateOffersContainer(offers, offersNumber, id);
   const description = generateOfferDescription(destination, photosNumber, id);
@@ -130,9 +140,7 @@ const createPointForm = (event) => {
                 </label>
                 <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
                 <datalist id="destination-list-1">
-                  <option value="Amsterdam"></option>
-                  <option value="Geneva"></option>
-                  <option value="Chamonix"></option>
+                  ${dataList}
                 </datalist>
               </div>
 
