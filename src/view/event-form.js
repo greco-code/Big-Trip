@@ -1,8 +1,8 @@
 import {humanizeToFullDate} from '../utils/time.js';
 import Smart from './smart.js';
 import {TYPES} from '../mock/offers-data.js';
-import {offersArray} from '../mock/offers-data.js';
-import {destinationsArray} from '../mock/destinations-data.js';
+import {offers} from '../mock/offers-data.js';
+import {destinations} from '../mock/destinations-data.js';
 
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -230,43 +230,30 @@ export default class EventForm extends Smart {
   _typeChangeHandler(evt) {
     const type = evt.target.dataset.type;
 
-    const offers = offersArray.find((element) => {
-      if (element.type === type) {
-        return element.offers;
-      }
-    }).offers;
+    const selectedArray = offers.find((element) => {
+      return element.type === type;
+    });
 
     evt.preventDefault();
     this.updateData({
       type,
-      offers,
+      offers: selectedArray.offers,
     });
   }
 
   _destinationChangeHandler(evt) {
     const selectedDestination = evt.target.value;
-    const destinationList = this._findDestination();
 
-    const description = destinationsArray.find((element) => {
-      if (element.name === selectedDestination && element.description !== '') {
-        return element.description;
-      }
-    }).description;
+    const selectedArray = destinations.find((element) => {
+      return element.name === selectedDestination;
+    });
 
-    console.log(description);
-
-    const pictures = destinationsArray.find((element) => {
-      if (element.name === selectedDestination) {
-        return element.pictures;
-      }
-    }).pictures;
-
-    if (destinationList.includes(selectedDestination)) {
+    if (selectedArray) {
       this.updateData({
         destination: {
-          description,
+          description: selectedArray.description,
           name: selectedDestination,
-          pictures,
+          pictures: selectedArray.pictures,
         },
       });
     } else {
@@ -341,24 +328,6 @@ export default class EventForm extends Smart {
     destinationInputs.forEach((item) => {
       item.addEventListener('change', this._destinationChangeHandler);
     });
-  }
-
-  _findDestination() {
-    const destinationList = [];
-
-    destinationsArray.forEach((item) => {
-      destinationList.push(item.name);
-    });
-
-    return destinationList;
-  }
-
-  _findPictures(destination_name) {
-    for (let i = 0; i < destinationsArray.length; i++) {
-      if (destinationsArray[i].name === destination_name) {
-        return destinationsArray[i].pictures;
-      }
-    }
   }
 
   static parseEventToData(event) {

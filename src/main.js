@@ -5,7 +5,6 @@ import {generateEvent} from './mock/event-data.js';
 import {render, RenderPosition} from './utils/render.js';
 import dayjs from 'dayjs';
 import RoutePresenter from './presenter/route.js';
-import {destinationsArray} from './mock/destinations-data.js';
 
 
 const headerMain = document.querySelector('.trip-main');
@@ -32,5 +31,3 @@ render(headerMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
 render(tripFilterContainer, new FilterView(), RenderPosition.AFTERBEGIN);
 
 routePresenter.init(events);
-
-console.log(destinationsArray);

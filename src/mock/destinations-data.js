@@ -65,4 +65,4 @@ const getDestinations = () => {
   return destinations;
 };
 
-export const destinationsArray = getDestinations();
+export const destinations = getDestinations();
