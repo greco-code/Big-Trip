@@ -229,7 +229,13 @@ export default class EventForm extends Smart {
 
   _typeChangeHandler(evt) {
     const type = evt.target.dataset.type;
-    const offers = this._findOffers(type);
+
+    const offers = offersArray.find((element) => {
+      if (element.type === type) {
+        return element.offers;
+      }
+    }).offers;
+
     evt.preventDefault();
     this.updateData({
       type,
@@ -240,8 +246,20 @@ export default class EventForm extends Smart {
   _destinationChangeHandler(evt) {
     const selectedDestination = evt.target.value;
     const destinationList = this._findDestination();
-    const description = this._findDescription(selectedDestination);
-    const pictures = this._findPictures(selectedDestination);
+
+    const description = destinationsArray.find((element) => {
+      if (element.name === selectedDestination && element.description !== '') {
+        return element.description;
+      }
+    }).description;
+
+    console.log(description);
+
+    const pictures = destinationsArray.find((element) => {
+      if (element.name === selectedDestination) {
+        return element.pictures;
+      }
+    }).pictures;
 
     if (destinationList.includes(selectedDestination)) {
       this.updateData({
@@ -250,7 +268,7 @@ export default class EventForm extends Smart {
           name: selectedDestination,
           pictures,
         },
-      }, true);
+      });
     } else {
       evt.target.setCustomValidity('This name is unavailable');
       evt.target.reportValidity();
@@ -325,14 +343,6 @@ export default class EventForm extends Smart {
     });
   }
 
-  _findOffers(type) {
-    for (let i = 0; i < offersArray.length; i++) {
-      if (offersArray[i].type === type) {
-        return offersArray[i].offers;
-      }
-    }
-  }
-
   _findDestination() {
     const destinationList = [];
 
@@ -341,14 +351,6 @@ export default class EventForm extends Smart {
     });
 
     return destinationList;
-  }
-
-  _findDescription(destination_name) {
-    for (let i = 0; i < destinationsArray.length; i++) {
-      if (destinationsArray[i].name === destination_name) {
-        return destinationsArray[i].description;
-      }
-    }
   }
 
   _findPictures(destination_name) {
