@@ -1,8 +1,8 @@
 import {getRandomInteger} from '../utils/random.js';
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
-import {destinationsArray} from './destinations-data.js';
-import {offersArray} from './offers-data.js';
+import {destinations} from './destinations-data.js';
+import {offers} from './offers-data.js';
 
 const EVENT_MIN_PRICE = 20;
 const EVENT_MAX_PRICE = 1000;
@@ -30,8 +30,8 @@ const generateDateTo = (dateFrom) => {
 export const generateEvent = () => {
   const dateFrom = generateDateFrom().toDate();
   const dateTo = generateDateTo(dateFrom).toDate();
-  const destination = destinationsArray[getRandomInteger(0, destinationsArray.length - 1)];
-  const offers = offersArray[getRandomInteger(0, offersArray.length - 1)];
+  const destination = destinations[getRandomInteger(0, destinations.length - 1)];
+  const offersList = offers[getRandomInteger(0, offers.length - 1)];
 
   return {
     base_price: generatePrice(EVENT_MIN_PRICE, EVENT_MAX_PRICE),
@@ -40,7 +40,7 @@ export const generateEvent = () => {
     destination,
     id: nanoid(),
     is_favorite: Boolean(getRandomInteger(0, 1)),
-    offers: offers.offers,
-    type: offers.type,
+    offers: offersList.offers,
+    type: offersList.type,
   };
 };

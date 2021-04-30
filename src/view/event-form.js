@@ -1,8 +1,12 @@
 import {humanizeToFullDate} from '../utils/time.js';
 import Smart from './smart.js';
 import {TYPES} from '../mock/offers-data.js';
-import {offersArray} from '../mock/offers-data.js';
-import {destinationsArray} from '../mock/destinations-data.js';
+import {offers} from '../mock/offers-data.js';
+import {destinations} from '../mock/destinations-data.js';
+
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import dayjs from 'dayjs';
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -60,7 +64,6 @@ const generatePhotosContainer = (destination, photosNumber) => {
     : '';
 };
 
-
 const generateOfferDescription = (destination, photosNumber) => {
   return destination.description
     ? `<section class="event__section  event__section--destination">
@@ -82,8 +85,18 @@ const generateTypesSelect = (id) => {
 };
 
 
+const generateDataList = () => {
+  const nameList = [];
+
+  destinations.forEach((destination) => {
+    nameList.push(`<option value="${destination.name}"></option>`);
+  });
+
+  return nameList.join('');
+};
+
+
 const createPointForm = (event) => {
-  // console.log(event.offers);
   const {
     base_price,
     date_from,
@@ -98,6 +111,7 @@ const createPointForm = (event) => {
   const timeFinish = humanizeToFullDate(date_to);
   const photosNumber = destination.pictures.length;
   const offersNumber = offers.length;
+  const dataList = generateDataList();
 
   const offersList = generateOffersContainer(offers, offersNumber, id);
   const description = generateOfferDescription(destination, photosNumber, id);
@@ -126,9 +140,7 @@ const createPointForm = (event) => {
                 </label>
                 <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
                 <datalist id="destination-list-1">
-                  <option value="Amsterdam"></option>
-                  <option value="Geneva"></option>
-                  <option value="Chamonix"></option>
+                  ${dataList}
                 </datalist>
               </div>
 
@@ -165,22 +177,23 @@ export default class EventForm extends Smart {
   constructor(event) {
     super();
     this._data = EventForm.parseEventToData(event);
+    this._startDatepicker = null;
+    this._finishDatepicker = null;
+
     this._eventClickHandler = this._eventClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
-
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._finishDateChangeHandler = this._finishDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setFinishDatepicker();
   }
 
   getTemplate() {
     return createPointForm(this._data);
-  }
-
-  _eventClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.eventClick();
   }
 
   setEventClickHandler(callback) {
@@ -191,11 +204,6 @@ export default class EventForm extends Smart {
       .addEventListener('click', this._eventClickHandler);
   }
 
-  _formSubmitHandler(evt) {
-    evt.preventDefault();
-    this._callback.formSubmit(EventForm.parseEventToData(this._data));
-  }
-
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this
@@ -203,77 +211,120 @@ export default class EventForm extends Smart {
       .addEventListener('submit', this._formSubmitHandler);
   }
 
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setFinishDatepicker();
+    this.setEventClickHandler(this._callback.eventClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  reset(event) {
+    this.updateData(
+      EventForm.parseEventToData(event),
+    );
+  }
+
+  _eventClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.eventClick();
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit(EventForm.parseEventToData(this._data));
+  }
+
   _typeChangeHandler(evt) {
     const type = evt.target.dataset.type;
-    const offers = this._findOffers(type);
+
+    const selectedArray = offers.find((element) => {
+      return element.type === type;
+    });
+
     evt.preventDefault();
     this.updateData({
       type,
-      offers,
+      offers: selectedArray.offers,
     });
   }
 
   _destinationChangeHandler(evt) {
     const selectedDestination = evt.target.value;
-    const destinationList = this._findDestination();
-    const description = this._findDescription(selectedDestination);
-    const pictures = this._findPictures(selectedDestination);
 
-    if (destinationList.includes(selectedDestination)) {
+    const selectedArray = destinations.find((element) => {
+      return element.name === selectedDestination;
+    });
+
+    if (selectedArray) {
       this.updateData({
         destination: {
-          description,
+          description: selectedArray.description,
           name: selectedDestination,
-          pictures,
+          pictures: selectedArray.pictures,
         },
-      }, true);
+      });
     } else {
       evt.target.setCustomValidity('This name is unavailable');
       evt.target.reportValidity();
     }
   }
 
-  //todo следующие четыре метода смущают. Наверное, это можно как-то короче писать.
+  //DATE//
 
-  _findOffers(type) {
-    for (let i = 0; i < offersArray.length; i++) {
-      if (offersArray[i].type === type) {
-        return offersArray[i].offers;
-      }
+  _startDateChangeHandler(date_from) {
+    this.updateData(
+      {
+        date_from,
+      },
+    );
+  }
+
+  _finishDateChangeHandler(date_to) {
+    this.updateData(
+      {
+        date_to,
+      },
+    );
+  }
+
+  _setStartDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
     }
+
+    this._startDatepicker = flatpickr(
+      this.getElement().querySelector('input[name = event-start-time]'),
+      {
+        enableTime: true,
+        dateFormat: 'y/m/d H:i',
+        minDate: dayjs().format('YY/MM/DD HH:MM'),
+        onChange: this._startDateChangeHandler,
+      },
+    );
   }
 
-  _findDestination() {
-    const destinationList = [];
-
-    destinationsArray.forEach((item) => {
-      destinationList.push(item.name);
-    });
-
-    return destinationList;
-  }
-
-  _findDescription(destination_name) {
-    for (let i = 0; i < destinationsArray.length; i++) {
-      if (destinationsArray[i].name === destination_name) {
-        return destinationsArray[i].description;
-      }
+  _setFinishDatepicker() {
+    if (this._finishDatepicker) {
+      this._finishDatepicker.destroy();
+      this._finishDatepicker = null;
     }
+
+
+    this._finishDatepicker = flatpickr(
+      this.getElement().querySelector('input[name = event-end-time]'),
+      {
+        enableTime: true,
+        dateFormat: 'y/m/d H:i',
+        // minDate: this.getElement().querySelector('input[name = event-start-time]').value,
+        minDate: dayjs(this._data.date_from).format('YY/MM/DD HH:MM'),
+        onChange: this._finishDateChangeHandler,
+      },
+    );
   }
 
-  _findPictures(destination_name) {
-    for (let i = 0; i < destinationsArray.length; i++) {
-      if (destinationsArray[i].name === destination_name) {
-        return destinationsArray[i].pictures;
-      }
-    }
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setEventClickHandler(this._callback.eventClick);
-    this.setFormSubmitHandler(this._callback.formSubmit);
-  }
+  //UTILS//
 
   _setInnerHandlers() {
     const selectItems = this.getElement().querySelectorAll('.event__type-label');
@@ -285,12 +336,6 @@ export default class EventForm extends Smart {
     destinationInputs.forEach((item) => {
       item.addEventListener('change', this._destinationChangeHandler);
     });
-  }
-
-  reset(event) {
-    this.updateData(
-      EventForm.parseEventToData(event),
-    );
   }
 
   static parseEventToData(event) {

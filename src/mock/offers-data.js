@@ -53,4 +53,4 @@ const getOffers = () => {
   return offersList;
 };
 
-export const offersArray = getOffers();
+export const offers = getOffers();
