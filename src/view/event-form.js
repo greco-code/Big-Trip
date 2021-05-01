@@ -84,15 +84,11 @@ const generateTypesSelect = (id) => {
   }).join(' ');
 };
 
-
 const generateDataList = () => {
-  const nameList = [];
-
-  destinations.forEach((destination) => {
-    nameList.push(`<option value="${destination.name}"></option>`);
-  });
-
-  return nameList.join('');
+  return destinations.map((destination) => {
+    return `<option value="${destination.name}"></option>`;
+  })
+    .join('');
 };
 
 
