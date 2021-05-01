@@ -234,30 +234,30 @@ export default class EventForm extends Smart {
   _typeChangeHandler(evt) {
     const type = evt.target.dataset.type;
 
-    const selectedArray = offers.find((element) => {
+    const targetType = offers.find((element) => {
       return element.type === type;
     });
 
     evt.preventDefault();
     this.updateData({
       type,
-      offers: selectedArray.offers,
+      offers: targetType.offers,
     });
   }
 
   _destinationChangeHandler(evt) {
     const selectedDestination = evt.target.value;
 
-    const selectedArray = destinations.find((element) => {
+    const targetDestination = destinations.find((element) => {
       return element.name === selectedDestination;
     });
 
-    if (selectedArray) {
+    if (targetDestination) {
       this.updateData({
         destination: {
-          description: selectedArray.description,
+          description: targetDestination.description,
           name: selectedDestination,
-          pictures: selectedArray.pictures,
+          pictures: targetDestination.pictures,
         },
       });
     } else {
