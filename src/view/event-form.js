@@ -268,19 +268,19 @@ export default class EventForm extends Smart {
 
   //DATE//
 
-  _startDateChangeHandler(date_from) {
+  _startDateChangeHandler([date_from]) {
     this.updateData(
       {
         date_from,
-      },
+      },true,
     );
   }
 
-  _finishDateChangeHandler(date_to) {
+  _finishDateChangeHandler([date_to]) {
     this.updateData(
       {
         date_to,
-      },
+      }, true,
     );
   }
 
@@ -294,9 +294,10 @@ export default class EventForm extends Smart {
       this.getElement().querySelector('input[name = event-start-time]'),
       {
         enableTime: true,
-        dateFormat: 'y/m/d H:i',
-        minDate: dayjs().format('YY/MM/DD HH:MM'),
+        dateFormat: 'd/m/y H:i',
+        minDate: dayjs().format('DD/MM/YY HH:MM'),
         onChange: this._startDateChangeHandler,
+        time_24hr: true,
       },
     );
   }
@@ -307,15 +308,14 @@ export default class EventForm extends Smart {
       this._finishDatepicker = null;
     }
 
-
     this._finishDatepicker = flatpickr(
       this.getElement().querySelector('input[name = event-end-time]'),
       {
         enableTime: true,
-        dateFormat: 'y/m/d H:i',
-        // minDate: this.getElement().querySelector('input[name = event-start-time]').value,
-        minDate: dayjs(this._data.date_from).format('YY/MM/DD HH:MM'),
+        dateFormat: 'd/m/y H:i',
+        minDate: dayjs(this._data.date_from).format('DD/MM/YY HH:MM'),
         onChange: this._finishDateChangeHandler,
+        time_24hr: true,
       },
     );
   }
