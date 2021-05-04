@@ -13,7 +13,8 @@ const SortType = {
 };
 
 export default class Route {
-  constructor(eventsContainer) {
+  constructor(eventsContainer, eventsModel) {
+    this._eventsModel = eventsModel;
     this._eventsContainer = eventsContainer;
     this._noEvent = new NoEventView();
     this._eventList = new EventListView();
@@ -30,6 +31,10 @@ export default class Route {
   init(events) {
     this._events = events.slice();
     this._renderBoard();
+  }
+
+  _getEvents() {
+    return this._eventsModel.getEvents();
   }
 
   _handleEventChange(updatedEvent) {

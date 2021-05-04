@@ -5,7 +5,7 @@ import {generateEvent} from './mock/event-data.js';
 import {render, RenderPosition} from './utils/render.js';
 import dayjs from 'dayjs';
 import RoutePresenter from './presenter/route.js';
-
+import EventsModel from './model/events.js';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
@@ -15,12 +15,15 @@ const pageContainer = pageMain.querySelector('.trip-events');
 
 const EVENTS_COUNT = 15;
 
-const routePresenter = new RoutePresenter(pageContainer);
-
 const events = new Array(EVENTS_COUNT)
   .fill()
   .map(generateEvent)
   .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
+
+const eventsModel = new EventsModel();
+eventsModel.setEvents(events);
+
+const routePresenter = new RoutePresenter(pageContainer, eventsModel);
 
 
 if (events.length) {
