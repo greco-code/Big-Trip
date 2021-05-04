@@ -33,4 +33,4 @@ if (events.length) {
 render(headerMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
 render(tripFilterContainer, new FilterView(), RenderPosition.AFTERBEGIN);
 
-routePresenter.init(events);
+routePresenter.init();

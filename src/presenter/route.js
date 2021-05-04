@@ -3,14 +3,9 @@ import EventListView from '../view/event-list-container.js';
 import NoEventView from '../view/no-event.js';
 import PointPresenter from '../presenter/point.js';
 import SortView from '../view/trip-sort.js';
-import {render, RenderPosition, updateItem} from '../utils/render.js';
+import {render, RenderPosition} from '../utils/render.js';
+import {SortType} from '../const.js';
 import dayjs from 'dayjs';
-
-const SortType = {
-  DAY: 'day',
-  TIME: 'time',
-  PRICE: 'price',
-};
 
 export default class Route {
   constructor(eventsContainer, eventsModel) {
@@ -28,35 +23,25 @@ export default class Route {
     this._currentSortType = SortType.DAY;
   }
 
-  init(events) {
-    this._events = events.slice();
+  init() {
     this._renderBoard();
   }
 
   _getEvents() {
+    switch (this._currentSortType) {
+      case SortType.TIME:
+        return this._eventsModel.getEvents().slice().sort((a, b) => dayjs(a.date_to - a.date_from) - (b.date_to - b.date_from));
+      case SortType.PRICE:
+        return this._eventsModel.getEvents().slice().sort((a, b) => (a.base_price) - (b.base_price));
+      case SortType.DAY:
+        return this._eventsModel.getEvents().slice().sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
+    }
+
     return this._eventsModel.getEvents();
   }
 
   _handleEventChange(updatedEvent) {
-    this._events = updateItem(this._events, updatedEvent);
     this._pointPresenter[updatedEvent.id].init(updatedEvent);
-  }
-
-  _sortEvents(sortType) {
-    switch (sortType) {
-      case SortType.TIME:
-        this._events.sort((a, b) => dayjs(a.date_to - a.date_from) - (b.date_to - b.date_from));
-        break;
-      case SortType.PRICE:
-        this._events.sort((a, b) => (a.base_price) - (b.base_price));
-        break;
-      default:
-        this._events.sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
-    }
-
-    this._currentSortType = sortType;
-    this._clearEvents();
-    this._renderEvents(this._events);
   }
 
   _handleSortTypeChange(sortType) {
@@ -64,7 +49,9 @@ export default class Route {
       return;
     }
 
-    this._sortEvents(sortType);
+    this._currentSortType = sortType;
+    this._clearEvents();
+    this._renderEvents();
   }
 
   _handleModeChange() {
@@ -113,15 +100,15 @@ export default class Route {
   }
 
   _renderBoard() {
-    if (!this._events.length) {
+    if (!this._getEvents().length) {
       this._renderNoEvent();
     }
 
-    if (this._events.length) {
+    if (this._getEvents().length) {
       this._renderEventsList();
       this._renderSort();
     }
 
-    this._renderEvents(this._events);
+    this._renderEvents(this._getEvents());
   }
 }
