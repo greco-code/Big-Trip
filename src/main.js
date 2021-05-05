@@ -2,10 +2,11 @@ import MenuView from './view/menu.js';
 import FilterView from './view/trip-filter.js';
 import TripInfoView from './view/trip-info.js';
 import {generateEvent} from './mock/event-data.js';
-import {render, RenderPosition} from './utils/render.js';
+import {render} from './utils/render.js';
 import dayjs from 'dayjs';
 import RoutePresenter from './presenter/route.js';
 import EventsModel from './model/events.js';
+import {RenderPosition} from './const.js';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');

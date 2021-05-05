@@ -3,8 +3,8 @@ import EventListView from '../view/event-list-container.js';
 import NoEventView from '../view/no-event.js';
 import PointPresenter from '../presenter/point.js';
 import SortView from '../view/trip-sort.js';
-import {render, RenderPosition} from '../utils/render.js';
-import {SortType} from '../const.js';
+import {remove, render} from '../utils/render.js';
+import {RenderPosition, SortType, UpdateType, UserAction} from '../const.js';
 import dayjs from 'dayjs';
 
 export default class Route {
@@ -17,10 +17,13 @@ export default class Route {
     this._pointPresenter = {};
     this._sort = new SortView();
 
-    this._handleEventChange = this._handleEventChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._currentSortType = SortType.DAY;
+
+    this._eventsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -40,8 +43,35 @@ export default class Route {
     return this._eventsModel.getEvents();
   }
 
-  _handleEventChange(updatedEvent) {
-    this._pointPresenter[updatedEvent.id].init(updatedEvent);
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this._eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_EVENT:
+        this._eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_EVENT:
+        this._eventsModel.deleteEvent(updateType, update);
+        break;
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        // - обновить часть списка (например, когда поменялось описание)
+        this._pointPresenter[data.id].init(data);
+        break;
+      case UpdateType.MINOR:
+        this._clearBoard();
+        this._renderBoard();
+        break;
+      case UpdateType.MAJOR:
+        this._clearBoard({resetSortType: true});
+        this._renderBoard();
+        break;
+    }
   }
 
   _handleSortTypeChange(sortType) {
@@ -51,7 +81,7 @@ export default class Route {
 
     this._currentSortType = sortType;
     this._clearEvents();
-    this._renderEvents();
+    this._renderEvents(this._getEvents());
   }
 
   _handleModeChange() {
@@ -70,7 +100,7 @@ export default class Route {
 
   _renderEvent(event) {
     this._renderEventContainer();
-    const pointPresenter = new PointPresenter(this._eventListItem, this._handleEventChange, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._eventListItem, this._handleViewAction, this._handleModeChange);
     pointPresenter.init(event);
     this._pointPresenter[event.id] = pointPresenter;
   }
@@ -88,6 +118,20 @@ export default class Route {
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.destroy());
     this._taskPresenter = {};
+  }
+
+  _clearBoard(resetSortType = false) {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._taskPresenter = {};
+
+    remove(this._sort);
+    remove(this._noEvent);
+
+    if (resetSortType) {
+      this._currentSortType = SortType.DAY;
+    }
   }
 
   _renderNoEvent() {

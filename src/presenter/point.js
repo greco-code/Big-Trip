@@ -1,11 +1,7 @@
-import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {render, replace, remove} from '../utils/render.js';
 import EventView from '../view/event.js';
 import EventFormView from '../view/event-form.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import {Mode, RenderPosition, UpdateType, UserAction} from '../const.js';
 
 export default class Point {
   constructor(eventContainer, changeData, changeMode) {
@@ -95,6 +91,8 @@ export default class Point {
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._event,
