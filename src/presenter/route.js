@@ -80,8 +80,8 @@ export default class Route {
     }
 
     this._currentSortType = sortType;
-    this._clearEvents();
-    this._renderEvents(this._getEvents());
+    this._clearBoard();
+    this._renderBoard();
   }
 
   _handleModeChange() {
@@ -111,13 +111,6 @@ export default class Route {
         this._renderEvent(event);
         this._eventListItem = new EventListItemView();
       });
-  }
-
-  _clearEvents() {
-    Object
-      .values(this._pointPresenter)
-      .forEach((presenter) => presenter.destroy());
-    this._taskPresenter = {};
   }
 
   _clearBoard(resetSortType = false) {

@@ -180,6 +180,8 @@ export default class EventForm extends Smart {
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._eventDeleteClickHandler = this._eventDeleteClickHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._finishDateChangeHandler = this._finishDateChangeHandler.bind(this);
 
@@ -207,12 +209,21 @@ export default class EventForm extends Smart {
       .addEventListener('submit', this._formSubmitHandler);
   }
 
+  setEventDeleteHandler(callback) {
+    this._callback.eventDelete = callback;
+    this
+      .getElement()
+      .querySelector('.event__reset-btn')
+      .addEventListener('click', this._eventDeleteClickHandler);
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
     this._setStartDatepicker();
     this._setFinishDatepicker();
     this.setEventClickHandler(this._callback.eventClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setEventDeleteHandler(this._callback.eventDelete);
   }
 
   reset(event) {
@@ -229,6 +240,11 @@ export default class EventForm extends Smart {
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.formSubmit(EventForm.parseEventToData(this._data));
+  }
+
+  _eventDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.eventDelete(EventForm.parseEventToData(this._data));
   }
 
   _typeChangeHandler(evt) {
@@ -266,13 +282,22 @@ export default class EventForm extends Smart {
     }
   }
 
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData(
+      {
+        base_price: evt.target.value,
+      }, true,
+    );
+  }
+
   //DATE//
 
   _startDateChangeHandler([date_from]) {
     this.updateData(
       {
         date_from,
-      },true,
+      }, true,
     );
   }
 
@@ -331,6 +356,11 @@ export default class EventForm extends Smart {
     const destinationInputs = this.getElement().querySelectorAll('.event__input--destination');
     destinationInputs.forEach((item) => {
       item.addEventListener('change', this._destinationChangeHandler);
+    });
+
+    const priceInputs = this.getElement().querySelectorAll('.event__input--price');
+    priceInputs.forEach((item) => {
+      item.addEventListener('input', this._priceInputHandler);
     });
   }
 
