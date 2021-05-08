@@ -25,3 +25,9 @@ export const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
 };
+
+export const FilterType = {
+  EVERYTHING : 'everything',
+  FUTURE: 'future',
+  PAST: 'past',
+};

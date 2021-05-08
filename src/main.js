@@ -1,5 +1,4 @@
 import MenuView from './view/menu.js';
-import FilterView from './view/trip-filter.js';
 import TripInfoView from './view/trip-info.js';
 import {generateEvent} from './mock/event-data.js';
 import {render} from './utils/render.js';
@@ -7,6 +6,8 @@ import dayjs from 'dayjs';
 import RoutePresenter from './presenter/route.js';
 import EventsModel from './model/events.js';
 import {RenderPosition} from './const.js';
+import FilterModel from './model/filter.js';
+import FilterPresenter from './presenter/filters.js';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
@@ -21,17 +22,21 @@ const events = new Array(EVENTS_COUNT)
   .map(generateEvent)
   .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
 
-const eventsModel = new EventsModel();
-eventsModel.setEvents(events);
-
-const routePresenter = new RoutePresenter(pageContainer, eventsModel);
-
 
 if (events.length) {
   render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
 }
 
 render(headerMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
-render(tripFilterContainer, new FilterView(), RenderPosition.AFTERBEGIN);
 
+
+const eventsModel = new EventsModel();
+eventsModel.setEvents(events);
+
+const filterModel = new FilterModel();
+
+const routePresenter = new RoutePresenter(pageContainer, eventsModel, filterModel);
+const filterPresenter = new FilterPresenter(tripFilterContainer, filterModel, eventsModel);
+
+filterPresenter.init();
 routePresenter.init();
