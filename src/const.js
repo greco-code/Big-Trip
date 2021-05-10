@@ -27,7 +27,7 @@ export const RenderPosition = {
 };
 
 export const FilterType = {
-  EVERYTHING : 'everything',
+  EVERYTHING: 'everything',
   FUTURE: 'future',
   PAST: 'past',
 };

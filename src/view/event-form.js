@@ -7,6 +7,25 @@ import {destinations} from '../mock/destinations-data.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
+
+const BLANK_EVENT = {
+  base_price: '',
+  date_from: dayjs(),
+  date_to: dayjs(),
+  destination: {
+    description: '',
+    name: '',
+    pictures: [{
+      src: null,
+      description: null,
+    }],
+  },
+  id: nanoid(),
+  is_favorite: false,
+  offers: offers[0].offers,
+  type: offers[0].type,
+};
 
 // Возвращает список услуг
 const generateOffers = (offers, id) => {
@@ -170,7 +189,7 @@ const createPointForm = (event) => {
 };
 
 export default class EventForm extends Smart {
-  constructor(event) {
+  constructor(event = BLANK_EVENT) {
     super();
     this._data = EventForm.parseEventToData(event);
     this._startDatepicker = null;

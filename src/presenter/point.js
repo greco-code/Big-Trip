@@ -13,7 +13,6 @@ export default class Point {
     this._eventFormComponent = null;
     this._mode = Mode.DEFAULT;
 
-
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleEventClick = this._handleEventClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
