@@ -50,8 +50,6 @@ export default class PointNew {
       Object.assign({id: nanoid()}, event),
     );
 
-    // console.log(this);
-    // this.destroy();
     document.removeEventListener('keydown', this._onEscKeyDown);
   }
 
