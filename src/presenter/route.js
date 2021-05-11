@@ -174,8 +174,7 @@ export default class Route {
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.destroy());
     this._pointPresenter = {};
-    //todo
-    // this._pointNewPresenter.destroy();
+    this._pointNewPresenter.destroy();
 
     remove(this._sort);
     remove(this._noEvent);

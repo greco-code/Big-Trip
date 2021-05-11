@@ -60,7 +60,11 @@ export default class PointNew {
 
   destroy() {
     remove(this._eventContainer);
-    remove(this._eventFormComponent);
+
+    if (this._eventFormComponent) {
+      remove(this._eventFormComponent);
+    }
+
     this._addNewEventButton.disabled = false;
   }
 }
