@@ -17,10 +17,7 @@ const BLANK_EVENT = {
   destination: {
     description: '',
     name: '',
-    pictures: [{
-      src: null,
-      description: null,
-    }],
+    pictures: [],
   },
   id: nanoid(),
   is_favorite: false,

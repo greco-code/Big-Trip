@@ -17,7 +17,6 @@ export default class Route {
     this._eventsContainer = eventsContainer;
 
     this._noEvent = new NoEventView();
-    this._eventList = new EventListView();
     this._eventListItem = new EventListItemView();
 
     this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction);
@@ -60,6 +59,10 @@ export default class Route {
   createEvent() {
     this._currentSortType = SortType.DAY;
     this._filtersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    if (!this._eventList) {
+      this._renderEventsList();
+    }
 
     this._eventListItem = new EventListItemView();
     this._renderEventContainer();
@@ -128,6 +131,7 @@ export default class Route {
 
   //RENDERS//
   _renderEventsList() {
+    this._eventList = new EventListView();
     render(this._eventsContainer, this._eventList, RenderPosition.BEFOREEND);
   }
 
@@ -180,9 +184,11 @@ export default class Route {
     this._pointPresenter = {};
     this._pointNewPresenter.destroy();
 
-    remove(this._sort);
-    remove(this._noEvent);
+    if (this._sort) {
+      remove(this._sort);
+    }
 
+    remove(this._noEvent);
     if (resetSortType) {
       this._currentSortType = SortType.DAY;
     }
