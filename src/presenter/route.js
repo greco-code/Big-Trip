@@ -66,6 +66,10 @@ export default class Route {
 
     this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction);
     this._pointNewPresenter.init();
+
+    if (this._noEvent) {
+      remove(this._noEvent);
+    }
   }
 
   //HANDLERS//
