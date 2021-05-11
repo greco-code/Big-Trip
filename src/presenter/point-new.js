@@ -4,9 +4,12 @@ import {RenderPosition, UpdateType, UserAction} from '../const.js';
 import {nanoid} from 'nanoid';
 
 export default class PointNew {
-  constructor(eventContainer, changeData) {
+  constructor(eventContainer, changeData, offers, destinations) {
     this._eventContainer = eventContainer;
     this._changeData = changeData;
+
+    this._offers = offers;
+    this._destinations = destinations;
 
     this._eventFormComponent = null;
 
@@ -19,7 +22,15 @@ export default class PointNew {
   }
 
   init() {
-    this._eventFormComponent = new EventFormView();
+    this._eventFormComponent = new EventFormView(
+      {
+        date_from: new Date(),
+        date_to: new Date(),
+        type: this._offers[0].type,
+      },
+      this._offers,
+      this._destinations,
+    );
 
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
@@ -37,6 +48,8 @@ export default class PointNew {
       evt.preventDefault();
       this.destroy();
     }
+
+    document.removeEventListener('keydown', this._onEscKeyDown);
   }
 
   _handleEventClick() {
@@ -50,7 +63,6 @@ export default class PointNew {
       Object.assign({id: nanoid()}, event),
     );
 
-    this.destroy();
     document.removeEventListener('keydown', this._onEscKeyDown);
   }
 
@@ -60,7 +72,11 @@ export default class PointNew {
 
   destroy() {
     remove(this._eventContainer);
-    remove(this._eventFormComponent);
+
+    if (this._eventFormComponent) {
+      remove(this._eventFormComponent);
+    }
+
     this._addNewEventButton.disabled = false;
   }
 }

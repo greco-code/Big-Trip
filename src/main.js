@@ -10,6 +10,9 @@ import FilterModel from './model/filter.js';
 import FilterPresenter from './presenter/filters.js';
 import NewEventButtonView from './view/new-button.js';
 
+import {offers} from './mock/offers-data.js';
+import {destinations} from './mock/destinations-data.js';
+
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
 const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation');
@@ -18,7 +21,7 @@ const pageContainer = pageMain.querySelector('.trip-events');
 
 const newEventButton = new NewEventButtonView();
 
-const EVENTS_COUNT = 15;
+const EVENTS_COUNT = 3;
 
 const events = new Array(EVENTS_COUNT)
   .fill()
@@ -39,7 +42,7 @@ eventsModel.setEvents(events);
 
 const filterModel = new FilterModel();
 
-const routePresenter = new RoutePresenter(pageContainer, eventsModel, filterModel);
+const routePresenter = new RoutePresenter(pageContainer, eventsModel, filterModel, offers, destinations);
 const filterPresenter = new FilterPresenter(tripFilterContainer, filterModel, eventsModel);
 
 newEventButton.setNewEventClickHandler(() => {
@@ -49,3 +52,10 @@ newEventButton.setNewEventClickHandler(() => {
 
 filterPresenter.init();
 routePresenter.init();
+
+/* todo
+* 3. Хедер не работает
+* 4. Заменить blank-task
+* 5. Не сохраняются чекнутые офферы
+* 6. Пропадает выделелние на сортировке при клике на disabled поля
+* */

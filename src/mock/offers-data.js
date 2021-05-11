@@ -16,15 +16,15 @@ export const TYPES = [
 const TYPES_PRICE = [
   {
     title: 'Order Uber',
-    price: 100,
+    price: 150,
   },
   {
     title: 'Add luggage',
-    price: 100,
+    price: 300,
   },
   {
     title: 'Add breakfast',
-    price: 100,
+    price: 200,
   },
   {
     title: 'Book tickets',
@@ -32,7 +32,15 @@ const TYPES_PRICE = [
   },
   {
     title: 'Rent a car',
-    price: 100,
+    price: 150,
+  },
+  {
+    title: 'Buy milk',
+    price: 200,
+  },
+  {
+    title: 'Buy Webstorm',
+    price: 300,
   },
 ];
 

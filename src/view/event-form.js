@@ -1,46 +1,31 @@
 import {humanizeToFullDate} from '../utils/time.js';
 import Smart from './smart.js';
-import {TYPES} from '../mock/offers-data.js';
-import {offers} from '../mock/offers-data.js';
-import {destinations} from '../mock/destinations-data.js';
 
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
-import {nanoid} from 'nanoid';
 import he from 'he';
-
-const BLANK_EVENT = {
-  base_price: '',
-  date_from: dayjs(),
-  date_to: dayjs(),
-  destination: {
-    description: '',
-    name: '',
-    pictures: [{
-      src: null,
-      description: null,
-    }],
-  },
-  id: nanoid(),
-  is_favorite: false,
-  offers: offers[0].offers,
-  type: offers[0].type,
-};
+import {replaceSpace} from '../utils/random.js';
 
 // Возвращает список услуг
-const generateOffers = (offers, id) => {
+const generateOffers = (offers, id, selectedOffers) => {
   let offerMarkup = '';
 
   offers.forEach((offer) => {
+    const isOfferChecked = selectedOffers && selectedOffers.includes(offer);
+    const offerTitle = replaceSpace(offer.title);
     offerMarkup +=
       `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${id}" type="checkbox" name="event-offer-${offer.title}">
-            <label class="event__offer-label" for="event-offer-${offer.title}-${id}">
-              <span class="event__offer-title">${offer.title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer.price}</span>
-            </label>
+          <input class="event__offer-checkbox  visually-hidden"
+            id="event-offer-${offerTitle}-${id}"
+            type="checkbox"
+            data-title=${offerTitle}
+            name="event-offer-${offerTitle}" ${isOfferChecked ? 'checked' : ''}>
+          <label class="event__offer-label" for="event-offer-${offerTitle}-${id}">
+            <span class="event__offer-title">${offer.title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </label>
        </div>`;
   });
 
@@ -48,12 +33,12 @@ const generateOffers = (offers, id) => {
 };
 
 // Возвращает список услуг В КОНТЕЙНЕРЕ
-const generateOffersContainer = (offers, offersNumber, id) => {
-  return offersNumber
+const generateOffersContainer = (id, offers, selectedOffers) => {
+  return offers && offers.length
     ? `<section class="event__section  event__section--offers">
          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
          <div class="event__available-offers">
-            ${generateOffers(offers, id)}
+            ${generateOffers(offers, id, selectedOffers)}
          </div>
        </section>`
     : '';
@@ -74,7 +59,8 @@ const generatePhotos = (destination, photosNumber) => {
 };
 
 // Возвращает список фото В КОНТЕЙНЕРЕ
-const generatePhotosContainer = (destination, photosNumber) => {
+const generatePhotosContainer = (destination) => {
+  const photosNumber = destination && destination.pictures && destination.pictures.length;
   return photosNumber
     ? `<div class="event__photos-container">
           <div class="event__photos-tape">
@@ -84,19 +70,19 @@ const generatePhotosContainer = (destination, photosNumber) => {
     : '';
 };
 
-const generateOfferDescription = (destination, photosNumber) => {
+const generateOfferDescription = (destination) => {
   return destination.description
     ? `<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${destination.description}</p>
-        ${generatePhotosContainer(destination, photosNumber)}
+        ${generatePhotosContainer(destination, destination.pictures.length)}
       </section>`
 
     : '';
 };
 
-const generateTypesSelect = (id) => {
-  return TYPES.map((type) => {
+const generateTypesSelect = (id, types) => {
+  return types.map((type) => {
     return `<div class="event__type-item">
               <input id="event-type-${type.toLowerCase()}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
               <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-${id}" data-type="${type}">${type}</label>
@@ -104,7 +90,7 @@ const generateTypesSelect = (id) => {
   }).join(' ');
 };
 
-const generateDataList = () => {
+const generateDestinationsSelectMarkup = (destinations) => {
   return destinations.map((destination) => {
     return `<option value="${destination.name}"></option>`;
   })
@@ -112,26 +98,24 @@ const generateDataList = () => {
 };
 
 
-const createPointForm = (event) => {
-  const {
-    base_price,
-    date_from,
-    date_to,
-    destination,
-    type,
-    offers,
-    id,
-  } = event;
+const createPointForm = (event, availableOffers, destinations) => {
+  const price = event.base_price;
+  const dateFrom = event.date_from || new Date();
+  const dateTo = event.date_to || new Date();
+  const destination = event.destination;
+  const type = event.type || availableOffers[0].type;
+  const id = event.id;
+  const isNew = !event.id;
+  const offersByType = availableOffers.find((offer) => offer.type === type).offers;
 
-  const timeStart = humanizeToFullDate(date_from);
-  const timeFinish = humanizeToFullDate(date_to);
-  const photosNumber = destination.pictures.length;
-  const offersNumber = offers.length;
-  const dataList = generateDataList();
+  const timeStart = humanizeToFullDate(dateFrom);
+  const timeFinish = humanizeToFullDate(dateTo);
+  const destinationsSelectMarkup = generateDestinationsSelectMarkup(destinations);
 
-  const offersList = generateOffersContainer(offers, offersNumber, id);
-  const description = generateOfferDescription(destination, photosNumber, id);
-  const typeSelectList = generateTypesSelect(id);
+  const offersMarkup = generateOffersContainer(id, offersByType, event.offers);
+  const description = destination ? generateOfferDescription(destination, id) : '';
+  const types = availableOffers.map((offer) => offer.type);
+  const typeSelectList = generateTypesSelect(id, types);
 
   return `<form class="event event--edit" action="#" method="post">
             <header class="event__header">
@@ -158,10 +142,10 @@ const createPointForm = (event) => {
                  id="event-destination-1"
                  type="text"
                  name="event-destination"
-                 value="${he.encode(destination.name)}"
+                 value="${destination ? he.encode(destination.name) : ''}"
                  list="destination-list-1" required>
                 <datalist id="destination-list-1">
-                  ${dataList}
+                  ${destinationsSelectMarkup}
                 </datalist>
               </div>
 
@@ -178,28 +162,32 @@ const createPointForm = (event) => {
                   <span class="visually-hidden">Price</span>
                   &euro;
                 </label>
-                <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${base_price}" required>
+                <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${price}" required>
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-              <button class="event__reset-btn" type="reset">Delete</button>
+              <button class="event__reset-btn" type="reset">${isNew ? 'Cancel' : 'Delete'}</button>
               <button class="event__rollup-btn" type="button">
                 <span class="visually-hidden">Open event</span>
               </button>
             </header>
             <section class="event__details">
-              ${offersList}
+              ${offersMarkup}
               ${description}
             </section>
           </form>`;
 };
 
 export default class EventForm extends Smart {
-  constructor(event = BLANK_EVENT) {
+  constructor(event = {}, offers, destinations) {
     super();
     this._data = EventForm.parseEventToData(event);
+
     this._startDatepicker = null;
     this._finishDatepicker = null;
+
+    this._offers = offers;
+    this._destinations = destinations;
 
     this._eventClickHandler = this._eventClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -209,6 +197,7 @@ export default class EventForm extends Smart {
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._finishDateChangeHandler = this._finishDateChangeHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
     this._setStartDatepicker();
@@ -216,7 +205,7 @@ export default class EventForm extends Smart {
   }
 
   getTemplate() {
-    return createPointForm(this._data);
+    return createPointForm(this._data, this._offers, this._destinations);
   }
 
   setEventClickHandler(callback) {
@@ -274,22 +263,16 @@ export default class EventForm extends Smart {
 
   _typeChangeHandler(evt) {
     const type = evt.target.dataset.type;
-
-    const targetType = offers.find((element) => {
-      return element.type === type;
-    });
-
     evt.preventDefault();
     this.updateData({
       type,
-      offers: targetType.offers,
     });
   }
 
   _destinationChangeHandler(evt) {
     const selectedDestination = evt.target.value;
 
-    const targetDestination = destinations.find((element) => {
+    const targetDestination = this._destinations.find((element) => {
       return element.name === selectedDestination;
     });
 
@@ -313,6 +296,36 @@ export default class EventForm extends Smart {
       {
         base_price: evt.target.value,
       }, true,
+    );
+  }
+
+  _offersChangeHandler(evt) {
+    const checkedOfferElement = evt.target.closest('div').querySelector('.event__offer-checkbox');
+    const checkedOfferTitle = checkedOfferElement && checkedOfferElement.dataset.title;
+    const isChecked = checkedOfferElement.checked;
+
+    const selectedType = evt.target.closest('.event--edit').querySelector('.event__type-output').textContent.trim();
+    const targetType = this._offers.find((offer) => offer.type === selectedType);
+    const availableOffers = targetType && targetType.offers;
+
+    const checkedOffer = checkedOfferTitle && availableOffers.find((offer) => replaceSpace(offer.title) === checkedOfferTitle);
+
+    if (!this._data.offers) {
+      this._data.offers = [];
+    }
+
+    const checkedOffers = this._data.offers.slice();
+
+    if (isChecked) {
+      this._data.offers.push(checkedOffer);
+    } else {
+      this._data.offers = checkedOffers.filter((offer) => replaceSpace(offer.title) !== checkedOfferTitle);
+    }
+
+    this.updateData(
+      {
+        offers: this._data.offers.slice(),
+      },
     );
   }
 
@@ -386,6 +399,11 @@ export default class EventForm extends Smart {
     const priceInputs = this.getElement().querySelectorAll('.event__input--price');
     priceInputs.forEach((item) => {
       item.addEventListener('input', this._priceInputHandler);
+    });
+
+    const offerCheckboxes = this.getElement().querySelectorAll('.event__offer-checkbox');
+    offerCheckboxes.forEach((item) => {
+      item.addEventListener('change', this._offersChangeHandler);
     });
   }
 

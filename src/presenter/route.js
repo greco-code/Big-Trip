@@ -10,17 +10,19 @@ import dayjs from 'dayjs';
 import {filter} from '../utils/filter.js';
 
 export default class Route {
-  constructor(eventsContainer, eventsModel, filtersModel) {
+  constructor(eventsContainer, eventsModel, filtersModel, offers, destinations) {
+    this._offers = offers;
+    this._destinations = destinations;
+
     this._eventsModel = eventsModel;
     this._filtersModel = filtersModel;
 
     this._eventsContainer = eventsContainer;
 
     this._noEvent = new NoEventView();
-    this._eventList = new EventListView();
     this._eventListItem = new EventListItemView();
 
-    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction);
+    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction, this._offers, this._destinations);
 
     this._pointPresenter = {};
 
@@ -61,11 +63,19 @@ export default class Route {
     this._currentSortType = SortType.DAY;
     this._filtersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
 
+    if (!this._eventList) {
+      this._renderEventsList();
+    }
+
     this._eventListItem = new EventListItemView();
     this._renderEventContainer();
 
-    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction);
+    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction, this._offers, this._destinations);
     this._pointNewPresenter.init();
+
+    if (this._noEvent) {
+      remove(this._noEvent);
+    }
   }
 
   //HANDLERS//
@@ -111,6 +121,8 @@ export default class Route {
   }
 
   _handleModeChange() {
+    // todo СЕЙЧАС НЕ ЗАКРЫВАЕТСЯ ФОРМА СОЗДАНИЯ ПРИ ОТКРЫТИИ ФОРМЫ РЕДАКТИРОВАНИЯ
+    // this._pointNewPresenter.destroy();
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.resetView());
@@ -124,6 +136,7 @@ export default class Route {
 
   //RENDERS//
   _renderEventsList() {
+    this._eventList = new EventListView();
     render(this._eventsContainer, this._eventList, RenderPosition.BEFOREEND);
   }
 
@@ -133,7 +146,7 @@ export default class Route {
 
   _renderEvent(event) {
     this._renderEventContainer();
-    const pointPresenter = new PointPresenter(this._eventListItem, this._handleViewAction, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._eventListItem, this._handleViewAction, this._handleModeChange, this._offers, this._destinations);
     pointPresenter.init(event);
     this._pointPresenter[event.id] = pointPresenter;
   }
@@ -174,12 +187,13 @@ export default class Route {
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.destroy());
     this._pointPresenter = {};
-    //todo
-    // this._pointNewPresenter.destroy();
+    this._pointNewPresenter.destroy();
 
-    remove(this._sort);
+    if (this._sort) {
+      remove(this._sort);
+    }
+
     remove(this._noEvent);
-
     if (resetSortType) {
       this._currentSortType = SortType.DAY;
     }
