@@ -1,11 +1,14 @@
 import MenuView from './view/menu.js';
-import FilterView from './view/trip-filter.js';
 import TripInfoView from './view/trip-info.js';
 import {generateEvent} from './mock/event-data.js';
-import {render, RenderPosition} from './utils/render.js';
+import {render} from './utils/render.js';
 import dayjs from 'dayjs';
 import RoutePresenter from './presenter/route.js';
-
+import EventsModel from './model/events.js';
+import {RenderPosition} from './const.js';
+import FilterModel from './model/filter.js';
+import FilterPresenter from './presenter/filters.js';
+import NewEventButtonView from './view/new-button.js';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
@@ -13,9 +16,9 @@ const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation
 const tripFilterContainer = headerMain.querySelector('.trip-controls__filters');
 const pageContainer = pageMain.querySelector('.trip-events');
 
-const EVENTS_COUNT = 15;
+const newEventButton = new NewEventButtonView();
 
-const routePresenter = new RoutePresenter(pageContainer);
+const EVENTS_COUNT = 15;
 
 const events = new Array(EVENTS_COUNT)
   .fill()
@@ -28,6 +31,21 @@ if (events.length) {
 }
 
 render(headerMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
-render(tripFilterContainer, new FilterView(), RenderPosition.AFTERBEGIN);
+render(headerMain, newEventButton, RenderPosition.BEFOREEND);
 
-routePresenter.init(events);
+
+const eventsModel = new EventsModel();
+eventsModel.setEvents(events);
+
+const filterModel = new FilterModel();
+
+const routePresenter = new RoutePresenter(pageContainer, eventsModel, filterModel);
+const filterPresenter = new FilterPresenter(tripFilterContainer, filterModel, eventsModel);
+
+newEventButton.setNewEventClickHandler(() => {
+  routePresenter.createEvent();
+  routePresenter.handleNewEventFormOpen();
+});
+
+filterPresenter.init();
+routePresenter.init();

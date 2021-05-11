@@ -2,56 +2,102 @@ import EventListItemView from '../view/event-item-container.js';
 import EventListView from '../view/event-list-container.js';
 import NoEventView from '../view/no-event.js';
 import PointPresenter from '../presenter/point.js';
+import PointNewPresenter from './point-new.js';
 import SortView from '../view/trip-sort.js';
-import {render, RenderPosition, updateItem} from '../utils/render.js';
+import {remove, render} from '../utils/render.js';
+import {RenderPosition, SortType, UpdateType, UserAction, FilterType} from '../const.js';
 import dayjs from 'dayjs';
-
-const SortType = {
-  DAY: 'day',
-  TIME: 'time',
-  PRICE: 'price',
-};
+import {filter} from '../utils/filter.js';
 
 export default class Route {
-  constructor(eventsContainer) {
+  constructor(eventsContainer, eventsModel, filtersModel) {
+    this._eventsModel = eventsModel;
+    this._filtersModel = filtersModel;
+
     this._eventsContainer = eventsContainer;
+
     this._noEvent = new NoEventView();
     this._eventList = new EventListView();
     this._eventListItem = new EventListItemView();
-    this._pointPresenter = {};
-    this._sort = new SortView();
 
-    this._handleEventChange = this._handleEventChange.bind(this);
+    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction);
+
+    this._pointPresenter = {};
+
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
+    this.handleNewEventFormOpen = this.handleNewEventFormOpen.bind(this);
+
     this._currentSortType = SortType.DAY;
+
+    this._eventsModel.addObserver(this._handleModelEvent);
+    this._filtersModel.addObserver(this._handleModelEvent);
   }
 
-  init(events) {
-    this._events = events.slice();
+  init() {
     this._renderBoard();
   }
 
-  _handleEventChange(updatedEvent) {
-    this._events = updateItem(this._events, updatedEvent);
-    this._pointPresenter[updatedEvent.id].init(updatedEvent);
-  }
+  _getEvents() {
+    const filtersType = this._filtersModel.getFilter();
+    const events = this._eventsModel.getEvents();
+    const filteredEvents = filter[filtersType](events);
 
-  _sortEvents(sortType) {
-    switch (sortType) {
+    switch (this._currentSortType) {
       case SortType.TIME:
-        this._events.sort((a, b) => dayjs(a.date_to - a.date_from) - (b.date_to - b.date_from));
-        break;
+        return filteredEvents.sort((a, b) => dayjs(a.date_to - a.date_from) - (b.date_to - b.date_from));
       case SortType.PRICE:
-        this._events.sort((a, b) => (a.base_price) - (b.base_price));
-        break;
-      default:
-        this._events.sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
+        return filteredEvents.sort((a, b) => (a.base_price) - (b.base_price));
+      case SortType.DAY:
+        return filteredEvents.sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
     }
 
-    this._currentSortType = sortType;
-    this._clearEvents();
-    this._renderEvents(this._events);
+    return filteredEvents;
+  }
+
+  createEvent() {
+    this._currentSortType = SortType.DAY;
+    this._filtersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    this._eventListItem = new EventListItemView();
+    this._renderEventContainer();
+
+    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction);
+    this._pointNewPresenter.init();
+  }
+
+  //HANDLERS//
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this._eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_EVENT:
+        this._eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_EVENT:
+        this._eventsModel.deleteEvent(updateType, update);
+        break;
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        // - обновить часть списка (например, когда поменялось описание)
+        this._pointPresenter[data.id].init(data);
+        break;
+      case UpdateType.MINOR:
+        this._clearBoard();
+        this._renderBoard();
+        break;
+      case UpdateType.MAJOR:
+        this._clearBoard({resetSortType: true});
+        this._renderBoard();
+        break;
+    }
   }
 
   _handleSortTypeChange(sortType) {
@@ -59,7 +105,9 @@ export default class Route {
       return;
     }
 
-    this._sortEvents(sortType);
+    this._currentSortType = sortType;
+    this._clearBoard();
+    this._renderBoard();
   }
 
   _handleModeChange() {
@@ -68,17 +116,24 @@ export default class Route {
       .forEach((presenter) => presenter.resetView());
   }
 
+  handleNewEventFormOpen() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
+  //RENDERS//
   _renderEventsList() {
     render(this._eventsContainer, this._eventList, RenderPosition.BEFOREEND);
   }
 
   _renderEventContainer() {
-    render(this._eventList, this._eventListItem, RenderPosition.BEFOREEND);
+    render(this._eventList, this._eventListItem, RenderPosition.AFTERBEGIN);
   }
 
   _renderEvent(event) {
     this._renderEventContainer();
-    const pointPresenter = new PointPresenter(this._eventListItem, this._handleEventChange, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._eventListItem, this._handleViewAction, this._handleModeChange);
     pointPresenter.init(event);
     this._pointPresenter[event.id] = pointPresenter;
   }
@@ -91,32 +146,42 @@ export default class Route {
       });
   }
 
-  _clearEvents() {
-    Object
-      .values(this._pointPresenter)
-      .forEach((presenter) => presenter.destroy());
-    this._taskPresenter = {};
-  }
-
   _renderNoEvent() {
     render(this._eventsContainer, this._noEvent, RenderPosition.AFTERBEGIN);
   }
 
   _renderSort() {
+    this._sort = new SortView(this._currentSortType);
     render(this._eventsContainer, this._sort, RenderPosition.AFTERBEGIN);
     this._sort.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderBoard() {
-    if (!this._events.length) {
+    if (!this._getEvents().length) {
       this._renderNoEvent();
     }
 
-    if (this._events.length) {
+    if (this._getEvents().length) {
       this._renderEventsList();
       this._renderSort();
     }
 
-    this._renderEvents(this._events);
+    this._renderEvents(this._getEvents());
+  }
+
+  _clearBoard(resetSortType = false) {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._pointPresenter = {};
+    //todo
+    // this._pointNewPresenter.destroy();
+
+    remove(this._sort);
+    remove(this._noEvent);
+
+    if (resetSortType) {
+      this._currentSortType = SortType.DAY;
+    }
   }
 }

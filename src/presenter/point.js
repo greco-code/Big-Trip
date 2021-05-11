@@ -1,11 +1,7 @@
-import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {render, replace, remove} from '../utils/render.js';
 import EventView from '../view/event.js';
 import EventFormView from '../view/event-form.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import {Mode, RenderPosition, UpdateType, UserAction} from '../const.js';
 
 export default class Point {
   constructor(eventContainer, changeData, changeMode) {
@@ -17,10 +13,10 @@ export default class Point {
     this._eventFormComponent = null;
     this._mode = Mode.DEFAULT;
 
-
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleEventClick = this._handleEventClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
@@ -38,6 +34,7 @@ export default class Point {
     this._eventComponent.setFavouriteClickHandler(this._handleFavoriteClick);
     this._eventFormComponent.setEventClickHandler(this._handleEventClick);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._eventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
 
 
     if (prevEventComponent === null || prevEventFormComponent === null) {
@@ -88,13 +85,29 @@ export default class Point {
     document.removeEventListener('keydown', this._onEscKeyDown);
   }
 
-  _handleFormSubmit() {
+  _handleFormSubmit(event) {
+    this._changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
+
     this._replaceFormToEvent();
     document.removeEventListener('keydown', this._onEscKeyDown);
   }
 
+  _handleDeleteClick(event) {
+    this._changeData(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
+  }
+
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._event,
