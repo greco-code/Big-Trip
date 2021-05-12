@@ -28,7 +28,7 @@ export default class Point {
     const prevEventFormComponent = this._eventFormComponent;
 
     this._eventComponent = new EventView(this._event);
-    this._eventFormComponent = new EventFormView(this._event);
+    this._eventFormComponent = new EventFormView(this._mode, this._event);
 
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventComponent.setFavouriteClickHandler(this._handleFavoriteClick);

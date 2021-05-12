@@ -118,7 +118,8 @@ export default class Route {
   }
 
   _handleModeChange() {
-    this._pointNewPresenter.destroy();
+    // todo СЕЙЧАС НЕ ЗАКРЫВАЕТСЯ ФОРМА СОЗДАНИЯ ПРИ ОТКРЫТИИ ФОРМЫ РЕДАКТИРОВАНИЯ
+    // this._pointNewPresenter.destroy();
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.resetView());

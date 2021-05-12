@@ -109,7 +109,7 @@ const generateDataList = () => {
 };
 
 
-const createPointForm = (event) => {
+const createPointForm = (event, mode) => {
   const {
     base_price,
     date_from,
@@ -119,6 +119,8 @@ const createPointForm = (event) => {
     offers,
     id,
   } = event;
+
+  const isAddMode = mode === Mode.ADDING ? 'true' : false;
 
   const timeStart = humanizeToFullDate(date_from);
   const timeFinish = humanizeToFullDate(date_to);
@@ -179,7 +181,7 @@ const createPointForm = (event) => {
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-              <button class="event__reset-btn" type="reset">Delete</button>
+              <button class="event__reset-btn" type="reset">${isAddMode ? 'Cancel' : 'Delete'}</button>
               <button class="event__rollup-btn" type="button">
                 <span class="visually-hidden">Open event</span>
               </button>
@@ -192,8 +194,9 @@ const createPointForm = (event) => {
 };
 
 export default class EventForm extends Smart {
-  constructor(event = BLANK_EVENT) {
+  constructor(mode, event = BLANK_EVENT) {
     super();
+    this._mode = mode;
     this._data = EventForm.parseEventToData(event);
     this._startDatepicker = null;
     this._finishDatepicker = null;
@@ -213,7 +216,7 @@ export default class EventForm extends Smart {
   }
 
   getTemplate() {
-    return createPointForm(this._data);
+    return createPointForm(this._data, this._mode);
   }
 
   setEventClickHandler(callback) {
