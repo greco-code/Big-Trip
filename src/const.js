@@ -1,6 +1,7 @@
 export const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
+  ADDING: 'ADDING',
 };
 
 export const SortType = {

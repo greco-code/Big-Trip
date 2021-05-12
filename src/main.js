@@ -49,3 +49,11 @@ newEventButton.setNewEventClickHandler(() => {
 
 filterPresenter.init();
 routePresenter.init();
+
+/* todo
+* 1. Создаются заново точки при клике на сортировку
+* 2. Заменить delete на cancel
+* 3. Хедер не работает
+* 4. Заменить blank-task
+* 5. Не сохраняются чекнутые офферы
+* */

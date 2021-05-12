@@ -7,19 +7,19 @@ import {destinations} from '../mock/destinations-data.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
-import {nanoid} from 'nanoid';
 import he from 'he';
+import {Mode} from '../const.js';
 
 const BLANK_EVENT = {
   base_price: '',
-  date_from: dayjs(),
-  date_to: dayjs(),
+  date_from: new Date(),
+  date_to: new Date(),
   destination: {
     description: '',
     name: '',
     pictures: [],
   },
-  id: nanoid(),
+  id: '',
   is_favorite: false,
   offers: offers[0].offers,
   type: offers[0].type,
@@ -175,7 +175,7 @@ const createPointForm = (event) => {
                   <span class="visually-hidden">Price</span>
                   &euro;
                 </label>
-                <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${base_price}" required>
+                <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${base_price}" required>
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
