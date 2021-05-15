@@ -1,7 +1,6 @@
 import {humanizeToFullDate} from '../utils/time.js';
 import Smart from './smart.js';
-import {TYPES} from '../mock/offers-data.js';
-import {offers} from '../mock/offers-data.js';
+import {offers, TYPES} from '../mock/offers-data.js';
 import {destinations} from '../mock/destinations-data.js';
 
 import flatpickr from 'flatpickr';
@@ -9,6 +8,7 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
 import he from 'he';
 import {Mode} from '../const.js';
+import {isEmpty, replaceSpace} from '../utils/random.js';
 
 const BLANK_EVENT = {
   base_price: '',
@@ -26,18 +26,24 @@ const BLANK_EVENT = {
 };
 
 // Возвращает список услуг
-const generateOffers = (offers, id) => {
+const generateOffers = (offers, id, selectedOffers) => {
   let offerMarkup = '';
 
   offers.forEach((offer) => {
+    const isOfferChecked = selectedOffers.includes(offer);
+    const offerTitle = replaceSpace(offer.title);
     offerMarkup +=
       `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${id}" type="checkbox" name="event-offer-${offer.title}">
-            <label class="event__offer-label" for="event-offer-${offer.title}-${id}">
-              <span class="event__offer-title">${offer.title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer.price}</span>
-            </label>
+          <input class="event__offer-checkbox  visually-hidden"
+            id="event-offer-${offerTitle}-${id}"
+            type="checkbox"
+            data-title=${offerTitle}
+            name="event-offer-${offerTitle}" ${isOfferChecked ? 'checked' : ''}>
+          <label class="event__offer-label" for="event-offer-${offerTitle}-${id}">
+            <span class="event__offer-title">${offerTitle}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </label>
        </div>`;
   });
 
@@ -45,12 +51,12 @@ const generateOffers = (offers, id) => {
 };
 
 // Возвращает список услуг В КОНТЕЙНЕРЕ
-const generateOffersContainer = (offers, offersNumber, id) => {
+const generateOffersContainer = (offers, offersNumber, id, selectedOffers) => {
   return offersNumber
     ? `<section class="event__section  event__section--offers">
          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
          <div class="event__available-offers">
-            ${generateOffers(offers, id)}
+            ${generateOffers(offers, id, selectedOffers)}
          </div>
        </section>`
     : '';
@@ -109,7 +115,8 @@ const generateDataList = () => {
 };
 
 
-const createPointForm = (event, mode) => {
+const createPointForm = (event, mode, availableOffers) => {
+
   const {
     base_price,
     date_from,
@@ -120,15 +127,39 @@ const createPointForm = (event, mode) => {
     id,
   } = event;
 
+
   const isAddMode = mode === Mode.ADDING ? 'true' : false;
+  // const isObjectEmpty = isEmpty(event);
+  //
+  // const timeStart = isObjectEmpty ? new Date() : humanizeToFullDate(date_from);
+  // const timeFinish = isObjectEmpty ? new Date() : humanizeToFullDate(date_to);
+  // const photosNumber = isObjectEmpty ? '' : destination.pictures.length;
+  // const destinationName = isObjectEmpty ? '' : destination.name;
+  // const basePrice = isObjectEmpty ? '' : base_price;
+  // const offersNumber = availableOffers.length;
+  // const eventType = isObjectEmpty ? availableOffers[0].type : type;
+  // const dataList = generateDataList();
+  //
+  // const targetOffer = availableOffers.find((offer) => offer.type === eventType);
+  // const foundOffers = targetOffer && targetOffer.offers;
+  // const selectedOffers = isObjectEmpty ? availableOffers[0].offers : offers;
+  //
+  // const offersList = generateOffersContainer(foundOffers, offersNumber, id, selectedOffers);
+  // const description = isObjectEmpty ? '' : generateOfferDescription(destination, photosNumber, id);
+  // const typeSelectList = generateTypesSelect(id);
+
 
   const timeStart = humanizeToFullDate(date_from);
   const timeFinish = humanizeToFullDate(date_to);
   const photosNumber = destination.pictures.length;
-  const offersNumber = offers.length;
+  const offersNumber = availableOffers.length;
   const dataList = generateDataList();
 
-  const offersList = generateOffersContainer(offers, offersNumber, id);
+  const targetOffer = availableOffers.find((offer) => offer.type === type);
+  const foundOffers = targetOffer && targetOffer.offers;
+  const selectedOffers = offers;
+
+  const offersList = generateOffersContainer(foundOffers, offersNumber, id, selectedOffers);
   const description = generateOfferDescription(destination, photosNumber, id);
   const typeSelectList = generateTypesSelect(id);
 
@@ -198,8 +229,11 @@ export default class EventForm extends Smart {
     super();
     this._mode = mode;
     this._data = EventForm.parseEventToData(event);
+
     this._startDatepicker = null;
     this._finishDatepicker = null;
+
+    this._availableOffers = offers;
 
     this._eventClickHandler = this._eventClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -209,6 +243,7 @@ export default class EventForm extends Smart {
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._finishDateChangeHandler = this._finishDateChangeHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
     this._setStartDatepicker();
@@ -216,7 +251,7 @@ export default class EventForm extends Smart {
   }
 
   getTemplate() {
-    return createPointForm(this._data, this._mode);
+    return createPointForm(this._data, this._mode, this._availableOffers);
   }
 
   setEventClickHandler(callback) {
@@ -316,6 +351,31 @@ export default class EventForm extends Smart {
     );
   }
 
+  _offersChangeHandler(evt) {
+    const checkedOfferMarkup = evt.target.closest('div').querySelector('.event__offer-checkbox');
+    let checkedOffers = this._data.offers;
+    const currentType = evt.target.closest('.event--edit').querySelector('.event__type-output').textContent.trim();
+    const offers = this._availableOffers;
+    const availableOffers = (offers.find((offer) => offer.type === currentType)).offers;
+    const checkedOffer = availableOffers.find((offer) => replaceSpace(offer.title) === checkedOfferMarkup.dataset.title);
+
+    if (!checkedOfferMarkup.checked) {
+      checkedOffers.push(checkedOffer);
+    }
+
+    if (checkedOfferMarkup.checked) {
+      const offerToRemove = checkedOffers.find((offer) => offer === checkedOffer);
+
+      checkedOffers = checkedOffers.filter((offer) => offer !== offerToRemove);
+    }
+
+    this.updateData(
+      {
+        offers: checkedOffers,
+      },
+    );
+  }
+
   //DATE//
 
   _startDateChangeHandler([date_from]) {
@@ -386,6 +446,11 @@ export default class EventForm extends Smart {
     const priceInputs = this.getElement().querySelectorAll('.event__input--price');
     priceInputs.forEach((item) => {
       item.addEventListener('input', this._priceInputHandler);
+    });
+
+    const offerCheckboxes = this.getElement().querySelectorAll('.event__offer-label');
+    offerCheckboxes.forEach((item) => {
+      item.addEventListener('click', this._offersChangeHandler);
     });
   }
 

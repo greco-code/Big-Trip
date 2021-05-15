@@ -4,9 +4,10 @@ import {Mode, RenderPosition, UpdateType, UserAction} from '../const.js';
 import {nanoid} from 'nanoid';
 
 export default class PointNew {
-  constructor(eventContainer, changeData) {
+  constructor(eventContainer, changeData, event) {
     this._eventContainer = eventContainer;
     this._changeData = changeData;
+    this._event = event;
 
     this._eventFormComponent = null;
 
@@ -21,7 +22,7 @@ export default class PointNew {
   }
 
   init() {
-    this._eventFormComponent = new EventFormView(this._mode);
+    this._eventFormComponent = new EventFormView(this._mode, this._event);
 
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
