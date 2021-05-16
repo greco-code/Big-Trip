@@ -8,7 +8,7 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
 import he from 'he';
 import {Mode} from '../const.js';
-import {isEmpty, replaceSpace} from '../utils/random.js';
+import {replaceSpace} from '../utils/random.js';
 
 const BLANK_EVENT = {
   base_price: '',
@@ -21,7 +21,7 @@ const BLANK_EVENT = {
   },
   id: '',
   is_favorite: false,
-  offers: offers[0].offers,
+  offers: [],
   type: offers[0].type,
 };
 
@@ -129,25 +129,6 @@ const createPointForm = (event, mode, availableOffers) => {
 
 
   const isAddMode = mode === Mode.ADDING ? 'true' : false;
-  // const isObjectEmpty = isEmpty(event);
-  //
-  // const timeStart = isObjectEmpty ? new Date() : humanizeToFullDate(date_from);
-  // const timeFinish = isObjectEmpty ? new Date() : humanizeToFullDate(date_to);
-  // const photosNumber = isObjectEmpty ? '' : destination.pictures.length;
-  // const destinationName = isObjectEmpty ? '' : destination.name;
-  // const basePrice = isObjectEmpty ? '' : base_price;
-  // const offersNumber = availableOffers.length;
-  // const eventType = isObjectEmpty ? availableOffers[0].type : type;
-  // const dataList = generateDataList();
-  //
-  // const targetOffer = availableOffers.find((offer) => offer.type === eventType);
-  // const foundOffers = targetOffer && targetOffer.offers;
-  // const selectedOffers = isObjectEmpty ? availableOffers[0].offers : offers;
-  //
-  // const offersList = generateOffersContainer(foundOffers, offersNumber, id, selectedOffers);
-  // const description = isObjectEmpty ? '' : generateOfferDescription(destination, photosNumber, id);
-  // const typeSelectList = generateTypesSelect(id);
-
 
   const timeStart = humanizeToFullDate(date_from);
   const timeFinish = humanizeToFullDate(date_to);
