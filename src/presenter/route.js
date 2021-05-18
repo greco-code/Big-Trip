@@ -10,7 +10,10 @@ import dayjs from 'dayjs';
 import {filter} from '../utils/filter.js';
 
 export default class Route {
-  constructor(eventsContainer, eventsModel, filtersModel) {
+  constructor(eventsContainer, eventsModel, filtersModel, offers, destinations) {
+    this._offers = offers;
+    this._destinations = destinations;
+
     this._eventsModel = eventsModel;
     this._filtersModel = filtersModel;
 
@@ -19,7 +22,7 @@ export default class Route {
     this._noEvent = new NoEventView();
     this._eventListItem = new EventListItemView();
 
-    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction);
+    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction, this._offers, this._destinations);
 
     this._pointPresenter = {};
 
@@ -67,7 +70,7 @@ export default class Route {
     this._eventListItem = new EventListItemView();
     this._renderEventContainer();
 
-    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction);
+    this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction, this._offers, this._destinations);
     this._pointNewPresenter.init();
 
     if (this._noEvent) {
@@ -143,7 +146,7 @@ export default class Route {
 
   _renderEvent(event) {
     this._renderEventContainer();
-    const pointPresenter = new PointPresenter(this._eventListItem, this._handleViewAction, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._eventListItem, this._handleViewAction, this._handleModeChange, this._offers, this._destinations);
     pointPresenter.init(event);
     this._pointPresenter[event.id] = pointPresenter;
   }

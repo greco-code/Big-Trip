@@ -1,17 +1,18 @@
 import {render, remove} from '../utils/render.js';
 import EventFormView from '../view/event-form.js';
-import {Mode, RenderPosition, UpdateType, UserAction} from '../const.js';
+import {RenderPosition, UpdateType, UserAction} from '../const.js';
 import {nanoid} from 'nanoid';
 
 export default class PointNew {
-  constructor(eventContainer, changeData, event) {
+  constructor(eventContainer, changeData, offers, destinations) {
     this._eventContainer = eventContainer;
     this._changeData = changeData;
     this._event = event;
 
-    this._eventFormComponent = null;
+    this._offers = offers;
+    this._destinations = destinations;
 
-    this._mode = Mode.ADDING;
+    this._eventFormComponent = null;
 
     this._addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 
@@ -22,7 +23,7 @@ export default class PointNew {
   }
 
   init() {
-    this._eventFormComponent = new EventFormView(this._mode, this._event);
+    this._eventFormComponent = new EventFormView(this._event, this._offers, this._destinations);
 
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
