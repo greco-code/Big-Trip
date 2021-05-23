@@ -1,15 +1,24 @@
 import SmartView from './smart.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {formatDuration, getCostByType, getTimeSpend, getTypeAmount, makeItemsUniq} from '../utils/statistics.js';
+import {formatDuration, sortMapByValues} from '../utils/statistics.js';
 import {StatisticsSettings} from '../const.js';
 
-const BAR_HEIGHT = 55;
+const BAR_HEIGHT = 75;
 
 const renderMoneyChart = (moneyCtx, events) => {
-  const eventsTypes = events.map((event) => event.type);
-  const uniqTypes = makeItemsUniq(eventsTypes);
-  const uniqPrices = uniqTypes.map((type) => getCostByType(events, type));
+  const eventsByType = new Map();
+  events.forEach((event) => {
+    if (eventsByType.has(event.type)) {
+      let spendingsByType = eventsByType.get(event.type);
+      spendingsByType = spendingsByType + event.base_price;
+      eventsByType.set(event.type, spendingsByType);
+    } else {
+      eventsByType.set(event.type, event.base_price);
+    }
+  });
+
+  const sortedPrices = sortMapByValues(eventsByType);
 
   moneyCtx.height = BAR_HEIGHT * 5;
 
@@ -17,9 +26,9 @@ const renderMoneyChart = (moneyCtx, events) => {
     plugins: [ChartDataLabels],
     type: StatisticsSettings.TYPE,
     data: {
-      labels: uniqTypes,
+      labels: [...sortedPrices.keys()],
       datasets: [{
-        data: uniqPrices,
+        data: [...sortedPrices.values()],
         backgroundColor: StatisticsSettings.BACKGROUND_COLOR,
         hoverBackgroundColor: StatisticsSettings.HOVER_BACKGROUND_COLOR,
         anchor: StatisticsSettings.ANCHOR.START,
@@ -80,9 +89,18 @@ const renderMoneyChart = (moneyCtx, events) => {
 };
 
 const renderTypeChart = (typeCtx, events) => {
-  const eventsTypes = events.map((event) => event.type);
-  const uniqTypes = makeItemsUniq(eventsTypes);
-  const typesAmount = uniqTypes.map((type) => getTypeAmount(events, type));
+  const eventsByType = new Map();
+  events.forEach((event) => {
+    if (eventsByType.has(event.type)) {
+      let countByType = eventsByType.get(event.type);
+      countByType = countByType + 1;
+      eventsByType.set(event.type, countByType);
+    } else {
+      eventsByType.set(event.type, 1);
+    }
+  });
+
+  const sortedTypes = sortMapByValues(eventsByType);
 
 
   typeCtx.height = BAR_HEIGHT * 5;
@@ -91,9 +109,9 @@ const renderTypeChart = (typeCtx, events) => {
     plugins: [ChartDataLabels],
     type: StatisticsSettings.TYPE,
     data: {
-      labels: uniqTypes,
+      labels: [...sortedTypes.keys()],
       datasets: [{
-        data: typesAmount,
+        data: [...sortedTypes.values()],
         backgroundColor: StatisticsSettings.BACKGROUND_COLOR,
         hoverBackgroundColor: StatisticsSettings.HOVER_BACKGROUND_COLOR,
         anchor: StatisticsSettings.ANCHOR,
@@ -154,9 +172,18 @@ const renderTypeChart = (typeCtx, events) => {
 };
 
 const renderTmeChart = (timeCtx, events) => {
-  const eventsTypes = events.map((event) => event.type);
-  const uniqTypes = makeItemsUniq(eventsTypes);
-  const timeSpend = uniqTypes.map((type) => getTimeSpend(events, type));
+  const eventsByType = new Map();
+  events.forEach((event) => {
+    if (eventsByType.has(event.type)) {
+      let duration = eventsByType.get(event.type);
+      duration = duration + (event.date_to - event.date_from);
+      eventsByType.set(event.type, duration);
+    } else {
+      eventsByType.set(event.type, (event.date_to - event.date_from));
+    }
+  });
+
+  const sortedTime = sortMapByValues(eventsByType);
 
   timeCtx.height = BAR_HEIGHT * 5;
 
@@ -164,9 +191,9 @@ const renderTmeChart = (timeCtx, events) => {
     plugins: [ChartDataLabels],
     type: StatisticsSettings.TYPE,
     data: {
-      labels: uniqTypes,
+      labels: [...sortedTime.keys()],
       datasets: [{
-        data: timeSpend,
+        data: [...sortedTime.values()],
         backgroundColor: StatisticsSettings.BACKGROUND_COLOR,
         hoverBackgroundColor: StatisticsSettings.HOVER_BACKGROUND_COLOR,
         anchor: StatisticsSettings.ANCHOR,

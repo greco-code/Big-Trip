@@ -3,24 +3,6 @@ const MINUTES = 60;
 const HOURS = 60;
 const DAYS = 24;
 
-export const makeItemsUniq = (items) => [...new Set(items)];
-
-export const getCostByType = (events, type) => {
-  const eventsByType = events.filter((tripEvent) => tripEvent.type === type);
-  return eventsByType.reduce((sum, item) => sum + item.base_price, 0);
-};
-
-export const getTypeAmount = (events, type) => {
-  return events.filter((event) => event.type === type).length;
-};
-
-export const getTimeSpend = (events, type) => {
-  const allTripEventsTypes = events.filter((tripEvent) => tripEvent.type === type);
-  return allTripEventsTypes.reduce((totalDuration, tripEvent) => {
-    return totalDuration + (tripEvent.date_to - tripEvent.date_from);
-  }, 0);
-};
-
 export const formatDuration = (diffTime) => {
   let diffHours = Math.floor(diffTime / (MILLISECONDS * MINUTES * HOURS)); //hours
   let diffMinutes = Math.ceil(diffTime / (MILLISECONDS * MINUTES)); //minutes
@@ -43,4 +25,11 @@ export const formatDuration = (diffTime) => {
   }
 
   return (`${diffHours}H ${diffMinutes}M`);
+};
+
+export const sortMapByValues = (mapToSort) => {
+  return new Map([...mapToSort.entries()]
+    .sort((firstEntry, secondEntry) => {
+      return secondEntry[1] - firstEntry[1];
+    }));
 };
