@@ -40,6 +40,9 @@ export default class Route {
 
   init() {
     this._renderBoard();
+
+    this._eventsModel.addObserver(this._handleModelEvent);
+    this._filtersModel.addObserver(this._handleModelEvent);
   }
 
   _getEvents() {
@@ -76,6 +79,13 @@ export default class Route {
     if (this._noEvent) {
       remove(this._noEvent);
     }
+  }
+
+  destroy() {
+    this._clearBoard({resetSortType: true});
+
+    this._eventsModel.removeObserver(this._handleModelEvent);
+    this._filtersModel.removeObserver(this._handleModelEvent);
   }
 
   //HANDLERS//
