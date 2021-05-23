@@ -12,6 +12,10 @@ import NewEventButtonView from './view/new-button.js';
 import {offers} from './mock/offers-data.js';
 import {destinations} from './mock/destinations-data.js';
 import StatisticsView from './view/statistics.js';
+import Api from './api.js';
+
+const AUTHORIZATION = 'Basic cjr1J69xYe0lMur';
+const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const headerMain = document.querySelector('.trip-main');
 const pageMain = document.querySelector('.page-main');
@@ -30,6 +34,11 @@ const events = new Array(EVENTS_COUNT)
   .fill()
   .map(generateEvent)
   .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
+
+const api = new Api(END_POINT, AUTHORIZATION);
+
+api.getTasks().then((events) => {
+});
 
 if (events.length) {
   render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
