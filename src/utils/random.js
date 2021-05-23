@@ -34,6 +34,8 @@ export const generateRandomIntArray = (amount) => {
 };
 
 // Рандомно добавляет элементы в массив
-export const randomizeArray = (arr) => {
-  return arr.filter(() => Math.random() > 0.5);
-};
+export const randomizeArray = (arr) => arr.filter(() => Math.random() > 0.5);
+
+export const replaceSpace = (str) => str.replace(/\s+/g, '_');
+
+export const isEmpty = (obj) => [Object, Array].includes((obj || {}).constructor) && !Object.entries((obj || {})).length;

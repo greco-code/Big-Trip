@@ -4,13 +4,16 @@ import Abstract from './abstract.js';
 const generateOffers = (offers) => {
   let offersMarkup = '';
 
-  offers.forEach(({price, title}) => {
-    offersMarkup += `<li class="event__offer">
+  if (offers) {
+    offers.forEach(({price, title}) => {
+      offersMarkup += `<li class="event__offer">
          <span class="event__offer-title">${title}</span>
            &plus;&euro;&nbsp;
          <span class="event__offer-price">${price}</span>
          </li>`;
-  });
+    });
+  }
+
   return offersMarkup;
 };
 

@@ -16,6 +16,10 @@ export const humanizeToFullDate = (dueDate) => {
   return dayjs(dueDate).format('DD/MM/YY HH:mm');
 };
 
+export const humanizeToDuration = (dueDate) => {
+  return dayjs(dueDate).format('DD HH MM');
+};
+
 export const getDuration = (dateFrom, dateTo) => {
   const diffTime = Math.abs(dateTo - dateFrom); //ms
   const diffHours = Math.floor(diffTime / (MILLISECONDS * MINUTES * HOURS)); //hours

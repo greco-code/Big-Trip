@@ -4,7 +4,7 @@ import EventFormView from '../view/event-form.js';
 import {Mode, RenderPosition, UpdateType, UserAction} from '../const.js';
 
 export default class Point {
-  constructor(eventContainer, changeData, changeMode) {
+  constructor(eventContainer, changeData, changeMode, offers, destinations) {
     this._eventContainer = eventContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
@@ -12,6 +12,9 @@ export default class Point {
     this._eventComponent = null;
     this._eventFormComponent = null;
     this._mode = Mode.DEFAULT;
+
+    this._offers = offers;
+    this._destinations = destinations;
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleEventClick = this._handleEventClick.bind(this);
@@ -28,7 +31,7 @@ export default class Point {
     const prevEventFormComponent = this._eventFormComponent;
 
     this._eventComponent = new EventView(this._event);
-    this._eventFormComponent = new EventFormView(this._event);
+    this._eventFormComponent = new EventFormView(this._event, this._offers, this._destinations);
 
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventComponent.setFavouriteClickHandler(this._handleFavoriteClick);
