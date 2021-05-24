@@ -11,7 +11,7 @@ import {filter} from '../utils/filter.js';
 import LoadingView from '../view/loading.js';
 
 export default class Route {
-  constructor(eventsContainer, eventsModel, filtersModel, dataModel) {
+  constructor(eventsContainer, eventsModel, filtersModel, dataModel, api) {
     this._eventsModel = eventsModel;
     this._filtersModel = filtersModel;
     this._dataModel = dataModel;
@@ -20,12 +20,13 @@ export default class Route {
 
     this._noEvent = new NoEventView();
     this._eventListItem = new EventListItemView();
+    this._loaderComponent = new LoadingView();
 
     this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction, this._offers, this._destinations);
     this._pointPresenter = {};
 
     this._isLoading = true;
-    this._loaderComponent = new LoadingView();
+    this._api = api;
 
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
@@ -91,7 +92,9 @@ export default class Route {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventsModel.updateEvent(updateType, update);
+        this._api.updateEvent(update).then((response) => {
+          this._eventsModel.updateEvent(updateType, response);
+        });
         break;
       case UserAction.ADD_EVENT:
         this._eventsModel.addEvent(updateType, update);

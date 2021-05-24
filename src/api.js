@@ -34,7 +34,7 @@ export default class Api {
       .then((points) => points.map(EventsModel.adaptToClient));
   }
 
-  updateTask(point) {
+  updateEvent(point) {
     return this._load({
       url: `points/${point.id}`,
       method: Method.PUT,

@@ -32,9 +32,6 @@ const api = new Api(END_POINT, AUTHORIZATION);
 //   render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
 // }
 
-render(headerMenuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
-render(headerMain, newEventButton, RenderPosition.BEFOREEND);
-
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
@@ -59,7 +56,7 @@ const eventsModel = new EventsModel();
 const dataModel = new DataModel();
 const filterModel = new FilterModel();
 
-const routePresenter = new RoutePresenter(eventsContainer, eventsModel, filterModel, dataModel);
+const routePresenter = new RoutePresenter(eventsContainer, eventsModel, filterModel, dataModel, api);
 const filterPresenter = new FilterPresenter(tripFilterContainer, filterModel, eventsModel);
 
 newEventButton.setNewEventClickHandler(() => {
@@ -77,27 +74,12 @@ newEventButton.setNewEventClickHandler(() => {
 filterPresenter.init();
 routePresenter.init();
 
-// api.getEvents()
-//   .then((events) => {
-//     eventsModel.setEvents(UpdateType.INIT, events);
-//   })
-//   .catch(() => {
-//     eventsModel.setEvents(UpdateType.INIT, []);
-//   });
-//
-//
-// api.getDestinations()
-//   .then((destinations) => {
-//     dataModel.setDestinations(UpdateType.INIT, destinations);
-//   })
-//   .catch(() => {
-//     dataModel.setDestinations(UpdateType.INIT, []);
-//   });
-
 
 api.getOffers()
   .then((offers) => {
     dataModel.setOffers(UpdateType.INIT, offers);
+    render(headerMenuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
+    render(headerMain, newEventButton, RenderPosition.BEFOREEND);
   })
   .catch(() => {
     dataModel.setOffers(UpdateType.INIT, []);
