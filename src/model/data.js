@@ -1,9 +1,9 @@
 import Observer from '../utils/observer.js';
 
-export default class Data extends Observer{
+export default class Data extends Observer {
   constructor() {
     super();
-    this._offers = new Map();
+    this._offers = [];
     this._destinations = [];
   }
 
@@ -15,11 +15,16 @@ export default class Data extends Observer{
     return this._destinations;
   }
 
-  setOffers(offers) {
-    offers.forEach((offer) => this._offers.set(offer.type, offer.offers));
+  setOffers(updateType, offers) {
+    // offers.forEach((offer) => this._offers.set(offer.type, offer.offers));
+    this._offers = offers.slice();
+
+    this._notify(updateType);
   }
 
-  setDestinations(destinations) {
+  setDestinations(updateType, destinations) {
     this._destinations = destinations.slice();
+
+    this._notify(updateType);
   }
 }

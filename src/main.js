@@ -1,6 +1,5 @@
 import MenuView from './view/menu.js';
 import TripInfoView from './view/trip-info.js';
-import {generateEvent} from './mock/event-data.js';
 import {remove, render} from './utils/render.js';
 import dayjs from 'dayjs';
 import RoutePresenter from './presenter/route.js';
@@ -9,10 +8,9 @@ import {FilterType, MenuItem, RenderPosition, UpdateType} from './const.js';
 import FilterModel from './model/filter.js';
 import FilterPresenter from './presenter/filters.js';
 import NewEventButtonView from './view/new-button.js';
-import {offers} from './mock/offers-data.js';
-import {destinations} from './mock/destinations-data.js';
 import StatisticsView from './view/statistics.js';
 import Api from './api.js';
+import DataModel from './model/data.js';
 
 const AUTHORIZATION = 'Basic cjr1J69xYe0lMur';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
@@ -28,21 +26,11 @@ const newEventButton = new NewEventButtonView();
 const siteMenuComponent = new MenuView();
 let statisticsComponent = null;
 
-const EVENTS_COUNT = 15;
-
-const events = new Array(EVENTS_COUNT)
-  .fill()
-  .map(generateEvent)
-  .sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
-
 const api = new Api(END_POINT, AUTHORIZATION);
 
-api.getTasks().then((events) => {
-});
-
-if (events.length) {
-  render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
-}
+// if (events.length) {
+//   render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
+// }
 
 render(headerMenuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
 render(headerMain, newEventButton, RenderPosition.BEFOREEND);
@@ -68,11 +56,10 @@ siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
 
 const eventsModel = new EventsModel();
-eventsModel.setEvents(events);
-
+const dataModel = new DataModel();
 const filterModel = new FilterModel();
 
-const routePresenter = new RoutePresenter(eventsContainer, eventsModel, filterModel, offers, destinations);
+const routePresenter = new RoutePresenter(eventsContainer, eventsModel, filterModel, dataModel);
 const filterPresenter = new FilterPresenter(tripFilterContainer, filterModel, eventsModel);
 
 newEventButton.setNewEventClickHandler(() => {
@@ -89,4 +76,45 @@ newEventButton.setNewEventClickHandler(() => {
 
 filterPresenter.init();
 routePresenter.init();
+
+// api.getEvents()
+//   .then((events) => {
+//     eventsModel.setEvents(UpdateType.INIT, events);
+//   })
+//   .catch(() => {
+//     eventsModel.setEvents(UpdateType.INIT, []);
+//   });
+//
+//
+// api.getDestinations()
+//   .then((destinations) => {
+//     dataModel.setDestinations(UpdateType.INIT, destinations);
+//   })
+//   .catch(() => {
+//     dataModel.setDestinations(UpdateType.INIT, []);
+//   });
+
+
+api.getOffers()
+  .then((offers) => {
+    dataModel.setOffers(UpdateType.INIT, offers);
+  })
+  .catch(() => {
+    dataModel.setOffers(UpdateType.INIT, []);
+  })
+  .then(() => api.getEvents())
+  .then((events) => {
+    eventsModel.setEvents(UpdateType.INIT, events);
+  })
+  .catch(() => {
+    eventsModel.setEvents(UpdateType.INIT, []);
+  })
+  .then(() => api.getDestinations())
+  .then((destinations) => {
+    dataModel.setDestinations(UpdateType.INIT, destinations);
+  })
+  .catch(() => {
+    dataModel.setDestinations(UpdateType.INIT, []);
+  });
+
 

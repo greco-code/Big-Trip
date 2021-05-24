@@ -8,14 +8,13 @@ import {remove, render} from '../utils/render.js';
 import {RenderPosition, SortType, UpdateType, UserAction, FilterType} from '../const.js';
 import dayjs from 'dayjs';
 import {filter} from '../utils/filter.js';
+import LoadingView from '../view/loading.js';
 
 export default class Route {
-  constructor(eventsContainer, eventsModel, filtersModel, offers, destinations) {
-    this._offers = offers;
-    this._destinations = destinations;
-
+  constructor(eventsContainer, eventsModel, filtersModel, dataModel) {
     this._eventsModel = eventsModel;
     this._filtersModel = filtersModel;
+    this._dataModel = dataModel;
 
     this._eventsContainer = eventsContainer;
 
@@ -23,8 +22,10 @@ export default class Route {
     this._eventListItem = new EventListItemView();
 
     this._pointNewPresenter = new PointNewPresenter(this._eventListItem, this._handleViewAction, this._offers, this._destinations);
-
     this._pointPresenter = {};
+
+    this._isLoading = true;
+    this._loaderComponent = new LoadingView();
 
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
@@ -33,9 +34,6 @@ export default class Route {
     this.handleNewEventFormOpen = this.handleNewEventFormOpen.bind(this);
 
     this._currentSortType = SortType.DAY;
-
-    this._eventsModel.addObserver(this._handleModelEvent);
-    this._filtersModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -43,6 +41,7 @@ export default class Route {
 
     this._eventsModel.addObserver(this._handleModelEvent);
     this._filtersModel.addObserver(this._handleModelEvent);
+    this._dataModel.addObserver(this._handleModelEvent);
   }
 
   _getEvents() {
@@ -117,6 +116,12 @@ export default class Route {
         this._clearBoard({resetSortType: true});
         this._renderBoard();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loaderComponent);
+        this._clearBoard();
+        this._renderBoard();
+        break;
     }
   }
 
@@ -173,6 +178,10 @@ export default class Route {
     render(this._eventsContainer, this._noEvent, RenderPosition.AFTERBEGIN);
   }
 
+  _renderLoading() {
+    render(this._eventsContainer, this._loaderComponent, RenderPosition.BEFOREEND);
+  }
+
   _renderSort() {
     this._sort = new SortView(this._currentSortType);
     render(this._eventsContainer, this._sort, RenderPosition.AFTERBEGIN);
@@ -180,13 +189,22 @@ export default class Route {
   }
 
   _renderBoard() {
-    if (!this._getEvents().length) {
+    this._offers = this._dataModel.getOffers();
+    this._destinations = this._dataModel.getDestinations();
+
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
+    if (this._getEvents() === 0) {
       this._renderNoEvent();
     }
 
     if (this._getEvents().length) {
       this._renderEventsList();
       this._renderSort();
+      remove(this._noEvent);
     }
 
     this._renderEvents(this._getEvents());
@@ -204,6 +222,7 @@ export default class Route {
     }
 
     remove(this._noEvent);
+    remove(this._loaderComponent);
     if (resetSortType) {
       this._currentSortType = SortType.DAY;
     }

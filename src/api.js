@@ -16,8 +16,20 @@ export default class Api {
     this._authorization = authorization;
   }
 
-  getTasks() {
+  getEvents() {
     return this._load({url: 'points'})
+      .then(Api.toJSON)
+      .then((points) => points.map(EventsModel.adaptToClient));
+  }
+
+  getOffers() {
+    return this._load({url: 'offers'})
+      .then(Api.toJSON)
+      .then((points) => points.map(EventsModel.adaptToClient));
+  }
+
+  getDestinations() {
+    return this._load({url: 'destinations'})
       .then(Api.toJSON)
       .then((points) => points.map(EventsModel.adaptToClient));
   }
