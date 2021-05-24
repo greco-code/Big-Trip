@@ -10,9 +10,9 @@ import {replaceSpace} from '../utils/random.js';
 // Возвращает список услуг
 const generateOffers = (offers, id, selectedOffers) => {
   let offerMarkup = '';
-
   offers.forEach((offer) => {
-    const isOfferChecked = selectedOffers && selectedOffers.includes(offer);
+    const selectedOffersTitles = selectedOffers.map((offer) => offer.title);
+    const isOfferChecked = selectedOffersTitles.includes(offer.title);
     const offerTitle = replaceSpace(offer.title);
     offerMarkup +=
       `<div class="event__offer-selector">
