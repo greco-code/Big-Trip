@@ -97,10 +97,14 @@ export default class Route {
         });
         break;
       case UserAction.ADD_EVENT:
-        this._eventsModel.addEvent(updateType, update);
+        this._api.addEvent(update).then((response) => {
+          this._eventsModel.addEvent(updateType, response);
+        });
         break;
       case UserAction.DELETE_EVENT:
-        this._eventsModel.deleteEvent(updateType, update);
+        this._api.deleteEvent(update).then(() => {
+          this._eventsModel.deleteEvent(updateType, update);
+        });
         break;
     }
   }
@@ -200,7 +204,7 @@ export default class Route {
       return;
     }
 
-    if (this._getEvents() === 0) {
+    if (this._getEvents().length === 0) {
       this._renderNoEvent();
     }
 
