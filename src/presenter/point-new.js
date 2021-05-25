@@ -27,6 +27,8 @@ export default class PointNew {
         date_from: new Date(),
         date_to: new Date(),
         type: this._offers[0].type,
+        is_favorite: false,
+        offers: [],
       },
       this._offers,
       this._destinations,
@@ -77,7 +79,7 @@ export default class PointNew {
       remove(this._eventFormComponent);
     }
 
-    if( this._addNewEventButton) {
+    if (this._addNewEventButton) {
       this._addNewEventButton.disabled = false;
     }
   }
