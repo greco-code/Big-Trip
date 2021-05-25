@@ -6,8 +6,10 @@ export default class Events extends Observer {
     this._events = [];
   }
 
-  setEvents(events) {
+  setEvents(updateType, events) {
     this._events = events.slice();
+
+    this._notify(updateType);
   }
 
   getEvents() {
@@ -52,5 +54,27 @@ export default class Events extends Observer {
     ];
 
     this._notify(updateType);
+  }
+
+  static adaptToClient(event) {
+    return Object.assign(
+      {},
+      event,
+      {
+        date_from: event.date_from !== null ? new Date(event.date_from) : event.date_from,
+        date_to: event.date_to !== null ? new Date(event.date_to) : event.date_to,
+      },
+    );
+  }
+
+  static adaptToServer(event) {
+    return Object.assign(
+      {},
+      event,
+      {
+        date_from: event.date_from instanceof Date ? event.date_from.toISOString() : null,
+        date_to: event.date_to instanceof Date ? event.date_to.toISOString() : null,
+      },
+    );
   }
 }
