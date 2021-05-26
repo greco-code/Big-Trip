@@ -72,6 +72,13 @@ export default class PointNew {
     this.destroy();
   }
 
+  setSaving() {
+    this._eventFormComponent.updateData({
+      isSaving: true,
+      isDisabled: true,
+    });
+  }
+
   destroy() {
     remove(this._eventContainer);
 
