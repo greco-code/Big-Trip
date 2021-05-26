@@ -95,19 +95,28 @@ export default class Route {
         this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
         this._api.updateEvent(update).then((response) => {
           this._eventsModel.updateEvent(updateType, response);
-        });
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_EVENT:
-        this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
+        this._pointNewPresenter.setSaving();
         this._api.addEvent(update).then((response) => {
           this._eventsModel.addEvent(updateType, response);
-        });
+        })
+          .catch(() => {
+            this._pointNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_EVENT:
         this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
         this._api.deleteEvent(update).then(() => {
           this._eventsModel.deleteEvent(updateType, update);
-        });
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
     }
   }

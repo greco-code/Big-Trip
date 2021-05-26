@@ -6,6 +6,7 @@ import {Mode, RenderPosition, UpdateType, UserAction} from '../const.js';
 export const State = {
   SAVING: 'SAVING',
   DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
 };
 
 export default class Point {
@@ -127,6 +128,14 @@ export default class Point {
   }
 
   setViewState(state) {
+    const resetFormState = () => {
+      this._eventFormComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
     switch (state) {
       case State.SAVING:
         this._eventFormComponent.updateData({
@@ -139,6 +148,10 @@ export default class Point {
           isDeleting: true,
           isDisabled: true,
         });
+        break;
+      case State.ABORTING:
+        this._eventComponent.shake(resetFormState);
+        this._eventFormComponent.shake(resetFormState);
         break;
     }
   }
