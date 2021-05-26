@@ -1,7 +1,6 @@
 import MenuView from './view/menu.js';
-import TripInfoView from './view/trip-info.js';
+// import TripInfoView from './view/trip-info.js';
 import {remove, render} from './utils/render.js';
-import dayjs from 'dayjs';
 import RoutePresenter from './presenter/route.js';
 import EventsModel from './model/events.js';
 import {FilterType, MenuItem, RenderPosition, UpdateType} from './const.js';
