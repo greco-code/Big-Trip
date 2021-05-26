@@ -16,7 +16,6 @@ export default class Data extends Observer {
   }
 
   setOffers(updateType, offers) {
-    // offers.forEach((offer) => this._offers.set(offer.type, offer.offers));
     this._offers = offers.slice();
 
     this._notify(updateType);

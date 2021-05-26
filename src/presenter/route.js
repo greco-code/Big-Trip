@@ -1,7 +1,7 @@
 import EventListItemView from '../view/event-item-container.js';
 import EventListView from '../view/event-list-container.js';
 import NoEventView from '../view/no-event.js';
-import PointPresenter from '../presenter/point.js';
+import PointPresenter, {State as PointPresenterViewState} from '../presenter/point.js';
 import PointNewPresenter from './point-new.js';
 import SortView from '../view/trip-sort.js';
 import {remove, render} from '../utils/render.js';
@@ -92,15 +92,31 @@ export default class Route {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
         this._api.updateEvent(update).then((response) => {
           this._eventsModel.updateEvent(updateType, response);
-        });
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_EVENT:
-        this._eventsModel.addEvent(updateType, update);
+        this._pointNewPresenter.setSaving();
+        this._api.addEvent(update).then((response) => {
+          this._eventsModel.addEvent(updateType, response);
+        })
+          .catch(() => {
+            this._pointNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_EVENT:
-        this._eventsModel.deleteEvent(updateType, update);
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
+        this._api.deleteEvent(update).then(() => {
+          this._eventsModel.deleteEvent(updateType, update);
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
     }
   }
@@ -200,7 +216,7 @@ export default class Route {
       return;
     }
 
-    if (this._getEvents() === 0) {
+    if (this._getEvents().length === 0) {
       this._renderNoEvent();
     }
 

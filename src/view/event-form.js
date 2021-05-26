@@ -8,11 +8,11 @@ import he from 'he';
 import {replaceSpace} from '../utils/random.js';
 
 // Возвращает список услуг
-const generateOffers = (offers, id, selectedOffers) => {
+const generateOffers = (offers, id, selectedOffers, isDisabled) => {
   let offerMarkup = '';
   offers.forEach((offer) => {
-    const selectedOffersTitles = selectedOffers.map((offer) => offer.title);
-    const isOfferChecked = selectedOffersTitles.includes(offer.title);
+    const selectedOffersTitles = selectedOffers && selectedOffers.map((offer) => offer.title);
+    const isOfferChecked = selectedOffersTitles && selectedOffersTitles.includes(offer.title);
     const offerTitle = replaceSpace(offer.title);
     offerMarkup +=
       `<div class="event__offer-selector">
@@ -20,7 +20,8 @@ const generateOffers = (offers, id, selectedOffers) => {
             id="event-offer-${offerTitle}-${id}"
             type="checkbox"
             data-title=${offerTitle}
-            name="event-offer-${offerTitle}" ${isOfferChecked ? 'checked' : ''}>
+            name="event-offer-${offerTitle}" ${isOfferChecked ? 'checked' : ''}
+            ${isDisabled ? 'disabled' : ''}>
           <label class="event__offer-label" for="event-offer-${offerTitle}-${id}">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
@@ -33,12 +34,12 @@ const generateOffers = (offers, id, selectedOffers) => {
 };
 
 // Возвращает список услуг В КОНТЕЙНЕРЕ
-const generateOffersContainer = (id, offers, selectedOffers) => {
+const generateOffersContainer = (id, offers, selectedOffers, isDisabled) => {
   return offers && offers.length
     ? `<section class="event__section  event__section--offers">
          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
          <div class="event__available-offers">
-            ${generateOffers(offers, id, selectedOffers)}
+            ${generateOffers(offers, id, selectedOffers, isDisabled)}
          </div>
        </section>`
     : '';
@@ -81,10 +82,10 @@ const generateOfferDescription = (destination) => {
     : '';
 };
 
-const generateTypesSelect = (id, types) => {
+const generateTypesSelect = (id, types, isDisabled) => {
   return types.map((type) => {
     return `<div class="event__type-item">
-              <input id="event-type-${type.toLowerCase()}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
+              <input id="event-type-${type.toLowerCase()}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isDisabled ? 'disabled' : ''}>
               <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-${id}" data-type="${type}">${type}</label>
             </div>`;
   }).join(' ');
@@ -107,15 +108,18 @@ const createPointForm = (event, availableOffers, destinations) => {
   const id = event.id;
   const isNew = !event.id;
   const offersByType = availableOffers.find((offer) => offer.type === type).offers;
+  const isDeleting = event.isDeleting;
+  const isSaving = event.isSaving;
+  const isDisabled = event.isDisabled;
 
   const timeStart = humanizeToFullDate(dateFrom);
   const timeFinish = humanizeToFullDate(dateTo);
   const destinationsSelectMarkup = generateDestinationsSelectMarkup(destinations);
 
-  const offersMarkup = generateOffersContainer(id, offersByType, event.offers);
+  const offersMarkup = generateOffersContainer(id, offersByType, event.offers, isDisabled);
   const description = destination ? generateOfferDescription(destination, id) : '';
   const types = availableOffers.map((offer) => offer.type);
-  const typeSelectList = generateTypesSelect(id, types);
+  const typeSelectList = generateTypesSelect(id, types, isDisabled);
 
   return `<form class="event event--edit" action="#" method="post">
             <header class="event__header">
@@ -124,7 +128,7 @@ const createPointForm = (event, availableOffers, destinations) => {
                   <span class="visually-hidden">Choose event type</span>
                   <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
                 </label>
-                <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
+                <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
                 <div class="event__type-list">
                   <fieldset class="event__type-group">
@@ -143,7 +147,8 @@ const createPointForm = (event, availableOffers, destinations) => {
                  type="text"
                  name="event-destination"
                  value="${destination ? he.encode(destination.name) : ''}"
-                 list="destination-list-1" required>
+                 list="destination-list-1" required
+                 ${isDisabled ? 'disabled' : ''}>
                 <datalist id="destination-list-1">
                   ${destinationsSelectMarkup}
                 </datalist>
@@ -151,10 +156,10 @@ const createPointForm = (event, availableOffers, destinations) => {
 
               <div class="event__field-group  event__field-group--time">
                 <label class="visually-hidden" for="event-start-time-1">From</label>
-                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeStart}">
+                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeStart}" ${isDisabled ? 'disabled' : ''}>
                 &mdash;
                 <label class="visually-hidden" for="event-end-time-1">To</label>
-                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeFinish}">
+                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeFinish}" ${isDisabled ? 'disabled' : ''}>
               </div>
 
               <div class="event__field-group  event__field-group--price">
@@ -162,11 +167,13 @@ const createPointForm = (event, availableOffers, destinations) => {
                   <span class="visually-hidden">Price</span>
                   &euro;
                 </label>
-                <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${price}" required>
+                <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${price}" required ${isDisabled ? 'disabled' : ''}>
               </div>
 
-              <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-              <button class="event__reset-btn" type="reset">${isNew ? 'Cancel' : 'Delete'}</button>
+              <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+               ${isSaving ? 'Saving' : 'Save'}
+              </button>
+              <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isNew ? 'Cancel' : isDeleting ? 'Deleting' : 'Delete'}</button>
               <button class="event__rollup-btn" type="button">
                 <span class="visually-hidden">Open event</span>
               </button>
@@ -294,7 +301,7 @@ export default class EventForm extends Smart {
     evt.preventDefault();
     this.updateData(
       {
-        base_price: evt.target.value,
+        base_price: Number.parseInt(evt.target.value),
       }, true,
     );
   }
@@ -408,10 +415,20 @@ export default class EventForm extends Smart {
   }
 
   static parseEventToData(event) {
-
-    return Object.assign(
+    event = Object.assign(
       {},
       event,
+      {
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      },
     );
+
+    delete event.isDisabled;
+    delete event.isSaving;
+    delete event.isDeleting;
+
+    return event;
   }
 }

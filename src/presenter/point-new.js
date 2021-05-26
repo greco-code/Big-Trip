@@ -27,6 +27,8 @@ export default class PointNew {
         date_from: new Date(),
         date_to: new Date(),
         type: this._offers[0].type,
+        is_favorite: false,
+        offers: [],
       },
       this._offers,
       this._destinations,
@@ -70,6 +72,25 @@ export default class PointNew {
     this.destroy();
   }
 
+  setSaving() {
+    this._eventFormComponent.updateData({
+      isSaving: true,
+      isDisabled: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._eventFormComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._eventFormComponent.shake(resetFormState);
+  }
+
   destroy() {
     remove(this._eventContainer);
 
@@ -77,7 +98,7 @@ export default class PointNew {
       remove(this._eventFormComponent);
     }
 
-    if( this._addNewEventButton) {
+    if (this._addNewEventButton) {
       this._addNewEventButton.disabled = false;
     }
   }

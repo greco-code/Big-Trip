@@ -1,7 +1,6 @@
 import MenuView from './view/menu.js';
-import TripInfoView from './view/trip-info.js';
+// import TripInfoView from './view/trip-info.js';
 import {remove, render} from './utils/render.js';
-import dayjs from 'dayjs';
 import RoutePresenter from './presenter/route.js';
 import EventsModel from './model/events.js';
 import {FilterType, MenuItem, RenderPosition, UpdateType} from './const.js';
@@ -75,28 +74,20 @@ filterPresenter.init();
 routePresenter.init();
 
 
-api.getOffers()
-  .then((offers) => {
+Promise.all([
+  api.getOffers(),
+  api.getDestinations(),
+  api.getEvents(),
+])
+  .then(([offers, destinations, events]) => {
     dataModel.setOffers(UpdateType.INIT, offers);
+    dataModel.setDestinations(UpdateType.INIT, destinations);
+    eventsModel.setEvents(UpdateType.INIT, events);
     render(headerMenuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
     render(headerMain, newEventButton, RenderPosition.BEFOREEND);
   })
   .catch(() => {
     dataModel.setOffers(UpdateType.INIT, []);
-  })
-  .then(() => api.getEvents())
-  .then((events) => {
-    eventsModel.setEvents(UpdateType.INIT, events);
-  })
-  .catch(() => {
     eventsModel.setEvents(UpdateType.INIT, []);
-  })
-  .then(() => api.getDestinations())
-  .then((destinations) => {
-    dataModel.setDestinations(UpdateType.INIT, destinations);
-  })
-  .catch(() => {
     dataModel.setDestinations(UpdateType.INIT, []);
   });
-
-

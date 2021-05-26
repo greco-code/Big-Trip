@@ -3,6 +3,12 @@ import EventView from '../view/event.js';
 import EventFormView from '../view/event-form.js';
 import {Mode, RenderPosition, UpdateType, UserAction} from '../const.js';
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
 export default class Point {
   constructor(eventContainer, changeData, changeMode, offers, destinations) {
     this._eventContainer = eventContainer;
@@ -50,7 +56,8 @@ export default class Point {
     }
 
     if (this._mode === Mode.EDITING) {
-      replace(this._eventFormComponent, prevEventFormComponent);
+      replace(this._eventComponent, prevEventFormComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevEventComponent);
@@ -95,7 +102,6 @@ export default class Point {
       event,
     );
 
-    this._replaceFormToEvent();
     document.removeEventListener('keydown', this._onEscKeyDown);
   }
 
@@ -119,6 +125,35 @@ export default class Point {
         },
       ),
     );
+  }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._eventFormComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._eventFormComponent.updateData({
+          isSaving: true,
+          isDisabled: true,
+        });
+        break;
+      case State.DELETING:
+        this._eventFormComponent.updateData({
+          isDeleting: true,
+          isDisabled: true,
+        });
+        break;
+      case State.ABORTING:
+        this._eventComponent.shake(resetFormState);
+        this._eventFormComponent.shake(resetFormState);
+        break;
+    }
   }
 
   destroy() {
