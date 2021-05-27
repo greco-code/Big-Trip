@@ -124,7 +124,6 @@ export default class Route {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this._pointPresenter[data.id].init(data);
         break;
       case UpdateType.MINOR:
@@ -156,7 +155,7 @@ export default class Route {
 
   _handleModeChange() {
     // todo СЕЙЧАС НЕ ЗАКРЫВАЕТСЯ ФОРМА СОЗДАНИЯ ПРИ ОТКРЫТИИ ФОРМЫ РЕДАКТИРОВАНИЯ
-    // this._pointNewPresenter.destroy();
+    this._pointNewPresenter.destroy();
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.resetView());
