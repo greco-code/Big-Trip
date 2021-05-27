@@ -260,15 +260,7 @@ export default class EventForm extends Smart {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    // const dateStartMarkup = this.getElement().querySelector('input[name = event-start-time]');
-    // const dateFinishMarkup = this.getElement().querySelector('input[name = event-end-time]');
-
-    // if (dateStartMarkup.value > dateFinishMarkup.value) {
-    //   dateFinishMarkup.setCustomValidity('Finish date should be later then Start date');
-    //   dateFinishMarkup.reportValidity();
-    // } else {
     this._callback.formSubmit(EventForm.parseEventToData(this._data));
-    // }
   }
 
   _eventDeleteClickHandler(evt) {
