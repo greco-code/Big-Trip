@@ -43158,7 +43158,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const AUTHORIZATION = 'Basic cjr1J69xYe0lMul';
+const AUTHORIZATION = 'Basic cjr1J69xYe0lMql';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const headerMain = document.querySelector('.trip-main');
@@ -43236,6 +43236,9 @@ Promise.all([
     eventsModel.setEvents(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, []);
     dataModel.setDestinations(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, []);
   });
+
+/*todo
+* */
 
 
 /***/ }),
