@@ -273,6 +273,7 @@ export default class EventForm extends Smart {
     evt.preventDefault();
     this.updateData({
       type,
+      offers: [],
     });
   }
 

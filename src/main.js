@@ -10,7 +10,7 @@ import StatisticsView from './view/statistics.js';
 import Api from './api.js';
 import DataModel from './model/data.js';
 
-const AUTHORIZATION = 'Basic cjr1J69xYe0lMql';
+const AUTHORIZATION = 'Basic cjr1J69xYe0jLpl';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const headerMain = document.querySelector('.trip-main');
@@ -27,12 +27,15 @@ let statisticsComponent = null;
 const api = new Api(END_POINT, AUTHORIZATION);
 
 const handleSiteMenuClick = (menuItem) => {
+  const isStatisticsOpen = document.querySelector('.statistics');
   switch (menuItem) {
     case MenuItem.TABLE:
-      remove(statisticsComponent);
-      siteMenuComponent.setMenuItem(MenuItem.TABLE);
-      filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-      routePresenter.init();
+      if (isStatisticsOpen) {
+        remove(statisticsComponent);
+        siteMenuComponent.setMenuItem(MenuItem.TABLE);
+        filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+        routePresenter.init();
+      }
       break;
     case MenuItem.STATS:
       routePresenter.destroy();
@@ -88,6 +91,3 @@ Promise.all([
     eventsModel.setEvents(UpdateType.INIT, []);
     dataModel.setDestinations(UpdateType.INIT, []);
   });
-
-/*todo
-* */
