@@ -15,16 +15,16 @@ export const formatDuration = (diffTime) => {
 
   // Если разница менее одного часа
   if (diffHours < 1) {
-    return (`${diffMinutes}M`);
+    return `${diffMinutes}M`;
   }
 
   // Если разница более одного дня
   if (diffDays > 0) {
     diffHours = diffHours -  diffDays * 24;
-    return `(${diffDays}D ${diffHours}H ${diffMinutes}M)`;
+    return `${diffDays}D ${diffHours}H ${diffMinutes}M`;
   }
 
-  return (`${diffHours}H ${diffMinutes}M`);
+  return `${diffHours}H ${diffMinutes}M`;
 };
 
 export const sortMapByValues = (mapToSort) => {
