@@ -3,16 +3,20 @@
   "version": "1.0.0",
   "private": true,
   "description": "Проект «Большое путешествие» от HTML Academy",
+  "homepage": "https://greco-code.github.io/1035371-big-trip-14",
   "scripts": {
     "eslint": "eslint src/",
     "test": "npm run eslint",
     "build": "webpack --mode development",
-    "start": "webpack-dev-server --open 'Google Chrome'"
+    "start": "webpack-dev-server --open 'Google Chrome'",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d public"
   },
   "devDependencies": {
     "css-loader": "5.0.1",
     "eslint": "7.13.0",
     "eslint-config-htmlacademy": "3.0.0",
+    "gh-pages": "n3.2.0",
     "nanoid": "3.1.22",
     "style-loader": "2.0.0",
     "webpack": "4.44.2",
