@@ -56,7 +56,7 @@ export default class Route {
       case SortType.PRICE:
         return filteredEvents.sort((a, b) => (a.base_price) - (b.base_price));
       case SortType.DAY:
-        return filteredEvents.sort((a, b) => dayjs(a.date_from) - dayjs(b.date_from));
+        return filteredEvents.sort((a, b) => dayjs(b.date_from) - dayjs(a.date_from));
     }
 
     return filteredEvents;
@@ -154,7 +154,6 @@ export default class Route {
   }
 
   _handleModeChange() {
-    // todo СЕЙЧАС НЕ ЗАКРЫВАЕТСЯ ФОРМА СОЗДАНИЯ ПРИ ОТКРЫТИИ ФОРМЫ РЕДАКТИРОВАНИЯ
     this._pointNewPresenter.destroy();
     Object
       .values(this._pointPresenter)
