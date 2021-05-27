@@ -1,5 +1,4 @@
 import MenuView from './view/menu.js';
-// import TripInfoView from './view/trip-info.js';
 import {remove, render} from './utils/render.js';
 import RoutePresenter from './presenter/route.js';
 import EventsModel from './model/events.js';
@@ -26,10 +25,6 @@ const siteMenuComponent = new MenuView();
 let statisticsComponent = null;
 
 const api = new Api(END_POINT, AUTHORIZATION);
-
-// if (events.length) {
-//   render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
-// }
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -59,7 +54,8 @@ const routePresenter = new RoutePresenter(eventsContainer, eventsModel, filterMo
 const filterPresenter = new FilterPresenter(tripFilterContainer, filterModel, eventsModel);
 
 newEventButton.setNewEventClickHandler(() => {
-  if (statisticsComponent) {
+  const isStatisticsOpened = document.querySelector('.statistics');
+  if (isStatisticsOpened) {
     remove(statisticsComponent);
     siteMenuComponent.setMenuItem(MenuItem.TABLE);
     filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
