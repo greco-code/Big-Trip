@@ -10,7 +10,7 @@ import StatisticsView from './view/statistics.js';
 import Api from './api.js';
 import DataModel from './model/data.js';
 
-const AUTHORIZATION = 'Basic cjr1J69xYe0lMul';
+const AUTHORIZATION = 'Basic cjr1J69xYe0lMql';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const headerMain = document.querySelector('.trip-main');
@@ -88,3 +88,6 @@ Promise.all([
     eventsModel.setEvents(UpdateType.INIT, []);
     dataModel.setDestinations(UpdateType.INIT, []);
   });
+
+/*todo
+* */
