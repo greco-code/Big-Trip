@@ -37,6 +37,7 @@ const handleSiteMenuClick = (menuItem) => {
     case MenuItem.STATS:
       routePresenter.destroy();
       siteMenuComponent.setMenuItem(MenuItem.STATS);
+      filterPresenter.disable();
       statisticsComponent = new StatisticsView(eventsModel.getEvents());
       render(pageContainer, statisticsComponent, RenderPosition.BEFOREEND);
       break;

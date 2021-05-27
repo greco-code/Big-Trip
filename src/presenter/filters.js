@@ -67,4 +67,11 @@ export default class Filter {
       },
     ];
   }
+
+  disable() {
+    const inputs = this._filterComponent.getElement().querySelectorAll('.trip-filters__filter-input');
+    inputs.forEach((input) => {
+      input.disabled = true;
+    });
+  }
 }
