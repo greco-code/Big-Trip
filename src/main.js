@@ -10,7 +10,7 @@ import StatisticsView from './view/statistics.js';
 import Api from './api.js';
 import DataModel from './model/data.js';
 
-const AUTHORIZATION = 'Basic cjr1J69xYy0jLp';
+const AUTHORIZATION = 'Basic cjr1J69xYf0jLp';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const headerMain = document.querySelector('.trip-main');
