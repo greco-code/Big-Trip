@@ -43158,7 +43158,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const AUTHORIZATION = 'Basic cjr1J69xYe0lMql';
+const AUTHORIZATION = 'Basic cjr1J69xYy0jLp';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const headerMain = document.querySelector('.trip-main');
@@ -43175,12 +43175,15 @@ let statisticsComponent = null;
 const api = new _api_js__WEBPACK_IMPORTED_MODULE_9__["default"](END_POINT, AUTHORIZATION);
 
 const handleSiteMenuClick = (menuItem) => {
+  const isStatisticsOpen = document.querySelector('.statistics');
   switch (menuItem) {
     case _const_js__WEBPACK_IMPORTED_MODULE_4__["MenuItem"].TABLE:
-      Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_1__["remove"])(statisticsComponent);
-      siteMenuComponent.setMenuItem(_const_js__WEBPACK_IMPORTED_MODULE_4__["MenuItem"].TABLE);
-      filterModel.setFilter(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].MAJOR, _const_js__WEBPACK_IMPORTED_MODULE_4__["FilterType"].EVERYTHING);
-      routePresenter.init();
+      if (isStatisticsOpen) {
+        Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_1__["remove"])(statisticsComponent);
+        siteMenuComponent.setMenuItem(_const_js__WEBPACK_IMPORTED_MODULE_4__["MenuItem"].TABLE);
+        filterModel.setFilter(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].MAJOR, _const_js__WEBPACK_IMPORTED_MODULE_4__["FilterType"].EVERYTHING);
+        routePresenter.init();
+      }
       break;
     case _const_js__WEBPACK_IMPORTED_MODULE_4__["MenuItem"].STATS:
       routePresenter.destroy();
@@ -43236,9 +43239,6 @@ Promise.all([
     eventsModel.setEvents(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, []);
     dataModel.setDestinations(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, []);
   });
-
-/*todo
-* */
 
 
 /***/ }),
@@ -43538,7 +43538,9 @@ class PointNew {
     this._offers = offers;
     this._destinations = destinations;
 
-    this._eventFormComponent = null;
+    this._newEventFormComponent = null;
+
+    this._mode = _const_js__WEBPACK_IMPORTED_MODULE_2__["Mode"].EDITING;
 
     this._addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 
@@ -43549,7 +43551,7 @@ class PointNew {
   }
 
   init() {
-    this._eventFormComponent = new _view_event_form_js__WEBPACK_IMPORTED_MODULE_1__["default"](
+    this._newEventFormComponent = new _view_event_form_js__WEBPACK_IMPORTED_MODULE_1__["default"](
       {
         date_from: new Date(),
         date_to: new Date(),
@@ -43561,13 +43563,13 @@ class PointNew {
       this._destinations,
     );
 
-    this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._eventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
-    this._eventFormComponent.setEventClickHandler(this._handleEventClick);
+    this._newEventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._newEventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
+    this._newEventFormComponent.setEventClickHandler(this._handleEventClick);
 
     this._addNewEventButton.disabled = true;
 
-    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(this._eventContainer, this._eventFormComponent, _const_js__WEBPACK_IMPORTED_MODULE_2__["RenderPosition"].AFTERBEGIN);
+    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(this._eventContainer, this._newEventFormComponent, _const_js__WEBPACK_IMPORTED_MODULE_2__["RenderPosition"].AFTERBEGIN);
 
     document.addEventListener('keydown', this._onEscKeyDown);
   }
@@ -43600,7 +43602,7 @@ class PointNew {
   }
 
   setSaving() {
-    this._eventFormComponent.updateData({
+    this._newEventFormComponent.updateData({
       isSaving: true,
       isDisabled: true,
     });
@@ -43608,21 +43610,19 @@ class PointNew {
 
   setAborting() {
     const resetFormState = () => {
-      this._eventFormComponent.updateData({
+      this._newEventFormComponent.updateData({
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
       });
     };
 
-    this._eventFormComponent.shake(resetFormState);
+    this._newEventFormComponent.shake(resetFormState);
   }
 
   destroy() {
-    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["remove"])(this._eventContainer);
-
-    if (this._eventFormComponent) {
-      Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["remove"])(this._eventFormComponent);
+    if (this._newEventFormComponent) {
+      Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["remove"])(this._newEventFormComponent);
     }
 
     if (this._addNewEventButton) {
@@ -43903,7 +43903,7 @@ class Route {
       case _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].PRICE:
         return filteredEvents.sort((a, b) => (a.base_price) - (b.base_price));
       case _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].DAY:
-        return filteredEvents.sort((a, b) => dayjs__WEBPACK_IMPORTED_MODULE_8___default()(a.date_from) - dayjs__WEBPACK_IMPORTED_MODULE_8___default()(b.date_from));
+        return filteredEvents.sort((a, b) => dayjs__WEBPACK_IMPORTED_MODULE_8___default()(b.date_from) - dayjs__WEBPACK_IMPORTED_MODULE_8___default()(a.date_from));
     }
 
     return filteredEvents;
@@ -44001,7 +44001,6 @@ class Route {
   }
 
   _handleModeChange() {
-    // todo СЕЙЧАС НЕ ЗАКРЫВАЕТСЯ ФОРМА СОЗДАНИЯ ПРИ ОТКРЫТИИ ФОРМЫ РЕДАКТИРОВАНИЯ
     this._pointNewPresenter.destroy();
     Object
       .values(this._pointPresenter)
@@ -44698,6 +44697,7 @@ class EventForm extends _smart_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
     evt.preventDefault();
     this.updateData({
       type,
+      offers: [],
     });
   }
 
