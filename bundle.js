@@ -43158,7 +43158,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const AUTHORIZATION = 'Basic cjr1J69xYy0jLp';
+const AUTHORIZATION = 'Basic cjr1J69xYf0jLp';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const headerMain = document.querySelector('.trip-main');
@@ -43361,8 +43361,8 @@ class Events extends _utils_observer_js__WEBPACK_IMPORTED_MODULE_0__["default"] 
       {},
       event,
       {
-        date_from: event.date_from !== null ? new Date(event.date_from) : event.date_from,
-        date_to: event.date_to !== null ? new Date(event.date_to) : event.date_to,
+        'date_from': event.date_from !== null ? new Date(event.date_from) : event.date_from,
+        'date_to': event.date_to !== null ? new Date(event.date_to) : event.date_to,
       },
     );
   }
@@ -43372,8 +43372,8 @@ class Events extends _utils_observer_js__WEBPACK_IMPORTED_MODULE_0__["default"] 
       {},
       event,
       {
-        date_from: event.date_from instanceof Date ? event.date_from.toISOString() : null,
-        date_to: event.date_to instanceof Date ? event.date_to.toISOString() : null,
+        'date_from': event.date_from instanceof Date ? event.date_from.toISOString() : null,
+        'date_to': event.date_to instanceof Date ? event.date_to.toISOString() : null,
       },
     );
   }
