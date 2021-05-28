@@ -61,8 +61,8 @@ export default class Events extends Observer {
       {},
       event,
       {
-        date_from: event.date_from !== null ? new Date(event.date_from) : event.date_from,
-        date_to: event.date_to !== null ? new Date(event.date_to) : event.date_to,
+        'date_from': event.date_from !== null ? new Date(event.date_from) : event.date_from,
+        'date_to': event.date_to !== null ? new Date(event.date_to) : event.date_to,
       },
     );
   }
@@ -72,8 +72,8 @@ export default class Events extends Observer {
       {},
       event,
       {
-        date_from: event.date_from instanceof Date ? event.date_from.toISOString() : null,
-        date_to: event.date_to instanceof Date ? event.date_to.toISOString() : null,
+        'date_from': event.date_from instanceof Date ? event.date_from.toISOString() : null,
+        'date_to': event.date_to instanceof Date ? event.date_to.toISOString() : null,
       },
     );
   }

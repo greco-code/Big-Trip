@@ -273,6 +273,7 @@ export default class EventForm extends Smart {
     evt.preventDefault();
     this.updateData({
       type,
+      offers: [],
     });
   }
 
@@ -339,11 +340,20 @@ export default class EventForm extends Smart {
   //DATE//
 
   _startDateChangeHandler([date_from]) {
+    const dateStartMarkup = this.getElement().querySelector('input[name = event-start-time]');
+    const dateFinishMarkup = this.getElement().querySelector('input[name = event-end-time]');
+
     this.updateData(
       {
         date_from,
       }, true,
     );
+
+    if (dateStartMarkup.value > dateFinishMarkup.value) {
+      this._finishDatepicker.set({minDate: date_from});
+      this._finishDatepicker.setDate(date_from);
+      this._finishDateChangeHandler([date_from]);
+    }
   }
 
   _finishDateChangeHandler([date_to]) {

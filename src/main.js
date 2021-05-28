@@ -1,5 +1,4 @@
 import MenuView from './view/menu.js';
-// import TripInfoView from './view/trip-info.js';
 import {remove, render} from './utils/render.js';
 import RoutePresenter from './presenter/route.js';
 import EventsModel from './model/events.js';
@@ -11,7 +10,7 @@ import StatisticsView from './view/statistics.js';
 import Api from './api.js';
 import DataModel from './model/data.js';
 
-const AUTHORIZATION = 'Basic cjr1J69xYe0lMur';
+const AUTHORIZATION = 'Basic cjr1J69xYf0jLp';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const headerMain = document.querySelector('.trip-main');
@@ -27,21 +26,21 @@ let statisticsComponent = null;
 
 const api = new Api(END_POINT, AUTHORIZATION);
 
-// if (events.length) {
-//   render(headerMain, new TripInfoView(events), RenderPosition.AFTERBEGIN);
-// }
-
 const handleSiteMenuClick = (menuItem) => {
+  const isStatisticsOpen = document.querySelector('.statistics');
   switch (menuItem) {
     case MenuItem.TABLE:
-      remove(statisticsComponent);
-      siteMenuComponent.setMenuItem(MenuItem.TABLE);
-      filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-      routePresenter.init();
+      if (isStatisticsOpen) {
+        remove(statisticsComponent);
+        siteMenuComponent.setMenuItem(MenuItem.TABLE);
+        filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+        routePresenter.init();
+      }
       break;
     case MenuItem.STATS:
       routePresenter.destroy();
       siteMenuComponent.setMenuItem(MenuItem.STATS);
+      filterPresenter.disable();
       statisticsComponent = new StatisticsView(eventsModel.getEvents());
       render(pageContainer, statisticsComponent, RenderPosition.BEFOREEND);
       break;
@@ -59,7 +58,8 @@ const routePresenter = new RoutePresenter(eventsContainer, eventsModel, filterMo
 const filterPresenter = new FilterPresenter(tripFilterContainer, filterModel, eventsModel);
 
 newEventButton.setNewEventClickHandler(() => {
-  if (statisticsComponent) {
+  const isStatisticsOpened = document.querySelector('.statistics');
+  if (isStatisticsOpened) {
     remove(statisticsComponent);
     siteMenuComponent.setMenuItem(MenuItem.TABLE);
     filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);

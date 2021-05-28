@@ -1,6 +1,6 @@
 import {render, remove} from '../utils/render.js';
 import EventFormView from '../view/event-form.js';
-import {RenderPosition, UpdateType, UserAction} from '../const.js';
+import {Mode, RenderPosition, UpdateType, UserAction} from '../const.js';
 import {nanoid} from 'nanoid';
 
 export default class PointNew {
@@ -11,7 +11,9 @@ export default class PointNew {
     this._offers = offers;
     this._destinations = destinations;
 
-    this._eventFormComponent = null;
+    this._newEventFormComponent = null;
+
+    this._mode = Mode.EDITING;
 
     this._addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 
@@ -22,7 +24,7 @@ export default class PointNew {
   }
 
   init() {
-    this._eventFormComponent = new EventFormView(
+    this._newEventFormComponent = new EventFormView(
       {
         date_from: new Date(),
         date_to: new Date(),
@@ -34,13 +36,13 @@ export default class PointNew {
       this._destinations,
     );
 
-    this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._eventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
-    this._eventFormComponent.setEventClickHandler(this._handleEventClick);
+    this._newEventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._newEventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
+    this._newEventFormComponent.setEventClickHandler(this._handleEventClick);
 
     this._addNewEventButton.disabled = true;
 
-    render(this._eventContainer, this._eventFormComponent, RenderPosition.AFTERBEGIN);
+    render(this._eventContainer, this._newEventFormComponent, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this._onEscKeyDown);
   }
@@ -73,7 +75,7 @@ export default class PointNew {
   }
 
   setSaving() {
-    this._eventFormComponent.updateData({
+    this._newEventFormComponent.updateData({
       isSaving: true,
       isDisabled: true,
     });
@@ -81,21 +83,19 @@ export default class PointNew {
 
   setAborting() {
     const resetFormState = () => {
-      this._eventFormComponent.updateData({
+      this._newEventFormComponent.updateData({
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
       });
     };
 
-    this._eventFormComponent.shake(resetFormState);
+    this._newEventFormComponent.shake(resetFormState);
   }
 
   destroy() {
-    remove(this._eventContainer);
-
-    if (this._eventFormComponent) {
-      remove(this._eventFormComponent);
+    if (this._newEventFormComponent) {
+      remove(this._newEventFormComponent);
     }
 
     if (this._addNewEventButton) {
