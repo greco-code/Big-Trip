@@ -30,8 +30,8 @@ const getRoute = (events) => {
 const getPrice = (events) => {
   let price = 0;
 
-  events.forEach(({base_price}) => {
-    price += base_price;
+  events.forEach(({basePrice}) => {
+    price += basePrice;
   });
 
   return price;
@@ -40,8 +40,8 @@ const getPrice = (events) => {
 const getDuration = (events) => {
   let duration;
   const lastIndex = events.length - 1;
-  const startDate = events[0].date_from;
-  const finishDate = events[lastIndex].date_to;
+  const startDate = events[0].dateFrom;
+  const finishDate = events[lastIndex].dateTo;
 
   if (startDate.getMonth() === finishDate.getMonth()) {
     duration = `${humanizeToMonthDay(startDate)} &mdash; ${finishDate.getDate()}`;

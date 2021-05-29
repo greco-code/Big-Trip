@@ -91,3 +91,4 @@ Promise.all([
     eventsModel.setEvents(UpdateType.INIT, []);
     dataModel.setDestinations(UpdateType.INIT, []);
   });
+

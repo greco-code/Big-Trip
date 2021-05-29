@@ -121,7 +121,7 @@ export default class Point {
         {},
         this._event,
         {
-          is_favorite: !this._event.is_favorite,
+          isFavorite: !this._event.isFavorite,
         },
       ),
     );

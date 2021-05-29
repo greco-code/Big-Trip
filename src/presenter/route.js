@@ -52,11 +52,11 @@ export default class Route {
 
     switch (this._currentSortType) {
       case SortType.TIME:
-        return filteredEvents.sort((a, b) => dayjs(a.date_to - a.date_from) - (b.date_to - b.date_from));
+        return filteredEvents.sort((a, b) => dayjs(a.dateTo - a.dateFrom) - (b.dateTo - b.dateFrom));
       case SortType.PRICE:
-        return filteredEvents.sort((a, b) => (a.base_price) - (b.base_price));
+        return filteredEvents.sort((a, b) => (a.basePrice) - (b.basePrice));
       case SortType.DAY:
-        return filteredEvents.sort((a, b) => dayjs(b.date_from) - dayjs(a.date_from));
+        return filteredEvents.sort((a, b) => dayjs(b.dateFrom) - dayjs(a.dateFrom));
     }
 
     return filteredEvents;

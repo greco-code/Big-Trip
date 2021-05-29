@@ -1,6 +1,6 @@
 import {render, remove} from '../utils/render.js';
 import EventFormView from '../view/event-form.js';
-import {Mode, RenderPosition, UpdateType, UserAction} from '../const.js';
+import {RenderPosition, UpdateType, UserAction} from '../const.js';
 import {nanoid} from 'nanoid';
 
 export default class PointNew {
@@ -13,8 +13,6 @@ export default class PointNew {
 
     this._newEventFormComponent = null;
 
-    this._mode = Mode.EDITING;
-
     this._addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -26,10 +24,10 @@ export default class PointNew {
   init() {
     this._newEventFormComponent = new EventFormView(
       {
-        date_from: new Date(),
-        date_to: new Date(),
+        dateFrom: new Date(),
+        dateTo: new Date(),
         type: this._offers[0].type,
-        is_favorite: false,
+        isFavorite: false,
         offers: [],
       },
       this._offers,
