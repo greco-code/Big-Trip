@@ -127,11 +127,13 @@ export default class Point {
   _editClickHandler() {
     this._replaceEventToForm();
     this._eventFormComponent.reset(this._event);
+    this._eventFormComponent.setInnerDatePicker();
     document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
   _eventClickHandler() {
     this._replaceFormToEvent();
+    this._eventFormComponent.removeDatePicker();
     document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 

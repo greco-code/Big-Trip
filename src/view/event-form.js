@@ -207,8 +207,6 @@ export default class EventForm extends Smart {
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setStartDatepicker();
-    this._setFinishDatepicker();
   }
 
   getTemplate() {
@@ -217,8 +215,6 @@ export default class EventForm extends Smart {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this._setStartDatepicker();
-    this._setFinishDatepicker();
     this.setEventClickHandler(this._callback.eventClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEventDeleteHandler(this._callback.eventDelete);
@@ -228,6 +224,16 @@ export default class EventForm extends Smart {
     this.updateData(
       EventForm.parseEventToData(event),
     );
+  }
+
+  setInnerDatePicker() {
+    this._setStartDatepicker();
+    this._setFinishDatepicker();
+  }
+
+  removeDatePicker() {
+    this._startDatepicker.destroy();
+    this._finishDatepicker.destroy();
   }
 
   setEventClickHandler(callback) {
