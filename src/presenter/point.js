@@ -64,6 +64,46 @@ export default class Point {
     remove(prevEventFormComponent);
   }
 
+  setViewState(state) {
+    const resetFormState = () => {
+      this._eventFormComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._eventFormComponent.updateData({
+          isSaving: true,
+          isDisabled: true,
+        });
+        break;
+      case State.DELETING:
+        this._eventFormComponent.updateData({
+          isDeleting: true,
+          isDisabled: true,
+        });
+        break;
+      case State.ABORTING:
+        this._eventComponent.shake(resetFormState);
+        this._eventFormComponent.shake(resetFormState);
+        break;
+    }
+  }
+
+  destroy() {
+    remove(this._eventContainer);
+    remove(this._eventFormComponent);
+  }
+
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceFormToEvent();
+    }
+  }
+
   _replaceEventToForm() {
     replace(this._eventFormComponent, this._eventComponent);
     this._changeMode();
@@ -125,45 +165,5 @@ export default class Point {
         },
       ),
     );
-  }
-
-  setViewState(state) {
-    const resetFormState = () => {
-      this._eventFormComponent.updateData({
-        isDisabled: false,
-        isSaving: false,
-        isDeleting: false,
-      });
-    };
-
-    switch (state) {
-      case State.SAVING:
-        this._eventFormComponent.updateData({
-          isSaving: true,
-          isDisabled: true,
-        });
-        break;
-      case State.DELETING:
-        this._eventFormComponent.updateData({
-          isDeleting: true,
-          isDisabled: true,
-        });
-        break;
-      case State.ABORTING:
-        this._eventComponent.shake(resetFormState);
-        this._eventFormComponent.shake(resetFormState);
-        break;
-    }
-  }
-
-  destroy() {
-    remove(this._eventContainer);
-    remove(this._eventFormComponent);
-  }
-
-  resetView() {
-    if (this._mode !== Mode.DEFAULT) {
-      this._replaceFormToEvent();
-    }
   }
 }

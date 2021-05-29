@@ -45,23 +45,6 @@ export default class Route {
     this._dataModel.addObserver(this._modelEventHandler);
   }
 
-  _getEvents() {
-    const filtersType = this._filtersModel.get();
-    const events = this._eventsModel.get();
-    const filteredEvents = filter[filtersType](events);
-
-    switch (this._currentSortType) {
-      case SortType.TIME:
-        return filteredEvents.sort((a, b) => dayjs(a.dateTo - a.dateFrom) - (b.dateTo - b.dateFrom));
-      case SortType.PRICE:
-        return filteredEvents.sort((a, b) => (a.basePrice) - (b.basePrice));
-      case SortType.DAY:
-        return filteredEvents.sort((a, b) => dayjs(b.dateFrom) - dayjs(a.dateFrom));
-    }
-
-    return filteredEvents;
-  }
-
   createEvent() {
     this._currentSortType = SortType.DAY;
     this._filtersModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
@@ -88,85 +71,23 @@ export default class Route {
     this._filtersModel.removeObserver(this._modelEventHandler);
   }
 
-  //HANDLERS//
-  _viewActionHandler(actionType, updateType, update) {
-    switch (actionType) {
-      case UserAction.UPDATE_EVENT:
-        this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
-        this._api.updateEvent(update).then((response) => {
-          this._eventsModel.update(updateType, response);
-        })
-          .catch(() => {
-            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
-          });
-        break;
-      case UserAction.ADD_EVENT:
-        this._pointNewPresenter.setSaving();
-        this._api.addEvent(update).then((response) => {
-          this._eventsModel.add(updateType, response);
-        })
-          .catch(() => {
-            this._pointNewPresenter.setAborting();
-          });
-        break;
-      case UserAction.DELETE_EVENT:
-        this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
-        this._api.deleteEvent(update).then(() => {
-          this._eventsModel.delete(updateType, update);
-        })
-          .catch(() => {
-            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
-          });
-        break;
-    }
-  }
+  _getEvents() {
+    const filtersType = this._filtersModel.get();
+    const events = this._eventsModel.get();
+    const filteredEvents = filter[filtersType](events);
 
-  _modelEventHandler(updateType, data) {
-    switch (updateType) {
-      case UpdateType.PATCH:
-        this._pointPresenter[data.id].init(data);
-        break;
-      case UpdateType.MINOR:
-        this._clearBoard();
-        this._renderBoard();
-        break;
-      case UpdateType.MAJOR:
-        this._clearBoard({resetSortType: true});
-        this._renderBoard();
-        break;
-      case UpdateType.INIT:
-        this._isLoading = false;
-        remove(this._loaderComponent);
-        this._clearBoard();
-        this._renderBoard();
-        break;
-    }
-  }
-
-  _sortTypeChangeHandler(sortType) {
-    if (this._currentSortType === sortType) {
-      return;
+    switch (this._currentSortType) {
+      case SortType.TIME:
+        return filteredEvents.sort((a, b) => dayjs(a.dateTo - a.dateFrom) - (b.dateTo - b.dateFrom));
+      case SortType.PRICE:
+        return filteredEvents.sort((a, b) => (a.basePrice) - (b.basePrice));
+      case SortType.DAY:
+        return filteredEvents.sort((a, b) => dayjs(b.dateFrom) - dayjs(a.dateFrom));
     }
 
-    this._currentSortType = sortType;
-    this._clearBoard();
-    this._renderBoard();
+    return filteredEvents;
   }
 
-  _modeChangeHandler() {
-    this._pointNewPresenter.destroy();
-    Object
-      .values(this._pointPresenter)
-      .forEach((presenter) => presenter.resetView());
-  }
-
-  newEventFormOpenHandler() {
-    Object
-      .values(this._pointPresenter)
-      .forEach((presenter) => presenter.resetView());
-  }
-
-  //RENDERS//
   _renderEventsList() {
     this._eventList = new EventListView();
     render(this._eventsContainer, this._eventList, RenderPosition.BEFOREEND);
@@ -243,5 +164,82 @@ export default class Route {
     if (resetSortType) {
       this._currentSortType = SortType.DAY;
     }
+  }
+
+  newEventFormOpenHandler() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
+  _viewActionHandler(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
+        this._api.updateEvent(update).then((response) => {
+          this._eventsModel.update(updateType, response);
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
+        break;
+      case UserAction.ADD_EVENT:
+        this._pointNewPresenter.setSaving();
+        this._api.addEvent(update).then((response) => {
+          this._eventsModel.add(updateType, response);
+        })
+          .catch(() => {
+            this._pointNewPresenter.setAborting();
+          });
+        break;
+      case UserAction.DELETE_EVENT:
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
+        this._api.deleteEvent(update).then(() => {
+          this._eventsModel.delete(updateType, update);
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
+        break;
+    }
+  }
+
+  _modelEventHandler(updateType, data) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this._pointPresenter[data.id].init(data);
+        break;
+      case UpdateType.MINOR:
+        this._clearBoard();
+        this._renderBoard();
+        break;
+      case UpdateType.MAJOR:
+        this._clearBoard({resetSortType: true});
+        this._renderBoard();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loaderComponent);
+        this._clearBoard();
+        this._renderBoard();
+        break;
+    }
+  }
+
+  _sortTypeChangeHandler(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._currentSortType = sortType;
+    this._clearBoard();
+    this._renderBoard();
+  }
+
+  _modeChangeHandler() {
+    this._pointNewPresenter.destroy();
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.resetView());
   }
 }

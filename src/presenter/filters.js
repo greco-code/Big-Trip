@@ -34,16 +34,11 @@ export default class Filter {
     remove(prevFilterComponent);
   }
 
-  _modelEventHandler() {
-    this.init();
-  }
-
-  _filterTypeChangeHandler(filterType) {
-    if (this._filterModel.get() === filterType) {
-      return;
-    }
-
-    this._filterModel.set(UpdateType.MAJOR, filterType);
+  disable() {
+    const inputs = this._filterComponent.getElement().querySelectorAll('.trip-filters__filter-input');
+    inputs.forEach((input) => {
+      input.disabled = true;
+    });
   }
 
   _get() {
@@ -68,10 +63,15 @@ export default class Filter {
     ];
   }
 
-  disable() {
-    const inputs = this._filterComponent.getElement().querySelectorAll('.trip-filters__filter-input');
-    inputs.forEach((input) => {
-      input.disabled = true;
-    });
+  _modelEventHandler() {
+    this.init();
+  }
+
+  _filterTypeChangeHandler(filterType) {
+    if (this._filterModel.get() === filterType) {
+      return;
+    }
+
+    this._filterModel.set(UpdateType.MAJOR, filterType);
   }
 }

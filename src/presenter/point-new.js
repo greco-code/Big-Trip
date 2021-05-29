@@ -45,33 +45,6 @@ export default class PointNew {
     document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
-  _escKeyDownHandler(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this.destroy();
-    }
-
-    document.removeEventListener('keydown', this._escKeyDownHandler);
-  }
-
-  _eventClickHandler() {
-    this.destroy();
-  }
-
-  _formSubmitHandler(event) {
-    this._changeData(
-      UserAction.ADD_EVENT,
-      UpdateType.MINOR,
-      Object.assign({id: nanoid()}, event),
-    );
-
-    document.removeEventListener('keydown', this._escKeyDownHandler);
-  }
-
-  _deleteClickHandler() {
-    this.destroy();
-  }
-
   setSaving() {
     this._newEventFormComponent.updateData({
       isSaving: true,
@@ -99,6 +72,33 @@ export default class PointNew {
     if (this._addNewEventButton) {
       this._addNewEventButton.disabled = false;
     }
+  }
+
+  _escKeyDownHandler(evt) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.destroy();
+    }
+
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  _eventClickHandler() {
+    this.destroy();
+  }
+
+  _formSubmitHandler(event) {
+    this._changeData(
+      UserAction.ADD_EVENT,
+      UpdateType.MINOR,
+      Object.assign({id: nanoid()}, event),
+    );
+
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  _deleteClickHandler() {
+    this.destroy();
   }
 }
 

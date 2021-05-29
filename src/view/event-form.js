@@ -215,6 +215,21 @@ export default class EventForm extends Smart {
     return createPointForm(this._data, this._offers, this._destinations);
   }
 
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setFinishDatepicker();
+    this.setEventClickHandler(this._callback.eventClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setEventDeleteHandler(this._callback.eventDelete);
+  }
+
+  reset(event) {
+    this.updateData(
+      EventForm.parseEventToData(event),
+    );
+  }
+
   setEventClickHandler(callback) {
     this._callback.eventClick = callback;
     this
@@ -236,21 +251,6 @@ export default class EventForm extends Smart {
       .getElement()
       .querySelector('.event__reset-btn')
       .addEventListener('click', this._eventDeleteClickHandler);
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this._setStartDatepicker();
-    this._setFinishDatepicker();
-    this.setEventClickHandler(this._callback.eventClick);
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setEventDeleteHandler(this._callback.eventDelete);
-  }
-
-  reset(event) {
-    this.updateData(
-      EventForm.parseEventToData(event),
-    );
   }
 
   _eventClickHandler(evt) {

@@ -19,11 +19,6 @@ export default class Menu extends Abstract {
     return createSiteMenuTemplate();
   }
 
-  _menuClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.menuClick(evt.target.dataset.type);
-  }
-
   setMenuClickHandler(callback) {
     this._callback.menuClick = callback;
     this.getElement().addEventListener('click', this._menuClickHandler);
@@ -39,6 +34,11 @@ export default class Menu extends Abstract {
         checkedItem.classList.add('trip-tabs__btn--active');
       });
     }
+  }
+
+  _menuClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.menuClick(evt.target.dataset.type);
   }
 }
 

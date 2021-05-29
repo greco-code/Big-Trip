@@ -6,14 +6,14 @@ export default class Events extends Observer {
     this._events = [];
   }
 
+  get() {
+    return this._events;
+  }
+
   set(updateType, events) {
     this._events = events.slice();
 
     this._notify(updateType);
-  }
-
-  get() {
-    return this._events;
   }
 
   update(updateType, update) {
