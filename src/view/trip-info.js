@@ -12,7 +12,7 @@ const getRoute = (events) => {
   const countries = Array.from(countriesSet);
   let routeMarkup = '';
 
-  const lastIndexOfArray = countries.length - 1;
+  const lastIndex = countries.length - 1;
 
   if (countries.length === 1) {
     routeMarkup = `<h1 class="trip-info__title">${countries[0]}</h1>`;
@@ -21,7 +21,7 @@ const getRoute = (events) => {
   } else if (countries.length === 3) {
     routeMarkup = `<h1 class="trip-info__title">${countries[0]} &mdash; ${countries[1]} &mdash; ${countries[2]}</h1>`;
   } else if (countries.length > 3) {
-    routeMarkup = `<h1 class="trip-info__title">${countries[0]} &mdash; ... &mdash; ${countries[lastIndexOfArray]}</h1>`;
+    routeMarkup = `<h1 class="trip-info__title">${countries[0]} &mdash; ... &mdash; ${countries[lastIndex]}</h1>`;
   }
 
   return routeMarkup;
