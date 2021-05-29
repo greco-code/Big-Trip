@@ -14,15 +14,15 @@ export default class NewEventButton extends Abstract {
     return createNewEventButton();
   }
 
-  _newEventClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.newEventButtonClick();
-  }
-
   setNewEventClickHandler(callback) {
     this._callback.newEventButtonClick = callback;
     this
       .getElement()
       .addEventListener('click', this._newEventClickHandler);
+  }
+
+  _newEventClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.newEventButtonClick();
   }
 }

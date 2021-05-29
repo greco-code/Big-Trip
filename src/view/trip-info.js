@@ -12,7 +12,7 @@ const getRoute = (events) => {
   const countries = Array.from(countriesSet);
   let routeMarkup = '';
 
-  const lastIndexOfArray = countries.length - 1;
+  const lastIndex = countries.length - 1;
 
   if (countries.length === 1) {
     routeMarkup = `<h1 class="trip-info__title">${countries[0]}</h1>`;
@@ -21,7 +21,7 @@ const getRoute = (events) => {
   } else if (countries.length === 3) {
     routeMarkup = `<h1 class="trip-info__title">${countries[0]} &mdash; ${countries[1]} &mdash; ${countries[2]}</h1>`;
   } else if (countries.length > 3) {
-    routeMarkup = `<h1 class="trip-info__title">${countries[0]} &mdash; ... &mdash; ${countries[lastIndexOfArray]}</h1>`;
+    routeMarkup = `<h1 class="trip-info__title">${countries[0]} &mdash; ... &mdash; ${countries[lastIndex]}</h1>`;
   }
 
   return routeMarkup;
@@ -30,8 +30,8 @@ const getRoute = (events) => {
 const getPrice = (events) => {
   let price = 0;
 
-  events.forEach(({base_price}) => {
-    price += base_price;
+  events.forEach(({basePrice}) => {
+    price += basePrice;
   });
 
   return price;
@@ -40,8 +40,8 @@ const getPrice = (events) => {
 const getDuration = (events) => {
   let duration;
   const lastIndex = events.length - 1;
-  const startDate = events[0].date_from;
-  const finishDate = events[lastIndex].date_to;
+  const startDate = events[0].dateFrom;
+  const finishDate = events[lastIndex].dateTo;
 
   if (startDate.getMonth() === finishDate.getMonth()) {
     duration = `${humanizeToMonthDay(startDate)} &mdash; ${finishDate.getDate()}`;

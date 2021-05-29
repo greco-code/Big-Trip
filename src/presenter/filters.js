@@ -1,4 +1,4 @@
-import FilterView from '../view/trip-filter.js';
+import FilterView from '../view/filter.js';
 import {render, replace, remove} from '../utils/render.js';
 import {filter} from '../utils/filter.js';
 import {FilterType, RenderPosition, UpdateType} from '../const.js';
@@ -11,19 +11,19 @@ export default class Filter {
 
     this._filterComponent = null;
 
-    this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
+    this._modelEventHandler = this._modelEventHandler.bind(this);
+    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
 
-    this._eventsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._eventsModel.addObserver(this._modelEventHandler);
+    this._filterModel.addObserver(this._modelEventHandler);
   }
 
   init() {
-    const filters = this._getFilters();
+    const filters = this._get();
     const prevFilterComponent = this._filterComponent;
 
-    this._filterComponent = new FilterView(filters, this._filterModel.getFilter());
-    this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
+    this._filterComponent = new FilterView(filters, this._filterModel.get());
+    this._filterComponent.setFilterTypeChangeHandler(this._filterTypeChangeHandler);
 
     if (prevFilterComponent === null) {
       render(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);
@@ -34,44 +34,44 @@ export default class Filter {
     remove(prevFilterComponent);
   }
 
-  _handleModelEvent() {
-    this.init();
-  }
-
-  _handleFilterTypeChange(filterType) {
-    if (this._filterModel.getFilter() === filterType) {
-      return;
-    }
-
-    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
-  }
-
-  _getFilters() {
-    const events = this._eventsModel.getEvents();
-
-    return [
-      {
-        type: FilterType.EVERYTHING,
-        name: 'everything',
-        count: filter[FilterType.EVERYTHING](events).length,
-      },
-      {
-        type: FilterType.FUTURE,
-        name: 'future',
-        count: filter[FilterType.FUTURE](events).length,
-      },
-      {
-        type: FilterType.PAST,
-        name: 'past',
-        count: filter[FilterType.PAST](events).length,
-      },
-    ];
-  }
-
   disable() {
     const inputs = this._filterComponent.getElement().querySelectorAll('.trip-filters__filter-input');
     inputs.forEach((input) => {
       input.disabled = true;
     });
+  }
+
+  _get() {
+    const events = this._eventsModel.get();
+
+    return [
+      {
+        type: FilterType.EVERYTHING,
+        name: FilterType.EVERYTHING,
+        count: filter[FilterType.EVERYTHING](events).length,
+      },
+      {
+        type: FilterType.FUTURE,
+        name: FilterType.FUTURE,
+        count: filter[FilterType.FUTURE](events).length,
+      },
+      {
+        type: FilterType.PAST,
+        name: FilterType.PAST,
+        count: filter[FilterType.PAST](events).length,
+      },
+    ];
+  }
+
+  _modelEventHandler() {
+    this.init();
+  }
+
+  _filterTypeChangeHandler(filterType) {
+    if (this._filterModel.get() === filterType) {
+      return;
+    }
+
+    this._filterModel.set(UpdateType.MAJOR, filterType);
   }
 }

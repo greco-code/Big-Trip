@@ -11,10 +11,10 @@ const renderMoneyChart = (moneyCtx, events) => {
   events.forEach((event) => {
     if (eventsByType.has(event.type)) {
       let spendingsByType = eventsByType.get(event.type);
-      spendingsByType = spendingsByType + event.base_price;
+      spendingsByType = spendingsByType + event.basePrice;
       eventsByType.set(event.type, spendingsByType);
     } else {
-      eventsByType.set(event.type, event.base_price);
+      eventsByType.set(event.type, event.basePrice);
     }
   });
 
@@ -176,10 +176,10 @@ const renderTmeChart = (timeCtx, events) => {
   events.forEach((event) => {
     if (eventsByType.has(event.type)) {
       let duration = eventsByType.get(event.type);
-      duration = duration + (event.date_to - event.date_from);
+      duration = duration + (event.dateTo - event.dateFrom);
       eventsByType.set(event.type, duration);
     } else {
-      eventsByType.set(event.type, (event.date_to - event.date_from));
+      eventsByType.set(event.type, (event.dateTo - event.dateFrom));
     }
   });
 
@@ -285,12 +285,12 @@ export default class Statistics extends SmartView {
     this._setCharts();
   }
 
-  removeElement() {
-    super.removeElement();
-  }
-
   getTemplate() {
     return createStatisticsTemplate();
+  }
+
+  removeElement() {
+    super.removeElement();
   }
 
   restoreHandlers() {

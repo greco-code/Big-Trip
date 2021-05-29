@@ -6,17 +6,17 @@ export default class Events extends Observer {
     this._events = [];
   }
 
-  setEvents(updateType, events) {
+  get() {
+    return this._events;
+  }
+
+  set(updateType, events) {
     this._events = events.slice();
 
     this._notify(updateType);
   }
 
-  getEvents() {
-    return this._events;
-  }
-
-  updateEvent(updateType, update) {
+  update(updateType, update) {
     const index = this._events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
@@ -32,7 +32,7 @@ export default class Events extends Observer {
     this._notify(updateType, update);
   }
 
-  addEvent(updateType, update) {
+  add(updateType, update) {
     this._events = [
       update,
       ...this._events,
@@ -41,7 +41,7 @@ export default class Events extends Observer {
     this._notify(updateType, update);
   }
 
-  deleteEvent(updateType, update) {
+  delete(updateType, update) {
     const index = this._events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
@@ -57,24 +57,42 @@ export default class Events extends Observer {
   }
 
   static adaptToClient(event) {
-    return Object.assign(
+    const adaptedEvents =  Object.assign(
       {},
       event,
       {
-        'date_from': event.date_from !== null ? new Date(event.date_from) : event.date_from,
-        'date_to': event.date_to !== null ? new Date(event.date_to) : event.date_to,
+        basePrice: Number(event.base_price),
+        isFavorite: event.is_favorite,
+        dateFrom: event.date_from !== null ? new Date(event.date_from) : event.date_from,
+        dateTo: event.date_to !== null ? new Date(event.date_to) : event.date_to,
       },
     );
+
+    delete adaptedEvents.base_price;
+    delete adaptedEvents.date_from;
+    delete adaptedEvents.date_to;
+    delete adaptedEvents.is_favorite;
+
+    return adaptedEvents;
   }
 
   static adaptToServer(event) {
-    return Object.assign(
+    const adaptedTripEvent =  Object.assign(
       {},
       event,
       {
-        'date_from': event.date_from instanceof Date ? event.date_from.toISOString() : null,
-        'date_to': event.date_to instanceof Date ? event.date_to.toISOString() : null,
+        'base_price': event.basePrice,
+        'is_favorite': event.isFavorite,
+        'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : null,
+        'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : null,
       },
     );
+
+    delete adaptedTripEvent.basePrice;
+    delete adaptedTripEvent.dateFrom;
+    delete adaptedTripEvent.isFavorite;
+    delete adaptedTripEvent.dateTo;
+
+    return adaptedTripEvent;
   }
 }
