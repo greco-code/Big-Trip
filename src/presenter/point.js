@@ -22,12 +22,12 @@ export default class Point {
     this._offers = offers;
     this._destinations = destinations;
 
-    this._handleEditClick = this._handleEditClick.bind(this);
-    this._handleEventClick = this._handleEventClick.bind(this);
-    this._handleFormSubmit = this._handleFormSubmit.bind(this);
-    this._handleDeleteClick = this._handleDeleteClick.bind(this);
-    this._onEscKeyDown = this._onEscKeyDown.bind(this);
-    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._editClickHandler = this._editClickHandler.bind(this);
+    this._eventClickHandler = this._eventClickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   init(event) {
@@ -39,11 +39,11 @@ export default class Point {
     this._eventComponent = new EventView(this._event);
     this._eventFormComponent = new EventFormView(this._event, this._offers, this._destinations);
 
-    this._eventComponent.setEditClickHandler(this._handleEditClick);
-    this._eventComponent.setFavouriteClickHandler(this._handleFavoriteClick);
-    this._eventFormComponent.setEventClickHandler(this._handleEventClick);
-    this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._eventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
+    this._eventComponent.setEditClickHandler(this._editClickHandler);
+    this._eventComponent.setFavouriteClickHandler(this._favoriteClickHandler);
+    this._eventFormComponent.setEventClickHandler(this._eventClickHandler);
+    this._eventFormComponent.setFormSubmitHandler(this._formSubmitHandler);
+    this._eventFormComponent.setEventDeleteHandler(this._deleteClickHandler);
 
 
     if (prevEventComponent === null || prevEventFormComponent === null) {
@@ -72,11 +72,11 @@ export default class Point {
 
   _replaceFormToEvent() {
     replace(this._eventComponent, this._eventFormComponent);
-    document.removeEventListener('keydown', this._onEscKeyDown);
+    document.removeEventListener('keydown', this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
   }
 
-  _onEscKeyDown(evt) {
+  _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this._eventFormComponent.reset(this._event);
@@ -84,28 +84,28 @@ export default class Point {
     }
   }
 
-  _handleEditClick() {
+  _editClickHandler() {
     this._replaceEventToForm();
     this._eventFormComponent.reset(this._event);
-    document.addEventListener('keydown', this._onEscKeyDown);
+    document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
-  _handleEventClick() {
+  _eventClickHandler() {
     this._replaceFormToEvent();
-    document.removeEventListener('keydown', this._onEscKeyDown);
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
-  _handleFormSubmit(event) {
+  _formSubmitHandler(event) {
     this._changeData(
       UserAction.UPDATE_EVENT,
       UpdateType.MINOR,
       event,
     );
 
-    document.removeEventListener('keydown', this._onEscKeyDown);
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
-  _handleDeleteClick(event) {
+  _deleteClickHandler(event) {
     this._changeData(
       UserAction.DELETE_EVENT,
       UpdateType.MINOR,
@@ -113,7 +113,7 @@ export default class Point {
     );
   }
 
-  _handleFavoriteClick() {
+  _favoriteClickHandler() {
     this._changeData(
       UserAction.UPDATE_EVENT,
       UpdateType.MINOR,

@@ -5,7 +5,7 @@ import EventsModel from './model/events.js';
 import {FilterType, MenuItem, RenderPosition, UpdateType} from './const.js';
 import FilterModel from './model/filter.js';
 import FilterPresenter from './presenter/filters.js';
-import NewEventButtonView from './view/new-button.js';
+import NewEventButtonView from './view/new-event-button.js';
 import StatisticsView from './view/statistics.js';
 import Api from './api.js';
 import DataModel from './model/data.js';
@@ -33,7 +33,7 @@ const handleSiteMenuClick = (menuItem) => {
       if (isStatisticsOpen) {
         remove(statisticsComponent);
         siteMenuComponent.setMenuItem(MenuItem.TABLE);
-        filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+        filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
         routePresenter.init();
       }
       break;
@@ -41,7 +41,7 @@ const handleSiteMenuClick = (menuItem) => {
       routePresenter.destroy();
       siteMenuComponent.setMenuItem(MenuItem.STATS);
       filterPresenter.disable();
-      statisticsComponent = new StatisticsView(eventsModel.getEvents());
+      statisticsComponent = new StatisticsView(eventsModel.get());
       render(pageContainer, statisticsComponent, RenderPosition.BEFOREEND);
       break;
   }
@@ -62,12 +62,12 @@ newEventButton.setNewEventClickHandler(() => {
   if (isStatisticsOpened) {
     remove(statisticsComponent);
     siteMenuComponent.setMenuItem(MenuItem.TABLE);
-    filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
     routePresenter.init();
   }
 
   routePresenter.createEvent();
-  routePresenter.handleNewEventFormOpen();
+  routePresenter.newEventFormOpenHandler();
 });
 
 filterPresenter.init();
@@ -82,13 +82,13 @@ Promise.all([
   .then(([offers, destinations, events]) => {
     dataModel.setOffers(UpdateType.INIT, offers);
     dataModel.setDestinations(UpdateType.INIT, destinations);
-    eventsModel.setEvents(UpdateType.INIT, events);
+    eventsModel.set(UpdateType.INIT, events);
     render(headerMenuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
     render(headerMain, newEventButton, RenderPosition.BEFOREEND);
   })
   .catch(() => {
     dataModel.setOffers(UpdateType.INIT, []);
-    eventsModel.setEvents(UpdateType.INIT, []);
+    eventsModel.set(UpdateType.INIT, []);
     dataModel.setDestinations(UpdateType.INIT, []);
   });
 

@@ -15,10 +15,10 @@ export default class PointNew {
 
     this._addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 
-    this._handleFormSubmit = this._handleFormSubmit.bind(this);
-    this._handleDeleteClick = this._handleDeleteClick.bind(this);
-    this._onEscKeyDown = this._onEscKeyDown.bind(this);
-    this._handleEventClick = this._handleEventClick.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._eventClickHandler = this._eventClickHandler.bind(this);
   }
 
   init() {
@@ -34,41 +34,41 @@ export default class PointNew {
       this._destinations,
     );
 
-    this._newEventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._newEventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
-    this._newEventFormComponent.setEventClickHandler(this._handleEventClick);
+    this._newEventFormComponent.setFormSubmitHandler(this._formSubmitHandler);
+    this._newEventFormComponent.setEventDeleteHandler(this._deleteClickHandler);
+    this._newEventFormComponent.setEventClickHandler(this._eventClickHandler);
 
     this._addNewEventButton.disabled = true;
 
     render(this._eventContainer, this._newEventFormComponent, RenderPosition.AFTERBEGIN);
 
-    document.addEventListener('keydown', this._onEscKeyDown);
+    document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
-  _onEscKeyDown(evt) {
+  _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.destroy();
     }
 
-    document.removeEventListener('keydown', this._onEscKeyDown);
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
-  _handleEventClick() {
+  _eventClickHandler() {
     this.destroy();
   }
 
-  _handleFormSubmit(event) {
+  _formSubmitHandler(event) {
     this._changeData(
       UserAction.ADD_EVENT,
       UpdateType.MINOR,
       Object.assign({id: nanoid()}, event),
     );
 
-    document.removeEventListener('keydown', this._onEscKeyDown);
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
-  _handleDeleteClick() {
+  _deleteClickHandler() {
     this.destroy();
   }
 
