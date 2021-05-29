@@ -52,17 +52,17 @@ export default class Filter {
     return [
       {
         type: FilterType.EVERYTHING,
-        name: 'everything',
+        name: FilterType.EVERYTHING,
         count: filter[FilterType.EVERYTHING](events).length,
       },
       {
         type: FilterType.FUTURE,
-        name: 'future',
+        name: FilterType.FUTURE,
         count: filter[FilterType.FUTURE](events).length,
       },
       {
         type: FilterType.PAST,
-        name: 'past',
+        name: FilterType.PAST,
         count: filter[FilterType.PAST](events).length,
       },
     ];
