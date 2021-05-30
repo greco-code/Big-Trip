@@ -34,6 +34,7 @@ export default class PointNew {
       this._destinations,
     );
 
+    this._newEventFormComponent.setInnerDatePicker();
     this._newEventFormComponent.setFormSubmitHandler(this._formSubmitHandler);
     this._newEventFormComponent.setEventDeleteHandler(this._deleteClickHandler);
     this._newEventFormComponent.setEventClickHandler(this._eventClickHandler);
@@ -66,12 +67,15 @@ export default class PointNew {
 
   destroy() {
     if (this._newEventFormComponent) {
+      this._newEventFormComponent.removeDatePicker();
       remove(this._newEventFormComponent);
     }
 
     if (this._addNewEventButton) {
       this._addNewEventButton.disabled = false;
     }
+
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
   _escKeyDownHandler(evt) {

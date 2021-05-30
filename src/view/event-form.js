@@ -266,11 +266,13 @@ export default class EventForm extends Smart {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
+    this.removeDatePicker();
     this._callback.formSubmit(EventForm.parseEventToData(this._data));
   }
 
   _eventDeleteClickHandler(evt) {
     evt.preventDefault();
+    this.removeDatePicker();
     this._callback.eventDelete(EventForm.parseEventToData(this._data));
   }
 
