@@ -120,6 +120,7 @@ export default class Point {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this._eventFormComponent.reset(this._event);
+      this._eventFormComponent.removeDatePicker();
       this._replaceFormToEvent();
     }
   }
@@ -153,6 +154,8 @@ export default class Point {
       UpdateType.MINOR,
       event,
     );
+
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
   _favoriteClickHandler() {
