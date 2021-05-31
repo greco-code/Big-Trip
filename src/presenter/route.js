@@ -140,7 +140,11 @@ export default class Route {
     }
 
     if (this._getEvents().length) {
-      this._renderEventsList();
+
+      if (!this._eventList) {
+        this._renderEventsList();
+      }
+
       this._renderSort();
       remove(this._noEvent);
     }

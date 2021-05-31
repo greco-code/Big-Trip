@@ -69,6 +69,7 @@ export default class PointNew {
     if (this._newEventFormComponent) {
       this._newEventFormComponent.removeDatePicker();
       remove(this._newEventFormComponent);
+      remove(this._eventContainer);
     }
 
     if (this._addNewEventButton) {
