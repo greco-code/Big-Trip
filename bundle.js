@@ -43142,7 +43142,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _const_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./const.js */ "./src/const.js");
 /* harmony import */ var _model_filter_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./model/filter.js */ "./src/model/filter.js");
 /* harmony import */ var _presenter_filters_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./presenter/filters.js */ "./src/presenter/filters.js");
-/* harmony import */ var _view_new_button_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./view/new-button.js */ "./src/view/new-button.js");
+/* harmony import */ var _view_new_event_button_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./view/new-event-button.js */ "./src/view/new-event-button.js");
 /* harmony import */ var _view_statistics_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./view/statistics.js */ "./src/view/statistics.js");
 /* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./api.js */ "./src/api.js");
 /* harmony import */ var _model_data_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./model/data.js */ "./src/model/data.js");
@@ -43168,7 +43168,7 @@ const headerMenuContainer = headerMain.querySelector('.trip-controls__navigation
 const tripFilterContainer = headerMain.querySelector('.trip-controls__filters');
 const eventsContainer = pageMain.querySelector('.trip-events');
 
-const newEventButton = new _view_new_button_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+const newEventButton = new _view_new_event_button_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
 const siteMenuComponent = new _view_menu_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
 let statisticsComponent = null;
 
@@ -43181,7 +43181,7 @@ const handleSiteMenuClick = (menuItem) => {
       if (isStatisticsOpen) {
         Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_1__["remove"])(statisticsComponent);
         siteMenuComponent.setMenuItem(_const_js__WEBPACK_IMPORTED_MODULE_4__["MenuItem"].TABLE);
-        filterModel.setFilter(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].MAJOR, _const_js__WEBPACK_IMPORTED_MODULE_4__["FilterType"].EVERYTHING);
+        filterModel.set(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].MAJOR, _const_js__WEBPACK_IMPORTED_MODULE_4__["FilterType"].EVERYTHING);
         routePresenter.init();
       }
       break;
@@ -43189,7 +43189,7 @@ const handleSiteMenuClick = (menuItem) => {
       routePresenter.destroy();
       siteMenuComponent.setMenuItem(_const_js__WEBPACK_IMPORTED_MODULE_4__["MenuItem"].STATS);
       filterPresenter.disable();
-      statisticsComponent = new _view_statistics_js__WEBPACK_IMPORTED_MODULE_8__["default"](eventsModel.getEvents());
+      statisticsComponent = new _view_statistics_js__WEBPACK_IMPORTED_MODULE_8__["default"](eventsModel.get());
       Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_1__["render"])(pageContainer, statisticsComponent, _const_js__WEBPACK_IMPORTED_MODULE_4__["RenderPosition"].BEFOREEND);
       break;
   }
@@ -43210,12 +43210,12 @@ newEventButton.setNewEventClickHandler(() => {
   if (isStatisticsOpened) {
     Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_1__["remove"])(statisticsComponent);
     siteMenuComponent.setMenuItem(_const_js__WEBPACK_IMPORTED_MODULE_4__["MenuItem"].TABLE);
-    filterModel.setFilter(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].MAJOR, _const_js__WEBPACK_IMPORTED_MODULE_4__["FilterType"].EVERYTHING);
+    filterModel.set(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].MAJOR, _const_js__WEBPACK_IMPORTED_MODULE_4__["FilterType"].EVERYTHING);
     routePresenter.init();
   }
 
   routePresenter.createEvent();
-  routePresenter.handleNewEventFormOpen();
+  routePresenter.newEventFormOpenHandler();
 });
 
 filterPresenter.init();
@@ -43230,15 +43230,16 @@ Promise.all([
   .then(([offers, destinations, events]) => {
     dataModel.setOffers(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, offers);
     dataModel.setDestinations(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, destinations);
-    eventsModel.setEvents(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, events);
+    eventsModel.set(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, events);
     Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_1__["render"])(headerMenuContainer, siteMenuComponent, _const_js__WEBPACK_IMPORTED_MODULE_4__["RenderPosition"].BEFOREEND);
     Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_1__["render"])(headerMain, newEventButton, _const_js__WEBPACK_IMPORTED_MODULE_4__["RenderPosition"].BEFOREEND);
   })
   .catch(() => {
     dataModel.setOffers(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, []);
-    eventsModel.setEvents(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, []);
+    eventsModel.set(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, []);
     dataModel.setDestinations(_const_js__WEBPACK_IMPORTED_MODULE_4__["UpdateType"].INIT, []);
   });
+
 
 
 /***/ }),
@@ -43306,17 +43307,17 @@ class Events extends _utils_observer_js__WEBPACK_IMPORTED_MODULE_0__["default"] 
     this._events = [];
   }
 
-  setEvents(updateType, events) {
+  get() {
+    return this._events;
+  }
+
+  set(updateType, events) {
     this._events = events.slice();
 
     this._notify(updateType);
   }
 
-  getEvents() {
-    return this._events;
-  }
-
-  updateEvent(updateType, update) {
+  update(updateType, update) {
     const index = this._events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
@@ -43332,7 +43333,7 @@ class Events extends _utils_observer_js__WEBPACK_IMPORTED_MODULE_0__["default"] 
     this._notify(updateType, update);
   }
 
-  addEvent(updateType, update) {
+  add(updateType, update) {
     this._events = [
       update,
       ...this._events,
@@ -43341,7 +43342,7 @@ class Events extends _utils_observer_js__WEBPACK_IMPORTED_MODULE_0__["default"] 
     this._notify(updateType, update);
   }
 
-  deleteEvent(updateType, update) {
+  delete(updateType, update) {
     const index = this._events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
@@ -43357,25 +43358,43 @@ class Events extends _utils_observer_js__WEBPACK_IMPORTED_MODULE_0__["default"] 
   }
 
   static adaptToClient(event) {
-    return Object.assign(
+    const adaptedEvents =  Object.assign(
       {},
       event,
       {
-        'date_from': event.date_from !== null ? new Date(event.date_from) : event.date_from,
-        'date_to': event.date_to !== null ? new Date(event.date_to) : event.date_to,
+        basePrice: Number(event.base_price),
+        isFavorite: event.is_favorite,
+        dateFrom: event.date_from !== null ? new Date(event.date_from) : event.date_from,
+        dateTo: event.date_to !== null ? new Date(event.date_to) : event.date_to,
       },
     );
+
+    delete adaptedEvents.base_price;
+    delete adaptedEvents.date_from;
+    delete adaptedEvents.date_to;
+    delete adaptedEvents.is_favorite;
+
+    return adaptedEvents;
   }
 
   static adaptToServer(event) {
-    return Object.assign(
+    const adaptedTripEvent =  Object.assign(
       {},
       event,
       {
-        'date_from': event.date_from instanceof Date ? event.date_from.toISOString() : null,
-        'date_to': event.date_to instanceof Date ? event.date_to.toISOString() : null,
+        'base_price': event.basePrice,
+        'is_favorite': event.isFavorite,
+        'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : null,
+        'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : null,
       },
     );
+
+    delete adaptedTripEvent.basePrice;
+    delete adaptedTripEvent.dateFrom;
+    delete adaptedTripEvent.isFavorite;
+    delete adaptedTripEvent.dateTo;
+
+    return adaptedTripEvent;
   }
 }
 
@@ -43403,13 +43422,13 @@ class Filter extends _utils_observer_js__WEBPACK_IMPORTED_MODULE_0__["default"] 
     this._activeFilter = _const_js__WEBPACK_IMPORTED_MODULE_1__["FilterType"].EVERYTHING;
   }
 
-  setFilter(updateType, filter) {
-    this._activeFilter = filter;
-    this._notify(updateType, filter);
+  get() {
+    return this._activeFilter;
   }
 
-  getFilter() {
-    return this._activeFilter;
+  set(updateType, filter) {
+    this._activeFilter = filter;
+    this._notify(updateType, filter);
   }
 }
 
@@ -43426,7 +43445,7 @@ class Filter extends _utils_observer_js__WEBPACK_IMPORTED_MODULE_0__["default"] 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Filter; });
-/* harmony import */ var _view_trip_filter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../view/trip-filter.js */ "./src/view/trip-filter.js");
+/* harmony import */ var _view_filter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../view/filter.js */ "./src/view/filter.js");
 /* harmony import */ var _utils_render_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/render.js */ "./src/utils/render.js");
 /* harmony import */ var _utils_filter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/filter.js */ "./src/utils/filter.js");
 /* harmony import */ var _const_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../const.js */ "./src/const.js");
@@ -43443,19 +43462,19 @@ class Filter {
 
     this._filterComponent = null;
 
-    this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
+    this._modelEventHandler = this._modelEventHandler.bind(this);
+    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
 
-    this._eventsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._eventsModel.addObserver(this._modelEventHandler);
+    this._filterModel.addObserver(this._modelEventHandler);
   }
 
   init() {
-    const filters = this._getFilters();
+    const filters = this._get();
     const prevFilterComponent = this._filterComponent;
 
-    this._filterComponent = new _view_trip_filter_js__WEBPACK_IMPORTED_MODULE_0__["default"](filters, this._filterModel.getFilter());
-    this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
+    this._filterComponent = new _view_filter_js__WEBPACK_IMPORTED_MODULE_0__["default"](filters, this._filterModel.get());
+    this._filterComponent.setFilterTypeChangeHandler(this._filterTypeChangeHandler);
 
     if (prevFilterComponent === null) {
       Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_1__["render"])(this._filterContainer, this._filterComponent, _const_js__WEBPACK_IMPORTED_MODULE_3__["RenderPosition"].BEFOREEND);
@@ -43466,45 +43485,45 @@ class Filter {
     Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_1__["remove"])(prevFilterComponent);
   }
 
-  _handleModelEvent() {
-    this.init();
-  }
-
-  _handleFilterTypeChange(filterType) {
-    if (this._filterModel.getFilter() === filterType) {
-      return;
-    }
-
-    this._filterModel.setFilter(_const_js__WEBPACK_IMPORTED_MODULE_3__["UpdateType"].MAJOR, filterType);
-  }
-
-  _getFilters() {
-    const events = this._eventsModel.getEvents();
-
-    return [
-      {
-        type: _const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].EVERYTHING,
-        name: 'everything',
-        count: _utils_filter_js__WEBPACK_IMPORTED_MODULE_2__["filter"][_const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].EVERYTHING](events).length,
-      },
-      {
-        type: _const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].FUTURE,
-        name: 'future',
-        count: _utils_filter_js__WEBPACK_IMPORTED_MODULE_2__["filter"][_const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].FUTURE](events).length,
-      },
-      {
-        type: _const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].PAST,
-        name: 'past',
-        count: _utils_filter_js__WEBPACK_IMPORTED_MODULE_2__["filter"][_const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].PAST](events).length,
-      },
-    ];
-  }
-
   disable() {
     const inputs = this._filterComponent.getElement().querySelectorAll('.trip-filters__filter-input');
     inputs.forEach((input) => {
       input.disabled = true;
     });
+  }
+
+  _get() {
+    const events = this._eventsModel.get();
+
+    return [
+      {
+        type: _const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].EVERYTHING,
+        name: _const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].EVERYTHING,
+        count: _utils_filter_js__WEBPACK_IMPORTED_MODULE_2__["filter"][_const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].EVERYTHING](events).length,
+      },
+      {
+        type: _const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].FUTURE,
+        name: _const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].FUTURE,
+        count: _utils_filter_js__WEBPACK_IMPORTED_MODULE_2__["filter"][_const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].FUTURE](events).length,
+      },
+      {
+        type: _const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].PAST,
+        name: _const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].PAST,
+        count: _utils_filter_js__WEBPACK_IMPORTED_MODULE_2__["filter"][_const_js__WEBPACK_IMPORTED_MODULE_3__["FilterType"].PAST](events).length,
+      },
+    ];
+  }
+
+  _modelEventHandler() {
+    this.init();
+  }
+
+  _filterTypeChangeHandler(filterType) {
+    if (this._filterModel.get() === filterType) {
+      return;
+    }
+
+    this._filterModel.set(_const_js__WEBPACK_IMPORTED_MODULE_3__["UpdateType"].MAJOR, filterType);
   }
 }
 
@@ -43540,65 +43559,37 @@ class PointNew {
 
     this._newEventFormComponent = null;
 
-    this._mode = _const_js__WEBPACK_IMPORTED_MODULE_2__["Mode"].EDITING;
-
     this._addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 
-    this._handleFormSubmit = this._handleFormSubmit.bind(this);
-    this._handleDeleteClick = this._handleDeleteClick.bind(this);
-    this._onEscKeyDown = this._onEscKeyDown.bind(this);
-    this._handleEventClick = this._handleEventClick.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._eventClickHandler = this._eventClickHandler.bind(this);
   }
 
   init() {
     this._newEventFormComponent = new _view_event_form_js__WEBPACK_IMPORTED_MODULE_1__["default"](
       {
-        date_from: new Date(),
-        date_to: new Date(),
+        dateFrom: new Date(),
+        dateTo: new Date(),
         type: this._offers[0].type,
-        is_favorite: false,
+        isFavorite: false,
         offers: [],
       },
       this._offers,
       this._destinations,
     );
 
-    this._newEventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._newEventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
-    this._newEventFormComponent.setEventClickHandler(this._handleEventClick);
+    this._newEventFormComponent.setInnerDatePicker();
+    this._newEventFormComponent.setFormSubmitHandler(this._formSubmitHandler);
+    this._newEventFormComponent.setEventDeleteHandler(this._deleteClickHandler);
+    this._newEventFormComponent.setEventClickHandler(this._eventClickHandler);
 
     this._addNewEventButton.disabled = true;
 
     Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(this._eventContainer, this._newEventFormComponent, _const_js__WEBPACK_IMPORTED_MODULE_2__["RenderPosition"].AFTERBEGIN);
 
-    document.addEventListener('keydown', this._onEscKeyDown);
-  }
-
-  _onEscKeyDown(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this.destroy();
-    }
-
-    document.removeEventListener('keydown', this._onEscKeyDown);
-  }
-
-  _handleEventClick() {
-    this.destroy();
-  }
-
-  _handleFormSubmit(event) {
-    this._changeData(
-      _const_js__WEBPACK_IMPORTED_MODULE_2__["UserAction"].ADD_EVENT,
-      _const_js__WEBPACK_IMPORTED_MODULE_2__["UpdateType"].MINOR,
-      Object.assign({id: Object(nanoid__WEBPACK_IMPORTED_MODULE_3__["nanoid"])()}, event),
-    );
-
-    document.removeEventListener('keydown', this._onEscKeyDown);
-  }
-
-  _handleDeleteClick() {
-    this.destroy();
+    document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
   setSaving() {
@@ -43622,12 +43613,43 @@ class PointNew {
 
   destroy() {
     if (this._newEventFormComponent) {
+      this._newEventFormComponent.removeDatePicker();
       Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["remove"])(this._newEventFormComponent);
+      Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["remove"])(this._eventContainer);
     }
 
     if (this._addNewEventButton) {
       this._addNewEventButton.disabled = false;
     }
+
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  _escKeyDownHandler(evt) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.destroy();
+    }
+
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  _eventClickHandler() {
+    this.destroy();
+  }
+
+  _formSubmitHandler(event) {
+    this._changeData(
+      _const_js__WEBPACK_IMPORTED_MODULE_2__["UserAction"].ADD_EVENT,
+      _const_js__WEBPACK_IMPORTED_MODULE_2__["UpdateType"].MINOR,
+      Object.assign({id: Object(nanoid__WEBPACK_IMPORTED_MODULE_3__["nanoid"])()}, event),
+    );
+
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  _deleteClickHandler() {
+    this.destroy();
   }
 }
 
@@ -43674,12 +43696,12 @@ class Point {
     this._offers = offers;
     this._destinations = destinations;
 
-    this._handleEditClick = this._handleEditClick.bind(this);
-    this._handleEventClick = this._handleEventClick.bind(this);
-    this._handleFormSubmit = this._handleFormSubmit.bind(this);
-    this._handleDeleteClick = this._handleDeleteClick.bind(this);
-    this._onEscKeyDown = this._onEscKeyDown.bind(this);
-    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._editClickHandler = this._editClickHandler.bind(this);
+    this._eventClickHandler = this._eventClickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   init(event) {
@@ -43691,11 +43713,11 @@ class Point {
     this._eventComponent = new _view_event_js__WEBPACK_IMPORTED_MODULE_1__["default"](this._event);
     this._eventFormComponent = new _view_event_form_js__WEBPACK_IMPORTED_MODULE_2__["default"](this._event, this._offers, this._destinations);
 
-    this._eventComponent.setEditClickHandler(this._handleEditClick);
-    this._eventComponent.setFavouriteClickHandler(this._handleFavoriteClick);
-    this._eventFormComponent.setEventClickHandler(this._handleEventClick);
-    this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._eventFormComponent.setEventDeleteHandler(this._handleDeleteClick);
+    this._eventComponent.setEditClickHandler(this._editClickHandler);
+    this._eventComponent.setFavouriteClickHandler(this._favoriteClickHandler);
+    this._eventFormComponent.setEventClickHandler(this._eventClickHandler);
+    this._eventFormComponent.setFormSubmitHandler(this._formSubmitHandler);
+    this._eventFormComponent.setEventDeleteHandler(this._deleteClickHandler);
 
 
     if (prevEventComponent === null || prevEventFormComponent === null) {
@@ -43714,69 +43736,6 @@ class Point {
 
     Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["remove"])(prevEventComponent);
     Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["remove"])(prevEventFormComponent);
-  }
-
-  _replaceEventToForm() {
-    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["replace"])(this._eventFormComponent, this._eventComponent);
-    this._changeMode();
-    this._mode = _const_js__WEBPACK_IMPORTED_MODULE_3__["Mode"].EDITING;
-  }
-
-  _replaceFormToEvent() {
-    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["replace"])(this._eventComponent, this._eventFormComponent);
-    document.removeEventListener('keydown', this._onEscKeyDown);
-    this._mode = _const_js__WEBPACK_IMPORTED_MODULE_3__["Mode"].DEFAULT;
-  }
-
-  _onEscKeyDown(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this._eventFormComponent.reset(this._event);
-      this._replaceFormToEvent();
-    }
-  }
-
-  _handleEditClick() {
-    this._replaceEventToForm();
-    this._eventFormComponent.reset(this._event);
-    document.addEventListener('keydown', this._onEscKeyDown);
-  }
-
-  _handleEventClick() {
-    this._replaceFormToEvent();
-    document.removeEventListener('keydown', this._onEscKeyDown);
-  }
-
-  _handleFormSubmit(event) {
-    this._changeData(
-      _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_EVENT,
-      _const_js__WEBPACK_IMPORTED_MODULE_3__["UpdateType"].MINOR,
-      event,
-    );
-
-    document.removeEventListener('keydown', this._onEscKeyDown);
-  }
-
-  _handleDeleteClick(event) {
-    this._changeData(
-      _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].DELETE_EVENT,
-      _const_js__WEBPACK_IMPORTED_MODULE_3__["UpdateType"].MINOR,
-      event,
-    );
-  }
-
-  _handleFavoriteClick() {
-    this._changeData(
-      _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_EVENT,
-      _const_js__WEBPACK_IMPORTED_MODULE_3__["UpdateType"].MINOR,
-      Object.assign(
-        {},
-        this._event,
-        {
-          is_favorite: !this._event.is_favorite,
-        },
-      ),
-    );
   }
 
   setViewState(state) {
@@ -43818,6 +43777,74 @@ class Point {
       this._replaceFormToEvent();
     }
   }
+
+  _replaceEventToForm() {
+    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["replace"])(this._eventFormComponent, this._eventComponent);
+    this._changeMode();
+    this._mode = _const_js__WEBPACK_IMPORTED_MODULE_3__["Mode"].EDITING;
+  }
+
+  _replaceFormToEvent() {
+    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["replace"])(this._eventComponent, this._eventFormComponent);
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+    this._mode = _const_js__WEBPACK_IMPORTED_MODULE_3__["Mode"].DEFAULT;
+  }
+
+  _escKeyDownHandler(evt) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this._eventFormComponent.reset(this._event);
+      this._eventFormComponent.removeDatePicker();
+      this._replaceFormToEvent();
+    }
+  }
+
+  _editClickHandler() {
+    this._replaceEventToForm();
+    this._eventFormComponent.reset(this._event);
+    this._eventFormComponent.setInnerDatePicker();
+    document.addEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  _eventClickHandler() {
+    this._replaceFormToEvent();
+    this._eventFormComponent.removeDatePicker();
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  _formSubmitHandler(event) {
+    this._changeData(
+      _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_EVENT,
+      _const_js__WEBPACK_IMPORTED_MODULE_3__["UpdateType"].MINOR,
+      event,
+    );
+
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  _deleteClickHandler(event) {
+    this._changeData(
+      _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].DELETE_EVENT,
+      _const_js__WEBPACK_IMPORTED_MODULE_3__["UpdateType"].MINOR,
+      event,
+    );
+
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  _favoriteClickHandler() {
+    this._changeData(
+      _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_EVENT,
+      _const_js__WEBPACK_IMPORTED_MODULE_3__["UpdateType"].MINOR,
+      Object.assign(
+        {},
+        this._event,
+        {
+          isFavorite: !this._event.isFavorite,
+        },
+      ),
+    );
+  }
 }
 
 
@@ -43833,12 +43860,12 @@ class Point {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Route; });
-/* harmony import */ var _view_event_item_container_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../view/event-item-container.js */ "./src/view/event-item-container.js");
-/* harmony import */ var _view_event_list_container_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../view/event-list-container.js */ "./src/view/event-list-container.js");
+/* harmony import */ var _view_event_list_item_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../view/event-list-item.js */ "./src/view/event-list-item.js");
+/* harmony import */ var _view_event_list_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../view/event-list.js */ "./src/view/event-list.js");
 /* harmony import */ var _view_no_event_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../view/no-event.js */ "./src/view/no-event.js");
 /* harmony import */ var _presenter_point_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../presenter/point.js */ "./src/presenter/point.js");
 /* harmony import */ var _point_new_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./point-new.js */ "./src/presenter/point-new.js");
-/* harmony import */ var _view_trip_sort_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../view/trip-sort.js */ "./src/view/trip-sort.js");
+/* harmony import */ var _view_sort_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../view/sort.js */ "./src/view/sort.js");
 /* harmony import */ var _utils_render_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/render.js */ "./src/utils/render.js");
 /* harmony import */ var _const_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../const.js */ "./src/const.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
@@ -43866,20 +43893,20 @@ class Route {
     this._eventsContainer = eventsContainer;
 
     this._noEvent = new _view_no_event_js__WEBPACK_IMPORTED_MODULE_2__["default"]();
-    this._eventListItem = new _view_event_item_container_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
+    this._eventListItem = new _view_event_list_item_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
     this._loaderComponent = new _view_loading_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
 
-    this._pointNewPresenter = new _point_new_js__WEBPACK_IMPORTED_MODULE_4__["default"](this._eventListItem, this._handleViewAction, this._offers, this._destinations);
+    this._pointNewPresenter = new _point_new_js__WEBPACK_IMPORTED_MODULE_4__["default"](this._eventListItem, this._viewActionHandler, this._offers, this._destinations);
     this._pointPresenter = {};
 
     this._isLoading = true;
     this._api = api;
 
-    this._handleModeChange = this._handleModeChange.bind(this);
-    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-    this._handleViewAction = this._handleViewAction.bind(this);
-    this._handleModelEvent = this._handleModelEvent.bind(this);
-    this.handleNewEventFormOpen = this.handleNewEventFormOpen.bind(this);
+    this._modeChangeHandler = this._modeChangeHandler.bind(this);
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+    this._viewActionHandler = this._viewActionHandler.bind(this);
+    this._modelEventHandler = this._modelEventHandler.bind(this);
+    this.newEventFormOpenHandler = this.newEventFormOpenHandler.bind(this);
 
     this._currentSortType = _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].DAY;
   }
@@ -43887,40 +43914,23 @@ class Route {
   init() {
     this._renderBoard();
 
-    this._eventsModel.addObserver(this._handleModelEvent);
-    this._filtersModel.addObserver(this._handleModelEvent);
-    this._dataModel.addObserver(this._handleModelEvent);
-  }
-
-  _getEvents() {
-    const filtersType = this._filtersModel.getFilter();
-    const events = this._eventsModel.getEvents();
-    const filteredEvents = _utils_filter_js__WEBPACK_IMPORTED_MODULE_9__["filter"][filtersType](events);
-
-    switch (this._currentSortType) {
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].TIME:
-        return filteredEvents.sort((a, b) => dayjs__WEBPACK_IMPORTED_MODULE_8___default()(a.date_to - a.date_from) - (b.date_to - b.date_from));
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].PRICE:
-        return filteredEvents.sort((a, b) => (a.base_price) - (b.base_price));
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].DAY:
-        return filteredEvents.sort((a, b) => dayjs__WEBPACK_IMPORTED_MODULE_8___default()(b.date_from) - dayjs__WEBPACK_IMPORTED_MODULE_8___default()(a.date_from));
-    }
-
-    return filteredEvents;
+    this._eventsModel.addObserver(this._modelEventHandler);
+    this._filtersModel.addObserver(this._modelEventHandler);
+    this._dataModel.addObserver(this._modelEventHandler);
   }
 
   createEvent() {
     this._currentSortType = _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].DAY;
-    this._filtersModel.setFilter(_const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].MAJOR, _const_js__WEBPACK_IMPORTED_MODULE_7__["FilterType"].EVERYTHING);
+    this._filtersModel.set(_const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].MAJOR, _const_js__WEBPACK_IMPORTED_MODULE_7__["FilterType"].EVERYTHING);
 
     if (!this._eventList) {
       this._renderEventsList();
     }
 
-    this._eventListItem = new _view_event_item_container_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
+    this._eventListItem = new _view_event_list_item_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
     this._renderEventContainer();
 
-    this._pointNewPresenter = new _point_new_js__WEBPACK_IMPORTED_MODULE_4__["default"](this._eventListItem, this._handleViewAction, this._offers, this._destinations);
+    this._pointNewPresenter = new _point_new_js__WEBPACK_IMPORTED_MODULE_4__["default"](this._eventListItem, this._viewActionHandler, this._offers, this._destinations);
     this._pointNewPresenter.init();
 
     if (this._noEvent) {
@@ -43931,91 +43941,29 @@ class Route {
   destroy() {
     this._clearBoard({resetSortType: true});
 
-    this._eventsModel.removeObserver(this._handleModelEvent);
-    this._filtersModel.removeObserver(this._handleModelEvent);
+    this._eventsModel.removeObserver(this._modelEventHandler);
+    this._filtersModel.removeObserver(this._modelEventHandler);
   }
 
-  //HANDLERS//
-  _handleViewAction(actionType, updateType, update) {
-    switch (actionType) {
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UserAction"].UPDATE_EVENT:
-        this._pointPresenter[update.id].setViewState(_presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["State"].SAVING);
-        this._api.updateEvent(update).then((response) => {
-          this._eventsModel.updateEvent(updateType, response);
-        })
-          .catch(() => {
-            this._pointPresenter[update.id].setViewState(_presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["State"].ABORTING);
-          });
-        break;
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UserAction"].ADD_EVENT:
-        this._pointNewPresenter.setSaving();
-        this._api.addEvent(update).then((response) => {
-          this._eventsModel.addEvent(updateType, response);
-        })
-          .catch(() => {
-            this._pointNewPresenter.setAborting();
-          });
-        break;
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UserAction"].DELETE_EVENT:
-        this._pointPresenter[update.id].setViewState(_presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["State"].DELETING);
-        this._api.deleteEvent(update).then(() => {
-          this._eventsModel.deleteEvent(updateType, update);
-        })
-          .catch(() => {
-            this._pointPresenter[update.id].setViewState(_presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["State"].ABORTING);
-          });
-        break;
-    }
-  }
+  _getEvents() {
+    const filtersType = this._filtersModel.get();
+    const events = this._eventsModel.get();
+    const filteredEvents = _utils_filter_js__WEBPACK_IMPORTED_MODULE_9__["filter"][filtersType](events);
 
-  _handleModelEvent(updateType, data) {
-    switch (updateType) {
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].PATCH:
-        this._pointPresenter[data.id].init(data);
-        break;
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].MINOR:
-        this._clearBoard();
-        this._renderBoard();
-        break;
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].MAJOR:
-        this._clearBoard({resetSortType: true});
-        this._renderBoard();
-        break;
-      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].INIT:
-        this._isLoading = false;
-        Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_6__["remove"])(this._loaderComponent);
-        this._clearBoard();
-        this._renderBoard();
-        break;
-    }
-  }
-
-  _handleSortTypeChange(sortType) {
-    if (this._currentSortType === sortType) {
-      return;
+    switch (this._currentSortType) {
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].TIME:
+        return filteredEvents.sort((a, b) => dayjs__WEBPACK_IMPORTED_MODULE_8___default()(a.dateTo - a.dateFrom) - (b.dateTo - b.dateFrom));
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].PRICE:
+        return filteredEvents.sort((a, b) => (a.basePrice) - (b.basePrice));
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].DAY:
+        return filteredEvents.sort((a, b) => dayjs__WEBPACK_IMPORTED_MODULE_8___default()(b.dateFrom) - dayjs__WEBPACK_IMPORTED_MODULE_8___default()(a.dateFrom));
     }
 
-    this._currentSortType = sortType;
-    this._clearBoard();
-    this._renderBoard();
+    return filteredEvents;
   }
 
-  _handleModeChange() {
-    this._pointNewPresenter.destroy();
-    Object
-      .values(this._pointPresenter)
-      .forEach((presenter) => presenter.resetView());
-  }
-
-  handleNewEventFormOpen() {
-    Object
-      .values(this._pointPresenter)
-      .forEach((presenter) => presenter.resetView());
-  }
-
-  //RENDERS//
   _renderEventsList() {
-    this._eventList = new _view_event_list_container_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    this._eventList = new _view_event_list_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
     Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_6__["render"])(this._eventsContainer, this._eventList, _const_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].BEFOREEND);
   }
 
@@ -44025,7 +43973,7 @@ class Route {
 
   _renderEvent(event) {
     this._renderEventContainer();
-    const pointPresenter = new _presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["default"](this._eventListItem, this._handleViewAction, this._handleModeChange, this._offers, this._destinations);
+    const pointPresenter = new _presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["default"](this._eventListItem, this._viewActionHandler, this._modeChangeHandler, this._offers, this._destinations);
     pointPresenter.init(event);
     this._pointPresenter[event.id] = pointPresenter;
   }
@@ -44034,7 +43982,7 @@ class Route {
     events
       .forEach((event) => {
         this._renderEvent(event);
-        this._eventListItem = new _view_event_item_container_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
+        this._eventListItem = new _view_event_list_item_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
       });
   }
 
@@ -44047,9 +43995,9 @@ class Route {
   }
 
   _renderSort() {
-    this._sort = new _view_trip_sort_js__WEBPACK_IMPORTED_MODULE_5__["default"](this._currentSortType);
+    this._sort = new _view_sort_js__WEBPACK_IMPORTED_MODULE_5__["default"](this._currentSortType);
     Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_6__["render"])(this._eventsContainer, this._sort, _const_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].AFTERBEGIN);
-    this._sort.setSortTypeChangeHandler(this._handleSortTypeChange);
+    this._sort.setSortTypeChangeHandler(this._sortTypeChangeHandler);
   }
 
   _renderBoard() {
@@ -44066,7 +44014,11 @@ class Route {
     }
 
     if (this._getEvents().length) {
-      this._renderEventsList();
+
+      if (!this._eventList) {
+        this._renderEventsList();
+      }
+
       this._renderSort();
       Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_6__["remove"])(this._noEvent);
     }
@@ -44090,6 +44042,83 @@ class Route {
     if (resetSortType) {
       this._currentSortType = _const_js__WEBPACK_IMPORTED_MODULE_7__["SortType"].DAY;
     }
+  }
+
+  newEventFormOpenHandler() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
+  _viewActionHandler(actionType, updateType, update) {
+    switch (actionType) {
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UserAction"].UPDATE_EVENT:
+        this._pointPresenter[update.id].setViewState(_presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["State"].SAVING);
+        this._api.updateEvent(update).then((response) => {
+          this._eventsModel.update(updateType, response);
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(_presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["State"].ABORTING);
+          });
+        break;
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UserAction"].ADD_EVENT:
+        this._pointNewPresenter.setSaving();
+        this._api.addEvent(update).then((response) => {
+          this._eventsModel.add(updateType, response);
+        })
+          .catch(() => {
+            this._pointNewPresenter.setAborting();
+          });
+        break;
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UserAction"].DELETE_EVENT:
+        this._pointPresenter[update.id].setViewState(_presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["State"].DELETING);
+        this._api.deleteEvent(update).then(() => {
+          this._eventsModel.delete(updateType, update);
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(_presenter_point_js__WEBPACK_IMPORTED_MODULE_3__["State"].ABORTING);
+          });
+        break;
+    }
+  }
+
+  _modelEventHandler(updateType, data) {
+    switch (updateType) {
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].PATCH:
+        this._pointPresenter[data.id].init(data);
+        break;
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].MINOR:
+        this._clearBoard();
+        this._renderBoard();
+        break;
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].MAJOR:
+        this._clearBoard({resetSortType: true});
+        this._renderBoard();
+        break;
+      case _const_js__WEBPACK_IMPORTED_MODULE_7__["UpdateType"].INIT:
+        this._isLoading = false;
+        Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_6__["remove"])(this._loaderComponent);
+        this._clearBoard();
+        this._renderBoard();
+        break;
+    }
+  }
+
+  _sortTypeChangeHandler(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._currentSortType = sortType;
+    this._clearBoard();
+    this._renderBoard();
+  }
+
+  _modeChangeHandler() {
+    this._pointNewPresenter.destroy();
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.resetView());
   }
 }
 
@@ -44116,8 +44145,8 @@ const nowDate = dayjs__WEBPACK_IMPORTED_MODULE_1___default()();
 
 const filter = {
   [_const__WEBPACK_IMPORTED_MODULE_0__["FilterType"].EVERYTHING]: (events) => events,
-  [_const__WEBPACK_IMPORTED_MODULE_0__["FilterType"].PAST]: (events) => events.filter((event) => event.date_to < nowDate),
-  [_const__WEBPACK_IMPORTED_MODULE_0__["FilterType"].FUTURE]: (events) => events.filter((event) => event.date_to > nowDate),
+  [_const__WEBPACK_IMPORTED_MODULE_0__["FilterType"].PAST]: (events) => events.filter((event) => event.dateTo < nowDate),
+  [_const__WEBPACK_IMPORTED_MODULE_0__["FilterType"].FUTURE]: (events) => events.filter((event) => event.dateTo > nowDate),
 };
 
 
@@ -44524,9 +44553,9 @@ const generateDestinationsSelectMarkup = (destinations) => {
 
 
 const createPointForm = (event, availableOffers, destinations) => {
-  const price = event.base_price;
-  const dateFrom = event.date_from || new Date();
-  const dateTo = event.date_to || new Date();
+  const price = event.basePrice;
+  const dateFrom = event.dateFrom || new Date();
+  const dateTo = event.dateTo || new Date();
   const destination = event.destination;
   const type = event.type || availableOffers[0].type;
   const id = event.id;
@@ -44631,12 +44660,33 @@ class EventForm extends _smart_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setStartDatepicker();
-    this._setFinishDatepicker();
   }
 
   getTemplate() {
     return createPointForm(this._data, this._offers, this._destinations);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setEventClickHandler(this._callback.eventClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setEventDeleteHandler(this._callback.eventDelete);
+  }
+
+  reset(event) {
+    this.updateData(
+      EventForm.parseEventToData(event),
+    );
+  }
+
+  setInnerDatePicker() {
+    this._setStartDatepicker();
+    this._setFinishDatepicker();
+  }
+
+  removeDatePicker() {
+    this._startDatepicker.destroy();
+    this._finishDatepicker.destroy();
   }
 
   setEventClickHandler(callback) {
@@ -44662,21 +44712,6 @@ class EventForm extends _smart_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
       .addEventListener('click', this._eventDeleteClickHandler);
   }
 
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this._setStartDatepicker();
-    this._setFinishDatepicker();
-    this.setEventClickHandler(this._callback.eventClick);
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setEventDeleteHandler(this._callback.eventDelete);
-  }
-
-  reset(event) {
-    this.updateData(
-      EventForm.parseEventToData(event),
-    );
-  }
-
   _eventClickHandler(evt) {
     evt.preventDefault();
     this._callback.eventClick();
@@ -44684,11 +44719,13 @@ class EventForm extends _smart_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
+    this.removeDatePicker();
     this._callback.formSubmit(EventForm.parseEventToData(this._data));
   }
 
   _eventDeleteClickHandler(evt) {
     evt.preventDefault();
+    this.removeDatePicker();
     this._callback.eventDelete(EventForm.parseEventToData(this._data));
   }
 
@@ -44726,7 +44763,7 @@ class EventForm extends _smart_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
     evt.preventDefault();
     this.updateData(
       {
-        base_price: Number.parseInt(evt.target.value),
+        basePrice: Number.parseInt(evt.target.value),
       }, true,
     );
   }
@@ -44763,27 +44800,27 @@ class EventForm extends _smart_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
 
   //DATE//
 
-  _startDateChangeHandler([date_from]) {
+  _startDateChangeHandler([dateFrom]) {
     const dateStartMarkup = this.getElement().querySelector('input[name = event-start-time]');
     const dateFinishMarkup = this.getElement().querySelector('input[name = event-end-time]');
 
     this.updateData(
       {
-        date_from,
+        dateFrom,
       }, true,
     );
 
     if (dateStartMarkup.value > dateFinishMarkup.value) {
-      this._finishDatepicker.set({minDate: date_from});
-      this._finishDatepicker.setDate(date_from);
-      this._finishDateChangeHandler([date_from]);
+      this._finishDatepicker.set({minDate: dateFrom});
+      this._finishDatepicker.setDate(dateFrom);
+      this._finishDateChangeHandler([dateFrom]);
     }
   }
 
-  _finishDateChangeHandler([date_to]) {
+  _finishDateChangeHandler([dateTo]) {
     this.updateData(
       {
-        date_to,
+        dateTo,
       }, true,
     );
   }
@@ -44797,11 +44834,11 @@ class EventForm extends _smart_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
     this._startDatepicker = flatpickr__WEBPACK_IMPORTED_MODULE_2___default()(
       this.getElement().querySelector('input[name = event-start-time]'),
       {
-        enableTime: true,
-        dateFormat: 'd/m/y H:i',
-        minDate: dayjs__WEBPACK_IMPORTED_MODULE_4___default()().format('DD/MM/YY HH:MM'),
-        onChange: this._startDateChangeHandler,
-        time_24hr: true,
+        'enableTime': true,
+        'dateFormat': 'd/m/y H:i',
+        'minDate': dayjs__WEBPACK_IMPORTED_MODULE_4___default()().format('DD/MM/YY HH:MM'),
+        'onChange': this._startDateChangeHandler,
+        'time_24hr': true,
       },
     );
   }
@@ -44815,11 +44852,11 @@ class EventForm extends _smart_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
     this._finishDatepicker = flatpickr__WEBPACK_IMPORTED_MODULE_2___default()(
       this.getElement().querySelector('input[name = event-end-time]'),
       {
-        enableTime: true,
-        dateFormat: 'd/m/y H:i',
-        minDate: dayjs__WEBPACK_IMPORTED_MODULE_4___default()(this._data.date_from).format('DD/MM/YY HH:MM'),
-        onChange: this._finishDateChangeHandler,
-        time_24hr: true,
+        'enableTime': true,
+        'dateFormat': 'd/m/y H:i',
+        'minDate': dayjs__WEBPACK_IMPORTED_MODULE_4___default()(this._data.dateFrom).format('DD/MM/YY HH:MM'),
+        'onChange': this._finishDateChangeHandler,
+        'time_24hr': true,
       },
     );
   }
@@ -44870,10 +44907,10 @@ class EventForm extends _smart_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
 
 /***/ }),
 
-/***/ "./src/view/event-item-container.js":
-/*!******************************************!*\
-  !*** ./src/view/event-item-container.js ***!
-  \******************************************/
+/***/ "./src/view/event-list-item.js":
+/*!*************************************!*\
+  !*** ./src/view/event-list-item.js ***!
+  \*************************************/
 /*! exports provided: createEventItemContainerTemplate, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -44898,10 +44935,10 @@ class EventListItem extends _abstract_js__WEBPACK_IMPORTED_MODULE_0__["default"]
 
 /***/ }),
 
-/***/ "./src/view/event-list-container.js":
-/*!******************************************!*\
-  !*** ./src/view/event-list-container.js ***!
-  \******************************************/
+/***/ "./src/view/event-list.js":
+/*!********************************!*\
+  !*** ./src/view/event-list.js ***!
+  \********************************/
 /*! exports provided: createTripEventsListTemplate, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -44960,22 +44997,22 @@ const generateOffers = (offers) => {
 
 const createEventTemplate = (event) => {
   const {
-    base_price,
-    date_from,
-    date_to,
+    basePrice,
+    dateFrom,
+    dateTo,
     destination,
-    is_favorite,
+    isFavorite,
     offers,
     type,
   } = event;
 
-  const duration = Object(_utils_time_js__WEBPACK_IMPORTED_MODULE_0__["getDuration"])(date_from, date_to);
+  const duration = Object(_utils_time_js__WEBPACK_IMPORTED_MODULE_0__["getDuration"])(dateFrom, dateTo);
 
-  const timeStart = Object(_utils_time_js__WEBPACK_IMPORTED_MODULE_0__["humanizeToTime"])(date_from);
-  const timeFinish = Object(_utils_time_js__WEBPACK_IMPORTED_MODULE_0__["humanizeToTime"])(date_to);
-  const eventDay = Object(_utils_time_js__WEBPACK_IMPORTED_MODULE_0__["humanizeToMonthDay"])(date_from);
+  const timeStart = Object(_utils_time_js__WEBPACK_IMPORTED_MODULE_0__["humanizeToTime"])(dateFrom);
+  const timeFinish = Object(_utils_time_js__WEBPACK_IMPORTED_MODULE_0__["humanizeToTime"])(dateTo);
+  const eventDay = Object(_utils_time_js__WEBPACK_IMPORTED_MODULE_0__["humanizeToMonthDay"])(dateFrom);
 
-  const isFavourite = is_favorite ? 'event__favorite-btn--active' : '';
+  const isInFavorites = isFavorite ? 'event__favorite-btn--active' : '';
   const offersMarkup = generateOffers(offers);
 
   return `<div class="event">
@@ -44993,13 +45030,13 @@ const createEventTemplate = (event) => {
               <p class="event__duration">${duration}</p>
             </div>
             <p class="event__price">
-              &euro;&nbsp;<span class="event__price-value">${base_price}</span>
+              &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
             </p>
             <h4 class="visually-hidden">Offers:</h4>
             <ul class="event__selected-offers">
               ${offersMarkup}
             </ul>
-            <button class="event__favorite-btn ${isFavourite}" type="button">
+            <button class="event__favorite-btn ${isInFavorites}" type="button">
               <span class="visually-hidden">Add to favorite</span>
               <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
                 <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -45023,16 +45060,6 @@ class Event extends _abstract_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
     return createEventTemplate(this._event);
   }
 
-  _editClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.editClick();
-  }
-
-  _favoriteClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  }
-
   setEditClickHandler(callback) {
     this._callback.editClick = callback;
     this.getElement()
@@ -45045,6 +45072,81 @@ class Event extends _abstract_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
     this.getElement()
       .querySelector('.event__favorite-btn ')
       .addEventListener('click', this._favoriteClickHandler);
+  }
+
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/view/filter.js":
+/*!****************************!*\
+  !*** ./src/view/filter.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Filter; });
+/* harmony import */ var _abstract_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract.js */ "./src/view/abstract.js");
+
+
+const createFilterItemTemplate = (filter, currentFilterType) => {
+  const {type, name, count} = filter;
+
+  return `<div class="trip-filters__filter">
+              <input id="filter-${name}"
+                class="trip-filters__filter-input  visually-hidden"
+                type="radio" name="trip-filter"
+                value="${name}"
+                ${type === currentFilterType ? 'checked' : ''}
+                ${count === 0 ? 'disabled' : ''}>
+              <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
+           </div>`;
+};
+
+const createTripFilterTemplate = (filterItems, currentFilterType) => {
+  const filterItemsTemplate = filterItems
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
+    .join('');
+
+  return `<form class="trip-filters" action="#" method="get">
+            ${filterItemsTemplate}
+            <button class="visually-hidden" type="submit">Accept filter</button>
+          </form>`;
+};
+
+class Filter extends _abstract_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(filters, currentFilterType) {
+    super();
+    this._filters = filters;
+    this._currentFilter = currentFilterType;
+
+    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
+  }
+
+  getTemplate() {
+    return createTripFilterTemplate(this._filters, this._currentFilter);
+  }
+
+  setFilterTypeChangeHandler(callback) {
+    this._callback.fitlerTypeChange = callback;
+    this.getElement().addEventListener('change', this._filterTypeChangeHandler);
+  }
+
+  _filterTypeChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.fitlerTypeChange(evt.target.value);
   }
 }
 
@@ -45112,11 +45214,6 @@ class Menu extends _abstract_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
     return createSiteMenuTemplate();
   }
 
-  _menuClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.menuClick(evt.target.dataset.type);
-  }
-
   setMenuClickHandler(callback) {
     this._callback.menuClick = callback;
     this.getElement().addEventListener('click', this._menuClickHandler);
@@ -45133,16 +45230,21 @@ class Menu extends _abstract_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
       });
     }
   }
+
+  _menuClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.menuClick(evt.target.dataset.type);
+  }
 }
 
 
 
 /***/ }),
 
-/***/ "./src/view/new-button.js":
-/*!********************************!*\
-  !*** ./src/view/new-button.js ***!
-  \********************************/
+/***/ "./src/view/new-event-button.js":
+/*!**************************************!*\
+  !*** ./src/view/new-event-button.js ***!
+  \**************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -45166,16 +45268,16 @@ class NewEventButton extends _abstract_js__WEBPACK_IMPORTED_MODULE_0__["default"
     return createNewEventButton();
   }
 
-  _newEventClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.newEventButtonClick();
-  }
-
   setNewEventClickHandler(callback) {
     this._callback.newEventButtonClick = callback;
     this
       .getElement()
       .addEventListener('click', this._newEventClickHandler);
+  }
+
+  _newEventClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.newEventButtonClick();
   }
 }
 
@@ -45267,6 +45369,87 @@ class Smart extends _abstract_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 /***/ }),
 
+/***/ "./src/view/sort.js":
+/*!**************************!*\
+  !*** ./src/view/sort.js ***!
+  \**************************/
+/*! exports provided: createTripSortTemplate, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createTripSortTemplate", function() { return createTripSortTemplate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Sort; });
+/* harmony import */ var _abstract_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract.js */ "./src/view/abstract.js");
+/* harmony import */ var _const_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../const.js */ "./src/const.js");
+
+
+
+const createTripSortTemplate = (sortType) => {
+  return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
+            <div class="trip-sort__item  trip-sort__item--day">
+              <input id="sort-day" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-day"
+               ${sortType === _const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].DAY ? 'checked' : ''}
+               data-sort-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].DAY}">
+              <label class="trip-sort__btn" for="sort-day">Day</label>
+            </div>
+
+            <div class="trip-sort__item  trip-sort__item--event">
+              <input id="sort-event" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-event" disabled>
+              <label class="trip-sort__btn" for="sort-event">Event</label>
+            </div>
+
+            <div class="trip-sort__item  trip-sort__item--time">
+              <input id="sort-time" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-time"
+               ${sortType === _const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].TIME ? 'checked' : ''}
+               data-sort-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].TIME}">
+              <label class="trip-sort__btn" for="sort-time">Time</label>
+            </div>
+
+            <div class="trip-sort__item  trip-sort__item--price">
+              <input id="sort-price" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-price"
+               ${sortType === _const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].PRICE ? 'checked' : ''}
+               data-sort-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].PRICE}">
+              <label class="trip-sort__btn" for="sort-price">Price</label>
+            </div>
+
+            <div class="trip-sort__item  trip-sort__item--offer">
+              <input id="sort-offer" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-offer" disabled>
+              <label class="trip-sort__btn" for="sort-offer">Offers</label>
+            </div>
+          </form>`;
+};
+
+
+class Sort extends _abstract_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(sortType) {
+    super();
+    this._currentSortType = sortType;
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+  }
+
+  getTemplate() {
+    return createTripSortTemplate(this._currentSortType);
+  }
+
+  setSortTypeChangeHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener('change', this._sortTypeChangeHandler);
+  }
+
+  _sortTypeChangeHandler(evt) {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    evt.preventDefault();
+    this._callback.sortTypeChange(evt.target.dataset.sortType);
+  }
+}
+
+
+/***/ }),
+
 /***/ "./src/view/statistics.js":
 /*!********************************!*\
   !*** ./src/view/statistics.js ***!
@@ -45297,10 +45480,10 @@ const renderMoneyChart = (moneyCtx, events) => {
   events.forEach((event) => {
     if (eventsByType.has(event.type)) {
       let spendingsByType = eventsByType.get(event.type);
-      spendingsByType = spendingsByType + event.base_price;
+      spendingsByType = spendingsByType + event.basePrice;
       eventsByType.set(event.type, spendingsByType);
     } else {
-      eventsByType.set(event.type, event.base_price);
+      eventsByType.set(event.type, event.basePrice);
     }
   });
 
@@ -45462,10 +45645,10 @@ const renderTmeChart = (timeCtx, events) => {
   events.forEach((event) => {
     if (eventsByType.has(event.type)) {
       let duration = eventsByType.get(event.type);
-      duration = duration + (event.date_to - event.date_from);
+      duration = duration + (event.dateTo - event.dateFrom);
       eventsByType.set(event.type, duration);
     } else {
-      eventsByType.set(event.type, (event.date_to - event.date_from));
+      eventsByType.set(event.type, (event.dateTo - event.dateFrom));
     }
   });
 
@@ -45571,12 +45754,12 @@ class Statistics extends _smart_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this._setCharts();
   }
 
-  removeElement() {
-    super.removeElement();
-  }
-
   getTemplate() {
     return createStatisticsTemplate();
+  }
+
+  removeElement() {
+    super.removeElement();
   }
 
   restoreHandlers() {
@@ -45591,152 +45774,6 @@ class Statistics extends _smart_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this._moneyChart = renderMoneyChart(moneyCtx, this._events);
     this._typeChart = renderTypeChart(typeCtx, this._events);
     this._timeChart = renderTmeChart(timeCtx, this._events);
-  }
-}
-
-
-/***/ }),
-
-/***/ "./src/view/trip-filter.js":
-/*!*********************************!*\
-  !*** ./src/view/trip-filter.js ***!
-  \*********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Filter; });
-/* harmony import */ var _abstract_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract.js */ "./src/view/abstract.js");
-
-
-const createFilterItemTemplate = (filter, currentFilterType) => {
-  const {type, name, count} = filter;
-
-  return `<div class="trip-filters__filter">
-              <input id="filter-${name}"
-                class="trip-filters__filter-input  visually-hidden"
-                type="radio" name="trip-filter"
-                value="${name}"
-                ${type === currentFilterType ? 'checked' : ''}
-                ${count === 0 ? 'disabled' : ''}>
-              <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
-           </div>`;
-};
-
-const createTripFilterTemplate = (filterItems, currentFilterType) => {
-  const filterItemsTemplate = filterItems
-    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
-    .join('');
-
-  return `<form class="trip-filters" action="#" method="get">
-            ${filterItemsTemplate}
-            <button class="visually-hidden" type="submit">Accept filter</button>
-          </form>`;
-};
-
-class Filter extends _abstract_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(filters, currentFilterType) {
-    super();
-    this._filters = filters;
-    this._currentFilter = currentFilterType;
-
-    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
-  }
-
-  getTemplate() {
-    return createTripFilterTemplate(this._filters, this._currentFilter);
-  }
-
-  _filterTypeChangeHandler(evt) {
-    evt.preventDefault();
-    this._callback.fitlerTypeChange(evt.target.value);
-  }
-
-  setFilterTypeChangeHandler(callback) {
-    this._callback.fitlerTypeChange = callback;
-    this.getElement().addEventListener('change', this._filterTypeChangeHandler);
-  }
-}
-
-
-/***/ }),
-
-/***/ "./src/view/trip-sort.js":
-/*!*******************************!*\
-  !*** ./src/view/trip-sort.js ***!
-  \*******************************/
-/*! exports provided: createTripSortTemplate, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createTripSortTemplate", function() { return createTripSortTemplate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Sort; });
-/* harmony import */ var _abstract_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract.js */ "./src/view/abstract.js");
-/* harmony import */ var _const_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../const.js */ "./src/const.js");
-
-
-
-const createTripSortTemplate = (sortType) => {
-  return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-            <div class="trip-sort__item  trip-sort__item--day">
-              <input id="sort-day" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-day"
-               ${sortType === _const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].DAY ? 'checked' : ''}
-               data-sort-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].DAY}">
-              <label class="trip-sort__btn" for="sort-day">Day</label>
-            </div>
-
-            <div class="trip-sort__item  trip-sort__item--event">
-              <input id="sort-event" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-event" disabled>
-              <label class="trip-sort__btn" for="sort-event">Event</label>
-            </div>
-
-            <div class="trip-sort__item  trip-sort__item--time">
-              <input id="sort-time" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-time"
-               ${sortType === _const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].TIME ? 'checked' : ''}
-               data-sort-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].TIME}">
-              <label class="trip-sort__btn" for="sort-time">Time</label>
-            </div>
-
-            <div class="trip-sort__item  trip-sort__item--price">
-              <input id="sort-price" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-price"
-               ${sortType === _const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].PRICE ? 'checked' : ''}
-               data-sort-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["SortType"].PRICE}">
-              <label class="trip-sort__btn" for="sort-price">Price</label>
-            </div>
-
-            <div class="trip-sort__item  trip-sort__item--offer">
-              <input id="sort-offer" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-offer" disabled>
-              <label class="trip-sort__btn" for="sort-offer">Offers</label>
-            </div>
-          </form>`;
-};
-
-
-class Sort extends _abstract_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(sortType) {
-    super();
-    this._currentSortType = sortType;
-    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
-  }
-
-  getTemplate() {
-    return createTripSortTemplate(this._currentSortType);
-  }
-
-  _sortTypeChangeHandler(evt) {
-    if (evt.target.tagName !== 'INPUT') {
-      return;
-    }
-
-    evt.preventDefault();
-    this._callback.sortTypeChange(evt.target.dataset.sortType);
-  }
-
-  setSortTypeChangeHandler(callback) {
-    this._callback.sortTypeChange = callback;
-    this.getElement().addEventListener('change', this._sortTypeChangeHandler);
   }
 }
 
